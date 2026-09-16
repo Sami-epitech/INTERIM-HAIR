@@ -1,0 +1,63 @@
+const express = require('express');
+const cors = require('cors');
+const { transformerOffreFranceTravail } = require('./src/mapper');
+
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Jeux de données fictif (Mock) pour la tâche TK-008
+const MOCK_OFFRES_FT = [
+    {
+        id: "184XYZ1",
+        intitule: "Coiffeur / Coiffeuse Polyvalent(e)",
+        entreprise: { nom: "Salon Tiff & Co" },
+        lieuTravail: { libelle: "Lille - 59" },
+        typeContratLibelle: "Intérim - 3 mois",
+        salaire: { libelle: "13.50 € par heure" },
+        description: "Nous recherchons un coiffeur autonome pour renforcer notre équipe...",
+        competences: [{ libelle: "Coupe homme" }, { libelle: "Coloration" }, { libelle: "Balayage" }],
+        dateCreation: "2026-09-16T08:00:00.000Z"
+    },
+    {
+        id: "184XYZ2",
+        intitule: "Coiffeur Visagiste / Coloriste",
+        entreprise: { nom: "L'Atelier Coiffure" },
+        lieuTravail: { libelle: "Paris 15e - 75" },
+        typeContratLibelle: "CDD",
+        salaire: { libelle: "14.00 € par heure" },
+        description: "Salon haut de gamme cherche un profil expérimenté en technique et visagisme...",
+        competences: [{ libelle: "Visagisme" }, { libelle: "Technique coloration" }],
+        dateCreation: "2026-09-15T14:30:00.000Z"
+    },
+    {
+        id: "184XYZ3",
+        intitule: "Barbier / Coiffeur Homme",
+        entreprise: { nom: "Barber Shop Club" },
+        lieuTravail: { libelle: "Lyon 2e - 69" },
+        typeContratLibelle: "MIS (Intérim)",
+        salaire: { libelle: "12.80 € par heure" },
+        description: "Recherche spécialiste de la taille de barbe et coupe homme moderne...",
+        competences: [{ libelle: "Taille de barbe" }, { libelle: "Coupe homme" }],
+        dateCreation: "2026-09-14T09:15:00.000Z"
+    }
+];
+
+// Route API appelable par React
+app.get('/api/jobs', (req, res) => {
+    try {
+        // Transformation des offres via mapper.js
+        const offresFormatees = MOCK_OFFRES_FT.map(transformerOffreFranceTravail);
+        res.json(offresFormatees);
+    } catch (error) {
+        res.status(500).json({ error: "Erreur lors du traitement des offres" });
+    }
+});
+
+// Démarrage du serveur
+app.listen(PORT, () => {
+    console.log(`[OK] Serveur Node/Express démarré sur http://localhost:${PORT}`);
+});
