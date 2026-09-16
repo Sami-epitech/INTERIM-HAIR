@@ -14,3 +14,11 @@ __pycache__/
 # Fichiers temporaires
 *.tmp
 resultat_test.json
+
+# Node / frontend
+node_modules/
+dist/
+build/
+*.local
+npm-debug.log*
+.DS_Store
