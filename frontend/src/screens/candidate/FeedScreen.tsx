@@ -60,14 +60,9 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
       <div className="flex-1 flex flex-col min-w-0">
         <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-4 flex items-center justify-between">
           <div>
-            {/* Le logo n'a plus besoin d'être répété ici sur desktop : il
-                est déjà affiché en haut de la Sidebar. On le garde quand
-                même visible en permanence (masqué uniquement à lg) pour
-                ne pas casser l'en-tête mobile. */}
             <div className="lg:hidden"><AppName size="sm" /></div>
             <p className="text-xs text-muted-foreground mt-0.5 lg:mt-0 lg:text-sm">Paris & alentours · {filtered.length} offres</p>
           </div>
-          {/* Avatar (initiales) → accès rapide à l'espace candidat */}
           <button onClick={() => onNavigate("c-dashboard")} className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent/40 border border-border">
             <span className="text-xs font-semibold text-foreground">MD</span>
           </button>
