@@ -1,0 +1,16 @@
+# Environnement virtuel
+venv/
+.venv/
+env/
+
+# Fichiers d'environnement et secrets
+.env
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Fichiers temporaires
+*.tmp
+resultat_test.json
