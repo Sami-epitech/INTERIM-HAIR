@@ -1,0 +1,88 @@
+/* ════════════════════════════════════════════════════════════
+   index.css
+   ────────────────────────────────────────────────────────────
+   1) Import des polices Google Fonts utilisées par la maquette
+   2) Déclaration du thème Tailwind v4 (@theme) — TOUTE la palette
+      de couleurs de la maquette vit ici, dans ces variables. Ne
+      jamais écrire une couleur "en dur" (#hex) ailleurs dans le
+      code : utiliser les classes Tailwind générées automatiquement
+      (bg-primary, text-foreground, border-border, etc.)
+   3) Styles globaux + petits utilitaires (scrollbars, animations)
+   ════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+/* ── Thème Tailwind v4 : palette EXACTE de la maquette Figma ── */
+@theme {
+  --color-background: #FAF8F5;         /* fond général de l'app */
+  --color-foreground: #2D1F1A;         /* texte principal (brun foncé) */
+  --color-card: #FFFFFF;               /* fond des cartes (offres, blocs) */
+  --color-card-foreground: #2D1F1A;
+  --color-primary: #C4697B;            /* rose poudré — boutons, accents, actif */
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #F5EDE8;          /* fond des tags / zones secondaires */
+  --color-secondary-foreground: #6B4F3A;
+  --color-muted: #EDE8E3;              /* fond neutre, séparateurs, éléments inactifs */
+  --color-muted-foreground: #9B8E85;
+  --color-accent: #E8A4B0;             /* rose plus soutenu — dégradés décoratifs */
+  --color-accent-foreground: #2D1F1A;
+  --color-border: #E2D9D0;             /* bordures de cartes, inputs, séparateurs */
+  --color-ring: #C4697B;               /* couleur du focus ring (accessibilité clavier) */
+
+  /* Polices — utilisées via font-sans / font-serif / font-mono */
+  --font-sans: 'Outfit', sans-serif;         /* texte courant */
+  --font-serif: 'DM Serif Display', serif;   /* titres, logo, montants en gros */
+  --font-mono: 'DM Mono', monospace;         /* valeurs chiffrées alignées (€, %, km) */
+}
+
+/* Box-sizing cohérent partout : largeur/hauteur incluent padding + bordure */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #FAF8F5;
+  color: #2D1F1A;
+  font-family: 'Outfit', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Scrollbars invisibles par défaut (look "app mobile" plutôt que "site web") */
+::-webkit-scrollbar { width: 0; height: 0; }
+* { scrollbar-width: none; }
+
+/* ... mais réapparaissent discrètement au survol des zones scrollables
+   (voir la classe utilitaire "scrollable" posée sur les listes longues) */
+.scrollable:hover::-webkit-scrollbar { width: 4px; }
+.scrollable:hover { scrollbar-width: thin; scrollbar-color: #E2D9D0 transparent; }
+
+/* Halo de focus rose sur les champs de formulaire (accessibilité + cohérence visuelle) */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #C4697B33; /* #C4697B en 20% d'opacité */
+}
+
+/* Petite animation de transition entre écrans (voir la clé `key={screen}` dans App.tsx) */
+.screen-enter {
+  animation: fadeSlideIn 0.25s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Curseur slider (rayon de recherche, taux horaire minimum...) coloré en rose */
+input[type="range"] {
+  accent-color: #C4697B;
+  cursor: pointer;
+}

@@ -1,11 +1,17 @@
 // ════════════════════════════════════════════════════════════
 // screens/candidate/FeedScreen.tsx
 // ────────────────────────────────────────────────────────────
-// Fil des offres proposées au candidat.
-// Connecté au Back-End Node.js (GET http://localhost:8000/api/jobs)
+// Fil des offres proposées au candidat. Comprend la recherche par
+// filtres (via FilterModal) et la gestion des favoris (cœur sur
+// chaque carte). C'est le "hub" principal du côté candidat.
+//
+// TODO backend : remplacer `JOBS` (données mockées) par un fetch
+// vers GET /api/missions avec les filtres en query string — voir
+// backend/src/controllers/missions.controller.js → listMissions().
 // ════════════════════════════════════════════════════════════
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import type { Filters, Job, Screen } from "../../types";
+import { JOBS } from "../../data/mockData";
 import { MatchRing, Tag } from "../../components/ui";
 import { IArrow, IClock, IFilter, IHeart, ILocation } from "../../components/icons";
 import { AppName } from "../../components/ui";
@@ -16,93 +22,58 @@ import { Sidebar } from "../../components/candidate/Sidebar";
 const DEFAULT_FILTERS: Filters = { contract: "Tous", location: "", rateMin: 10, matchMin: 0 };
 
 export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Screen) => void; setSelectedJob: (j: Job) => void }) {
-  // État local pour stocker les offres provenant de l'API Node.js
-  const [jobsList, setJobsList] = useState<Job[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  // Favoris pré-remplis
-  const [favorites, setFavorites] = useState<string[]>([]);
+  // Favoris pré-rempli avec l'offre id=1, pour illustrer l'état "déjà favori" au chargement
+  const [favorites, setFavorites] = useState<number[]>([1]);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
 
-  // 1. Récupération des offres depuis le Back-End Node.js
-  useEffect(() => {
-    fetch("http://localhost:8000/api/jobs")
-      .then((res) => res.json())
-      .then((data: Array<Record<string, any>>) => {
-        // Adaptation des données reçues du Back-End au type `Job` strict du Front
-        const formattedJobs: Job[] = data.map((item, index) => {
-          const parsedRate = parseFloat(item.hourlyRate) || 12.5;
+  const toggleFav = (id: number) => setFavorites((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
-          return {
-            id: Number(item.id) || index + 1,
-            title: item.title || "Offre sans titre",
-            salon: item.salonName || "Salon de coiffure",
-            location: item.location || "Non précisé",
-            contract: item.contractType || "Intérim",
-            shift: "Journée",
-            rate: parsedRate,
-            match: 85 + (index % 10),
-            image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80",
-            tags: Array.isArray(item.requirements) && item.requirements.length > 0 ? item.requirements : ["Polyvalence"],
-            description: item.description || "Aucune description fournie.",
-            // Ajout des propriétés requises par l'interface Job
-            diplomas: item.diplomas || ["CAP Coiffure"],
-            benefits: item.benefits || ["Titre-restaurant", "Mutuelle"],
-          };
-        });
-
-        setJobsList(formattedJobs);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Erreur de connexion au serveur Node.js :", err);
-        setLoading(false);
-      });
-  }, []);
-
-  const toggleFav = (id: string | number) => setFavorites((p) => (p.includes(String(id)) ? p.filter((x) => x !== String(id)) : [...p, String(id)]));
-
-  // 2. Filtrage dynamique sur la liste récupérée du Back-End
+  // `useMemo` : on ne refiltre la liste que si `filters` change, pas à
+  // chaque re-render du composant (ex. quand on ouvre/ferme la modale).
   const filtered = useMemo(
     () =>
-      jobsList.filter((j) => {
+      JOBS.filter((j) => {
         if (filters.contract !== "Tous" && j.contract !== filters.contract) return false;
         if (filters.location && !j.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
         if (j.rate < filters.rateMin) return false;
         if (j.match < filters.matchMin) return false;
         return true;
       }),
-    [jobsList, filters],
+    [filters],
   );
 
+  // Nombre de filtres actifs (différents de leur valeur par défaut) — affiché en pastille sur le bouton "Filtres"
   const activeCount = [filters.contract !== "Tous", filters.location !== "", filters.rateMin > 10, filters.matchMin > 0].filter(Boolean).length;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-sm text-muted-foreground animate-pulse">Chargement des offres en cours...</p>
-      </div>
-    );
-  }
-
   return (
+    // lg:flex-row : à partir de 1024px, la Sidebar (colonne fixe) et le
+    // contenu principal se placent côte à côte au lieu de s'empiler.
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {showFilters && <FilterModal filters={filters} onApply={setFilters} onClose={() => setShowFilters(false)} />}
 
       <Sidebar active="feed" onNavigate={onNavigate} />
 
+      {/* min-w-0 : essentiel dans un enfant flex pour que son contenu
+          (la grille de cartes) puisse rétrécir sous sa largeur naturelle
+          plutôt que de forcer la Sidebar à sortir de l'écran. */}
       <div className="flex-1 flex flex-col min-w-0">
         <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-4 flex items-center justify-between">
           <div>
+            {/* Le logo n'a plus besoin d'être répété ici sur desktop : il
+                est déjà affiché en haut de la Sidebar. On le garde quand
+                même visible en permanence (masqué uniquement à lg) pour
+                ne pas casser l'en-tête mobile. */}
             <div className="lg:hidden"><AppName size="sm" /></div>
-            <p className="text-xs text-muted-foreground mt-0.5 lg:mt-0 lg:text-sm">Offres disponibles · {filtered.length} offres</p>
+            <p className="text-xs text-muted-foreground mt-0.5 lg:mt-0 lg:text-sm">Paris & alentours · {filtered.length} offres</p>
           </div>
+          {/* Avatar (initiales) → accès rapide à l'espace candidat */}
           <button onClick={() => onNavigate("c-dashboard")} className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent/40 border border-border">
             <span className="text-xs font-semibold text-foreground">MD</span>
           </button>
         </div>
 
+        {/* Ligne du bouton Filtres + compteur + "tout effacer" si des filtres sont actifs */}
         <div className="px-5 lg:px-8 pb-3 flex items-center gap-2">
           <button
             onClick={() => setShowFilters(true)}
@@ -120,16 +91,22 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
         </div>
 
         <div className="flex-1 overflow-y-auto scrollable px-5 lg:px-8 pb-4">
+          {/* max-w-6xl mx-auto : sur très grand écran, la grille ne s'étire
+              pas à l'infini — elle reste à une largeur confortable à lire. */}
           <div className="max-w-6xl mx-auto w-full">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-                <p className="text-muted-foreground text-sm">Aucune offre disponible pour le moment</p>
-                <button onClick={() => setFilters(DEFAULT_FILTERS)} className="text-primary text-sm font-medium underline underline-offset-2">Réinitialiser les filtres</button>
+                <p className="text-muted-foreground text-sm">Aucune offre pour ces filtres</p>
+                <button onClick={() => setFilters(DEFAULT_FILTERS)} className="text-primary text-sm font-medium underline underline-offset-2">Réinitialiser</button>
               </div>
             ) : (
+              // 1 colonne sur mobile, 2 à partir de lg (place libérée par la
+              // Sidebar), 3 à partir de xl (très grand écran).
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filtered.map((job) => (
                   <div key={job.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+                    {/* Bandeau photo : dégradé sombre en bas pour la lisibilité du badge contrat,
+                        score IA affiché en haut à droite via MatchRing */}
                     <div className="relative h-40 bg-muted overflow-hidden">
                       <img src={job.image} alt={job.salon} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
@@ -159,7 +136,7 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
                         </div>
                         <div className="flex items-center gap-2">
                           <button onClick={() => toggleFav(job.id)} className="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-background hover:bg-secondary transition-colors">
-                            <IHeart filled={favorites.includes(String(job.id))} />
+                            <IHeart filled={favorites.includes(job.id)} />
                           </button>
                           <button
                             onClick={() => { setSelectedJob(job); onNavigate("job-detail"); }}
