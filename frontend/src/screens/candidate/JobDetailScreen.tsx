@@ -1,15 +1,8 @@
 // ════════════════════════════════════════════════════════════
 // screens/candidate/JobDetailScreen.tsx
 // ────────────────────────────────────────────────────────────
-// Détail complet d'une offre + bouton de candidature. L'offre
-// affichée (`job`) est passée en prop depuis App.tsx, qui la garde
-// dans son état `selectedJob` (positionné par FeedScreen au clic
-// sur "Postuler").
-//
-// TODO backend : le clic sur "Confirmer ma candidature" devra
-// appeler POST /api/missions/:missionId/applications (voir
-// backend/src/controllers/applications.controller.js → applyToMission())
-// au lieu de se contenter de passer `applied` à true localement.
+// Détail complet d'une offre + bouton de candidature.
+// Connecté au Back-End Node.js (POST http://localhost:8000/api/applications)
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Job, Screen } from "../../types";
@@ -18,6 +11,38 @@ import { IClock, ILocation } from "../../components/icons";
 
 export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s: Screen) => void }) {
   const [applied, setApplied] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Fonction d'envoi de la candidature au serveur Node.js
+  const handleApply = async () => {
+    setSubmitting(true);
+    try {
+      const response = await fetch("http://localhost:8000/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jobId: job.id,
+          candidateName: "Marie Dupont", // Données de démo candidat
+          candidateEmail: "marie.dupont@example.com",
+          message: `Candidature pour l'offre : ${job.title}`,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("[TK-009] Candidature transmise avec succès :", data);
+        setApplied(true);
+      } else {
+        console.error("Erreur lors de l'envoi de la candidature");
+      }
+    } catch (error) {
+      console.error("Erreur de connexion au serveur Node.js :", error);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -29,9 +54,6 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
         <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-md"><MatchRing score={job.match} size={56} /></div>
       </div>
 
-      {/* pb-32 : laisse la place pour la barre d'action fixe en bas (position: fixed).
-          max-w-2xl mx-auto : le texte reste à une largeur confortable à lire même
-          en grand écran (l'image du bandeau ci-dessus, elle, reste en plein bord). */}
       <div className="flex-1 overflow-y-auto scrollable px-5 lg:px-8 pt-6 pb-32">
         <div className="max-w-2xl mx-auto w-full">
           <div className="flex items-start justify-between gap-3 mb-4">
@@ -87,9 +109,7 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
         </div>
       </div>
 
-      {/* Barre d'action fixe : bascule entre le bouton de candidature et la
-          confirmation, une fois cliqué. Même largeur max que le contenu
-          ci-dessus (max-w-2xl mx-auto) pour rester bien alignée avec lui. */}
+      {/* Barre d'action fixe */}
       <div className="fixed bottom-0 left-0 right-0 px-5 lg:px-8 pb-8 pt-4 bg-background/95 backdrop-blur-sm border-t border-border">
         <div className="max-w-2xl mx-auto w-full">
           {applied ? (
@@ -97,7 +117,9 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
               <span className="text-emerald-600 font-semibold text-sm">✓ Candidature envoyée !</span>
             </div>
           ) : (
-            <PrimaryButton onClick={() => setApplied(true)}>Confirmer ma candidature</PrimaryButton>
+            <PrimaryButton onClick={handleApply} disabled={submitting}>
+              {submitting ? "Envoi en cours..." : "Confirmer ma candidature"}
+            </PrimaryButton>
           )}
         </div>
       </div>
