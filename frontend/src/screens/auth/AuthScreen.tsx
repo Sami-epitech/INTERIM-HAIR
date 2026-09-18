@@ -1,15 +1,7 @@
 // ════════════════════════════════════════════════════════════
 // screens/auth/AuthScreen.tsx
 // ────────────────────────────────────────────────────────────
-// Écran de connexion / inscription. Un seul composant pour les
-// deux, avec un onglet interne (`tab`) — évite de dupliquer la
-// mise en page entre deux écrans quasi identiques.
-//
-// ⚠️ Pour l'instant, les champs ne sont PAS envoyés au backend :
-// cliquer sur "Se connecter"/"Créer mon compte" navigue directement
-// vers l'étape suivante. À terme, `onClick` du PrimaryButton devra
-// appeler POST /api/auth/login ou /api/auth/signup (voir
-// backend/src/controllers/auth.controller.js) avant de naviguer.
+// Écran de connexion / inscription connecté à l'API Express.
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { AuthTab, Screen, UserMode } from "../../types";
@@ -17,11 +9,60 @@ import { AppName, BackBtn, Input, PrimaryButton } from "../../components/ui";
 
 export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) => void; userMode: UserMode }) {
   const [tab, setTab] = useState<AuthTab>("login");
-  // Champs de formulaire — état local car ils ne sont utiles qu'à cet écran
-  // (rien d'autre dans l'app n'a besoin de connaître "email" en cours de saisie).
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    console.log("👉 [FRONTEND] Clic sur le bouton de soumission détecté !");
+    setErrorMsg(null);
+
+    // Validation minimale côté front
+    if (!email || !password || (tab === "signup" && !name)) {
+      const msg = "Veuillez remplir tous les champs requis.";
+      console.warn("⚠️ [FRONTEND]", msg);
+      setErrorMsg(msg);
+      return;
+    }
+
+    setLoading(true);
+
+    const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
+    const payload = tab === "login" 
+      ? { email, password, userMode } 
+      : { name, email, password, userMode };
+
+    console.log(`📡 [FRONTEND] Envoi de la requête à http://localhost:8000${endpoint}`, payload);
+
+    try {
+      const response = await fetch(`http://localhost:8000${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Une erreur est survenue lors de l'authentification.");
+      }
+
+      console.log("✅ [FRONTEND] Réponse positive du serveur :", data);
+
+      // Redirection si l'API a répondu avec succès
+      onNavigate(userMode === "candidate" ? "onboarding1" : "r-dashboard");
+
+    } catch (err: any) {
+      console.error("❌ [FRONTEND] Erreur lors de l'appel API :", err);
+      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -32,12 +73,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       </div>
 
       <div className="px-5 pt-6 pb-4">
-        {/* lg:hidden : sur grand écran, App.tsx affiche déjà la marque dans
-            son panneau de gauche fixe — la répéter ici ferait doublon. */}
         <div className="lg:hidden"><AppName size="sm" /></div>
-        {/* Le \n dans la chaîne + `whitespace-pre-line` (via leading-tight ci-dessous
-            n'est pas suffisant seul) : ici on gère le retour à la ligne en le
-            découpant nous-mêmes pour rester simple sans classe CSS supplémentaire. */}
         <h2 className="font-serif text-3xl text-foreground leading-tight mt-3 lg:mt-0">
           {tab === "login" ? (
             <>
@@ -61,7 +97,10 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
           {(["login", "signup"] as AuthTab[]).map((t) => (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => {
+                setTab(t);
+                setErrorMsg(null);
+              }}
               className={`pb-3 text-sm font-semibold border-b-2 -mb-px transition-colors duration-200 ${
                 tab === t ? "text-primary border-primary" : "text-muted-foreground border-transparent"
               }`}
@@ -71,7 +110,14 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
           ))}
         </div>
 
-        {/* Champs du formulaire — "Prénom & Nom" seulement en inscription */}
+        {/* Message d'erreur éventuel */}
+        {errorMsg && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl text-xs font-medium">
+            {errorMsg}
+          </div>
+        )}
+
+        {/* Champs du formulaire */}
         <div className="flex flex-col gap-4">
           {tab === "signup" && <Input label="Prénom & Nom" placeholder="Marie Dupont" value={name} onChange={setName} />}
           <Input label="Email" type="email" placeholder="marie@exemple.fr" value={email} onChange={setEmail} />
@@ -79,10 +125,12 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
           {tab === "login" && <button className="text-xs text-primary font-medium text-right -mt-2">Mot de passe oublié ?</button>}
         </div>
 
-        {/* Après connexion : le candidat part en onboarding, le recruteur va direct à son dashboard */}
-        <PrimaryButton onClick={() => onNavigate(userMode === "candidate" ? "onboarding1" : "r-dashboard")}>
-          {tab === "login" ? "Se connecter" : "Créer mon compte"}
-        </PrimaryButton>
+        {/* Bouton de soumission avec conteneur de secours au cas où PrimaryButton n'a pas de prop onClick directe */}
+        <div onClick={handleSubmit}>
+          <PrimaryButton disabled={loading}>
+            {loading ? "Chargement..." : tab === "login" ? "Se connecter" : "Créer mon compte"}
+          </PrimaryButton>
+        </div>
 
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-border" />
@@ -90,7 +138,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Boutons SSO — purement décoratifs pour l'instant (pas de vraie intégration OAuth) */}
+        {/* Boutons SSO (décoratifs) */}
         <div className="flex gap-3">
           {[
             { name: "Google", icon: "G", cls: "bg-white border-border text-foreground" },
