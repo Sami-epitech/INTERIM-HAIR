@@ -1,5 +1,13 @@
 import { Command } from 'commander';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+import * as fs from 'fs';
+
+// Charge le fichier .env situé à la racine du monorepo
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+
+// Désactive la vérification stricte SSL pour le développement local
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const program = new Command();
 
@@ -7,6 +15,7 @@ const program = new Command();
 const FT_AUTH_URL = 'https://entreprise.francetravail.fr/connexion/oauth2/access_token?realm=%2Fpartenaire';
 const FT_API_URL = 'https://api.francetravail.io/partenaire/offresdemploi/v2/offres/search';
 const ROME_COIFFURE = 'D1202';
+const TARGET_CONTRACT_TYPES = 'CDD,MIS,SAI';
 
 interface JobOffer {
   id: string;
@@ -14,7 +23,11 @@ interface JobOffer {
   description: string;
   entreprise?: { nom?: string };
   lieuTravail?: { libelle?: string };
-  // We can add more fields later for TK-014
+  typeContratLibelle?: string;
+  salaire?: { libelle?: string };
+  competences?: Array<{ libelle: string }>;
+  dateCreation?: string;
+  typeContrat?: string;
 }
 
 /**
@@ -24,6 +37,8 @@ async function getAccessToken(): Promise<string> {
   const clientId = process.env.FT_CLIENT_ID;
   const clientSecret = process.env.FT_CLIENT_SECRET;
 
+  console.log(`🔍 Verification des identifiants : Client ID présent = ${!!clientId}, Secret présent = ${!!clientSecret}`);
+
   if (!clientId || !clientSecret) {
     throw new Error("Missing France Travail credentials in .env file");
   }
@@ -32,53 +47,83 @@ async function getAccessToken(): Promise<string> {
     grant_type: 'client_credentials',
     client_id: clientId,
     client_secret: clientSecret,
-    scope: 'api_offresdemploiv2 o2dsoffre' 
+    scope: 'api_offresdemploiv2 o2dsoffre'
   });
 
-  const response = await fetch(FT_AUTH_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString()
-  });
+  console.log(`🌐 Tentative de connexion vers : ${FT_AUTH_URL}`);
 
-  if (!response.ok) {
-    throw new Error(`Failed to authenticate: ${response.statusText}`);
+  try {
+    const response = await fetch(FT_AUTH_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'InterimHair-CLI/1.0'
+      },
+      body: params.toString()
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP Error ${response.status} (${response.statusText}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.access_token;
+  } catch (err: any) {
+    // Log détaillé pour capturer les erreurs réseau profondes de fetch
+    console.error('🔍 Détails réseau de l’échec d’authentification :');
+    console.error(`- Nom de l'erreur : ${err?.name}`);
+    console.error(`- Message : ${err?.message}`);
+    if (err?.cause) {
+      console.error('- Cause racine :', err.cause);
+    }
+    throw err;
   }
-
-  const data = await response.json();
-  return data.access_token;
 }
 
 /**
  * Step 2: Fetch job offers for Hairdressing
  */
 async function fetchHairdressingOffers(token: string): Promise<JobOffer[]> {
-  // Using standard string addition (+) to avoid backtick/formatting issues
-  const searchUrl = FT_API_URL + '?codeROME=' + ROME_COIFFURE;
-  
-  const response = await fetch(searchUrl, {
-    headers: {
-      Authorization: 'Bearer ' + token,
-      Accept: 'application/json',
-    },
-  });
+  const searchUrl = `${FT_API_URL}?codeROME=${ROME_COIFFURE}&typeContrat=${TARGET_CONTRACT_TYPES}&range=0-149`;
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch offers: ${response.statusText}`);
+  try {
+    const response = await fetch(searchUrl, {
+      headers: {
+        Authorization: 'Bearer ' + token,
+        Accept: 'application/json',
+        'User-Agent': 'InterimHair-CLI/1.0'
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP Error ${response.status} (${response.statusText}): ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.resultats || [];
+  } catch (err: any) {
+    console.error('🔍 Détails réseau de l’échec de récupération des offres :');
+    console.error(`- Message : ${err?.message}`);
+    if (err?.cause) {
+      console.error('- Cause racine :', err.cause);
+    }
+    throw err;
   }
-
-  const data = await response.json();
-  return data.resultats || []; 
 }
 
 /**
  * Step 3: Deduplicate the offers
  */
 function deduplicateOffers(offers: JobOffer[]): JobOffer[] {
+  const allowedContracts = ['CDD', 'MIS', 'SAI'];
   const uniqueOffersMap = new Map();
-  
+
   for (const offer of offers) {
-    // We use the France Travail unique ID as the primary key for deduplication
+    if (offer.typeContrat && !allowedContracts.includes(offer.typeContrat)) {
+      continue;
+    }
     if (!uniqueOffersMap.has(offer.id)) {
       uniqueOffersMap.set(offer.id, offer);
     }
@@ -86,6 +131,7 @@ function deduplicateOffers(offers: JobOffer[]): JobOffer[] {
 
   return Array.from(uniqueOffersMap.values());
 }
+
 
 // --- CLI Setup ---
 
@@ -96,29 +142,34 @@ program
 
 program
   .command('fetch-jobs')
-  .description('Fetch and deduplicate hairdressing jobs from France Travail')
+  .description('Fetch, deduplicate and save hairdressing jobs from France Travail')
   .action(async () => {
     try {
       console.log('⏳ Authenticating with France Travail...');
       const token = await getAccessToken();
-      
+
       console.log('✅ Authenticated! Fetching jobs for ROME D1202 (Coiffure)...');
       const rawOffers = await fetchHairdressingOffers(token);
       console.log(`📥 Fetched ${rawOffers.length} raw offers.`);
 
       const cleanOffers = deduplicateOffers(rawOffers);
       const duplicatesRemoved = rawOffers.length - cleanOffers.length;
-      
+
       console.log(`🧹 Deduplication complete. Removed ${duplicatesRemoved} duplicate(s).`);
-      console.log(`🎯 Final count: ${cleanOffers.length} unique offers ready for the database.`);
-      
-      // For now, let's just log the first one to verify it works
-      if (cleanOffers.length > 0) {
-        console.log('\nSample Offer:', JSON.stringify(cleanOffers[0], null, 2));
+      console.log(`🎯 Final count: ${cleanOffers.length} unique offers.`);
+
+      // Ecriture du fichier JSON pour le Back-End
+      const outputDir = path.join(__dirname, '../../backend/src');
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
       }
+      const outputPath = path.join(outputDir, 'offres-ft.json');
+      fs.writeFileSync(outputPath, JSON.stringify(cleanOffers, null, 2));
+
+      console.log(`💾 Offres enregistrées avec succès dans : ${outputPath}`);
 
     } catch (error) {
-      console.error('❌ Error:', error instanceof Error ? error.message : error);
+      console.error('\n❌ Execution failed.');
       process.exit(1);
     }
   });
