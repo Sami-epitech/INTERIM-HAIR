@@ -8,9 +8,16 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 import express from "express";
 import cors from "cors";
 import passport from "./auth/passport";
+
+// Import de nos vrais contrôleurs connectés à Airtable
+import { signup, login } from "./controllers/auth.controller";
+import { saveProfile } from "./controllers/profile.controller";
+import { getJobs, postJob, patchJob } from "./controllers/job.controller";
+import { applyToMission } from "./controllers/application.controller";
+
+// Import de tes routeurs modulaires existants (si tu veux les garder)
 import jobRoutes from "./routes/job.routes";
 import applicationRoutes from "./routes/application.routes";
-import authRoutes from "./routes/auth.routes";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -24,68 +31,22 @@ app.get("/", (_req, res) => {
   res.json({ message: "Bienvenue sur l'API Interim'hair" });
 });
 
-// 2. Routes Authentification
-app.post("/api/auth/signup", (req, res) => {
-  console.log("📥 [BACKEND] Inscription reçue :", req.body);
-  res.status(200).json({ message: "Compte créé avec succès !", user: req.body });
-});
+// 2. Routes Authentification (Connectées à Airtable via auth.controller.ts)
+app.post("/api/auth/signup", signup);
+app.post("/api/auth/login", login);
 
-app.post("/api/auth/login", (req, res) => {
-  console.log("📥 [BACKEND] Connexion reçue :", req.body);
-  res.status(200).json({ message: "Connexion réussie !", user: req.body });
-});
+// 3. Route Profil & Disponibilités (Connectée à Airtable via profile.controller.ts)
+app.post("/api/profile", saveProfile);
 
-// 3. Route Profil & Disponibilités
-app.post("/api/profile", (req, res) => {
-  const data = req.body;
-  console.log("\n==================================================");
-  console.log("📥 [BACKEND] Profil / Préférences reçus !");
-  console.log("--------------------------------------------------");
-  console.log(" Source            :", data.source || "Non précisée");
-  if (data.skills) console.log(" Compétences       :", data.skills.join(", "));
-  if (data.experienceLevel) console.log(" Expérience        :", data.experienceLevel);
-  if (data.location) console.log(" Zone de travail   :", `${data.location.city} (${data.location.radiusKm} km)`);
-  if (data.availability) {
-    console.log(" 🗓️  Période du     :", data.availability.from, "au", data.availability.to);
-    console.log(" 📅 Jours de travail :", data.availability.days ? data.availability.days.join(", ") : "Aucun");
-    if (data.availability.hours) {
-      console.log(" ⏰ Plage horaire   :", `${data.availability.hours.start} – ${data.availability.hours.end}`);
-    }
-  }
-  console.log("==================================================\n");
+// 4. Routes pour la gestion des Missions / Jobs (Connectées à Airtable via job.controller.ts)
+app.get("/api/jobs", getJobs);
+app.post("/api/jobs", postJob);
+app.patch("/api/jobs/:id", patchJob);
 
-  res.status(200).json({ message: "Profil enregistré avec succès !", profile: data });
-});
+// 5. Routes pour les candidatures (Connectées à Airtable via application.controller.ts)
+app.post("/api/missions/:missionId/applications", applyToMission);
 
-// 4. Routes pour la gestion des Missions / Jobs
-app.post("/api/jobs", (req, res) => {
-  console.log("\n==================================================");
-  console.log("📥 [BACKEND] Nouvelle mission créée !");
-  console.log("--------------------------------------------------");
-  console.log(" Intitulé    :", req.body.title);
-  console.log(" Salon       :", req.body.location);
-  console.log(" Tarif       :", `${req.body.rate} €/h`);
-  console.log(" Dates       :", req.body.dates);
-  console.log(" Compétences :", req.body.skills ? req.body.skills.join(", ") : "Aucune");
-  console.log("==================================================\n");
-
-  res.status(201).json({
-    message: "Mission publiée avec succès !",
-    job: { id: Date.now().toString(), ...req.body },
-  });
-});
-
-app.patch("/api/jobs/:id", (req, res) => {
-  const { id } = req.params;
-  console.log(`\n📥 [BACKEND] Modification de la mission ID: ${id} :`, req.body);
-
-  res.status(200).json({
-    message: "Mission mise à jour avec succès !",
-    job: req.body,
-  });
-});
-
-// 5. Routes modulaires (si configurées dans /routes)
+// Routes modulaires additionnelles
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
 
