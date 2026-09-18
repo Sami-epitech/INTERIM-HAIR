@@ -2,9 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import type { Filters, Job, Screen } from "../../types";
 import { JOBS } from "../../data/mockData";
 import { mapFTToJob } from "../../utils/mapperFTJobs";
-import { MatchRing, Tag } from "../../components/ui";
+import { AppName, BackBtn, MatchRing, Tag } from "../../components/ui";
 import { IArrow, IClock, IFilter, IHeart, ILocation } from "../../components/icons";
-import { AppName } from "../../components/ui";
 import { FilterModal } from "../../components/candidate/FilterModal";
 import { BottomNav } from "../../components/candidate/BottomNav";
 import { Sidebar } from "../../components/candidate/Sidebar";
@@ -58,18 +57,34 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
   const activeCount = [filters.contract !== "Tous", filters.location !== "", filters.rateMin > 10, filters.matchMin > 0].filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col lg:flex-row">
+    // lg:flex-row : à partir de 1024px, la Sidebar (colonne fixe) et le
+    // contenu principal se placent côte à côte au lieu de s'empiler.
+    // h-screen + overflow-hidden (au lieu de min-h-screen) : borne la hauteur
+    // à l'écran pour que ce soit le bloc scrollable ci-dessous (et lui seul)
+    // qui défile, plutôt que la page entière.
+    <div className="h-screen overflow-hidden bg-background flex flex-col lg:flex-row">
       {showFilters && <FilterModal filters={filters} onApply={setFilters} onClose={() => setShowFilters(false)} />}
 
       <Sidebar active="feed" onNavigate={onNavigate} />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* min-w-0 + min-h-0 : essentiels dans un enfant flex pour que son contenu
+          (la grille de cartes) puisse rétrécir sous sa largeur ET sa hauteur
+          naturelles, plutôt que de forcer la Sidebar à sortir de l'écran ou
+          la page entière à défiler. */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-4 flex items-center justify-between">
-          <div>
-            <div className="lg:hidden"><AppName size="sm" /></div>
-            <p className="text-xs text-muted-foreground mt-0.5 lg:mt-0 lg:text-sm">
-              France · {loading ? "Chargement..." : `${filtered.length} offres disponibles`}
-            </p>
+          <div className="flex items-center gap-3">
+            <BackBtn onClick={() => onNavigate("role-select")} />
+            <div>
+              {/* Le logo n'a plus besoin d'être répété ici sur desktop : il
+                  est déjà affiché en haut de la Sidebar. On le garde quand
+                  même visible en permanence (masqué uniquement à lg) pour
+                  ne pas casser l'en-tête mobile. */}
+              <div className="lg:hidden"><AppName size="sm" /></div>
+              <p className="text-xs text-muted-foreground mt-0.5 lg:mt-0 lg:text-sm">
+                France · {loading ? "Chargement..." : `${filtered.length} offres disponibles`}
+              </p>
+            </div>
           </div>
           <button onClick={() => onNavigate("c-dashboard")} className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent/40 border border-border">
             <span className="text-xs font-semibold text-foreground">MD</span>
