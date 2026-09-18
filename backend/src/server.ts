@@ -33,47 +33,8 @@ app.get("/", (_req, res) => {
   res.json({ message: "Bienvenue sur l'API Interim'hair" });
 });
 
-// 2. Routes Authentification
+// 2. Routes Authentification OAuth (Google / Facebook)
 app.use("/api/auth", authRoutes);
-
-app.post("/api/auth/signup", async (req, res) => {
-  try {
-    const { password, ...userData } = req.body;
-    
-    if (!password) {
-      return res.status(400).json({ error: "Le mot de passe est obligatoire." });
-    }
-
-    // Hachage sécurisé du mot de passe avec Argon2
-    const passwordHash = await hashPassword(password);
-
-    // Objet prêt pour la future table d'utilisateurs (sans JAMAIS stocker ni afficher password en clair)
-    const newUser = {
-      ...userData,
-      passwordHash,
-      createdAt: new Date().toISOString(),
-    };
-
-    console.log("📥 [BACKEND] Inscription traitée avec succès (mot de passe hashé avec Argon2) :");
-    console.log("   Utilisateur :", { ...userData, passwordHash: `${passwordHash.substring(0, 25)}...` });
-
-    // Réponse sécurisée : on ne renvoie ni le mot de passe, ni le hash au client
-    return res.status(201).json({
-      message: "Compte créé avec succès !",
-      user: userData,
-    });
-  } catch (error) {
-    console.error("❌ [BACKEND] Erreur lors du hashage/inscription :", error);
-    return res.status(500).json({ error: "Erreur serveur lors de la création du compte." });
-  }
-});
-
-app.post("/api/auth/login", (req, res) => {
-  const { email, userMode } = req.body;
-  // Ne pas logger le mot de passe en clair
-  console.log("📥 [BACKEND] Tentative de connexion reçue pour :", { email, userMode });
-  res.status(200).json({ message: "Connexion réussie !", user: { email, userMode } });
-});
 // 2. Routes Authentification (Connectées à Airtable via auth.controller.ts)
 app.post("/api/auth/signup", signup);
 app.post("/api/auth/login", login);

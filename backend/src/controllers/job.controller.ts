@@ -10,7 +10,7 @@ export const getJobs = async (req: Request, res: Response) => {
     // 1. Récupération des offres Airtable créées par les recruteurs
     const airtableRecords = await base("Offres d'emploi").select({ filterByFormula: "{status} = 'open'" }).firstPage();
     
-    const airtableJobs = airtableRecords.map((record) => ({
+    const airtableJobs = airtableRecords.map((record: any) => ({
       id: record.id,
       title: record.fields.title,
       description: record.fields.description,
