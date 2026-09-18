@@ -1,12 +1,16 @@
 // ════════════════════════════════════════════════════════════
-// components/ui/AppName.tsx — logo texte "Interim'hair"
+// components/ui/AppName.tsx — logo "Interim'hair"
 // ────────────────────────────────────────────────────────────
-// L'apostrophe est mise en rose (text-primary) pour un petit
-// détail de marque, répété sur tous les écrans qui affichent le nom.
-// size="lg" pour l'écran d'accueil, size="sm" en en-tête des autres écrans.
+// TK-017 : remplace le logo texte par le vrai logo (image) créé
+// pour la marque. `size="lg"` pour l'écran d'accueil, `size="sm"`
+// en en-tête des autres écrans.
 // ════════════════════════════════════════════════════════════
+import logo from "../../assets/logo_site.svg";
+
 export const AppName = ({ size = "lg" }: { size?: "sm" | "lg" }) => (
-  <span className={`font-serif ${size === "lg" ? "text-4xl" : "text-xl"} text-foreground tracking-tight`}>
-    Interim<span className="text-primary">'</span>hair
-  </span>
+  <img
+    src={logo}
+    alt="Interim'hair"
+    className={size === "lg" ? "h-16 w-auto" : "h-9 w-auto"}
+  />
 );

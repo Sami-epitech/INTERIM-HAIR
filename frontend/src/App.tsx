@@ -136,15 +136,6 @@ export default function App() {
         <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-primary/8" />
         <div className="absolute -bottom-24 -left-12 w-64 h-64 rounded-full bg-accent/25" />
         <div className="relative flex flex-col items-center gap-4 text-center px-10">
-          <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-            {/* Logo : deux têtes (candidat/recruteur) reliées par une flèche de mise en relation */}
-            <svg width="44" height="44" viewBox="0 0 36 36" fill="none">
-              <circle cx="11" cy="11" r="5" stroke="#C4697B" strokeWidth="1.8" />
-              <circle cx="11" cy="25" r="5" stroke="#C4697B" strokeWidth="1.8" />
-              <path d="M15 15l12-4M15 21l12 4" stroke="#C4697B" strokeWidth="1.8" strokeLinecap="round" />
-              <path d="M15 15.5l3 2.5-3 2.5" stroke="#C4697B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
           <AppName size="lg" />
           <p className="text-base text-muted-foreground max-w-[280px]">La plateforme qui connecte les talents de la coiffure aux salons qui les recherchent.</p>
         </div>
