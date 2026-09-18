@@ -1,4 +1,13 @@
 {
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "data-ingestion-cli"
+  ],
+  "scripts": {
+    "setup": "npm install && pip install -r requirements.txt"
+  },
   "dependencies": {
     "airtable": "^0.12.2",
     "dotenv": "^17.4.2",

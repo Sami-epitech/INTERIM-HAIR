@@ -1,5 +1,8 @@
 import { Command } from 'commander';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const program = new Command();
 
