@@ -11,6 +11,7 @@ import passport from "./auth/passport";
 import jobRoutes from "./routes/job.routes";
 import applicationRoutes from "./routes/application.routes";
 import authRoutes from "./routes/auth.routes";
+import { hashPassword } from "./auth/hashing";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -25,14 +26,45 @@ app.get("/", (_req, res) => {
 });
 
 // 2. Routes Authentification
-app.post("/api/auth/signup", (req, res) => {
-  console.log("📥 [BACKEND] Inscription reçue :", req.body);
-  res.status(200).json({ message: "Compte créé avec succès !", user: req.body });
+app.use("/api/auth", authRoutes);
+
+app.post("/api/auth/signup", async (req, res) => {
+  try {
+    const { password, ...userData } = req.body;
+    
+    if (!password) {
+      return res.status(400).json({ error: "Le mot de passe est obligatoire." });
+    }
+
+    // Hachage sécurisé du mot de passe avec Argon2
+    const passwordHash = await hashPassword(password);
+
+    // Objet prêt pour la future table d'utilisateurs (sans JAMAIS stocker ni afficher password en clair)
+    const newUser = {
+      ...userData,
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    };
+
+    console.log("📥 [BACKEND] Inscription traitée avec succès (mot de passe hashé avec Argon2) :");
+    console.log("   Utilisateur :", { ...userData, passwordHash: `${passwordHash.substring(0, 25)}...` });
+
+    // Réponse sécurisée : on ne renvoie ni le mot de passe, ni le hash au client
+    return res.status(201).json({
+      message: "Compte créé avec succès !",
+      user: userData,
+    });
+  } catch (error) {
+    console.error("❌ [BACKEND] Erreur lors du hashage/inscription :", error);
+    return res.status(500).json({ error: "Erreur serveur lors de la création du compte." });
+  }
 });
 
 app.post("/api/auth/login", (req, res) => {
-  console.log("📥 [BACKEND] Connexion reçue :", req.body);
-  res.status(200).json({ message: "Connexion réussie !", user: req.body });
+  const { email, userMode } = req.body;
+  // Ne pas logger le mot de passe en clair
+  console.log("📥 [BACKEND] Tentative de connexion reçue pour :", { email, userMode });
+  res.status(200).json({ message: "Connexion réussie !", user: { email, userMode } });
 });
 
 // 3. Route Profil & Disponibilités

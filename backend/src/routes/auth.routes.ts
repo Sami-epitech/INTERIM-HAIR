@@ -60,7 +60,7 @@ router.get(
 
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
     // Redirection vers le frontend avec le token
-    res.redirect(`${frontendUrl}/auth/callback?token=${encodeURIComponent(token)}`);
+    res.redirect(`${frontendUrl}?token=${encodeURIComponent(token)}`);
   }
 );
 
