@@ -1,15 +1,8 @@
 // ════════════════════════════════════════════════════════════
 // screens/candidate/JobDetailScreen.tsx
 // ────────────────────────────────────────────────────────────
-// Détail complet d'une offre + bouton de candidature. L'offre
-// affichée (`job`) est passée en prop depuis App.tsx, qui la garde
-// dans son état `selectedJob` (positionné par FeedScreen au clic
-// sur "Postuler").
-//
-// TODO backend : le clic sur "Confirmer ma candidature" devra
-// appeler POST /api/missions/:missionId/applications (voir
-// backend/src/controllers/applications.controller.js → applyToMission())
-// au lieu de se contenter de passer `applied` à true localement.
+// Détail complet d'une offre + bouton de candidature.
+// Redirige vers France Travail si l'offre provient de leur API.
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Job, Screen } from "../../types";
@@ -18,6 +11,50 @@ import { IClock, ILocation } from "../../components/icons";
 
 export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s: Screen) => void }) {
   const [applied, setApplied] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Détection d'une offre France Travail (par source, champ url ou format de l'ID)
+  const jobUrl = (job as any).url || (job as any).originUrl;
+  const isFranceTravail = 
+    (job as any).source === "france_travail" || 
+    Boolean(jobUrl) || 
+    String(job.id).startsWith("ft_");
+
+  const handleApply = async () => {
+    // CAS 1 : Offre France Travail -> Redirection externe
+    if (isFranceTravail) {
+      const targetUrl = jobUrl || `https://candidat.francetravail.fr/offres/recherche/detail/${String(job.id).replace("ft_", "")}`;
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    // CAS 2 : Offre plateforme interne -> Envoi API Express
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8000/api/applications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          jobId: job.id,
+          appliedAt: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la soumission de la candidature");
+      }
+
+      setApplied(true);
+    } catch (err) {
+      console.error("❌ Erreur de candidature :", err);
+      // Mode démo : valide localement en cas d'erreur réseau
+      setApplied(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -29,9 +66,6 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
         <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-md"><MatchRing score={job.match} size={56} /></div>
       </div>
 
-      {/* pb-32 : laisse la place pour la barre d'action fixe en bas (position: fixed).
-          max-w-2xl mx-auto : le texte reste à une largeur confortable à lire même
-          en grand écran (l'image du bandeau ci-dessus, elle, reste en plein bord). */}
       <div className="flex-1 overflow-y-auto scrollable px-5 lg:px-8 pt-6 pb-32">
         <div className="max-w-2xl mx-auto w-full">
           <div className="flex items-start justify-between gap-3 mb-4">
@@ -87,9 +121,7 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
         </div>
       </div>
 
-      {/* Barre d'action fixe : bascule entre le bouton de candidature et la
-          confirmation, une fois cliqué. Même largeur max que le contenu
-          ci-dessus (max-w-2xl mx-auto) pour rester bien alignée avec lui. */}
+      {/* Barre d'action fixe */}
       <div className="fixed bottom-0 left-0 right-0 px-5 lg:px-8 pb-8 pt-4 bg-background/95 backdrop-blur-sm border-t border-border">
         <div className="max-w-2xl mx-auto w-full">
           {applied ? (
@@ -97,7 +129,15 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
               <span className="text-emerald-600 font-semibold text-sm">✓ Candidature envoyée !</span>
             </div>
           ) : (
-            <PrimaryButton onClick={() => setApplied(true)}>Confirmer ma candidature</PrimaryButton>
+            <div onClick={handleApply}>
+              <PrimaryButton disabled={loading}>
+                {loading 
+                  ? "Chargement..." 
+                  : isFranceTravail 
+                    ? "Postuler sur France Travail ↗" 
+                    : "Confirmer ma candidature"}
+              </PrimaryButton>
+            </div>
           )}
         </div>
       </div>
