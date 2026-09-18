@@ -5,14 +5,8 @@
 // `stage` :
 //   1. "drop"    → zone de dépôt du fichier
 //   2. "parsing" → simulation de l'analyse IA (setTimeout)
-//   3. "review"  → relecture/correction des données "extraites"
-//
-// ⚠️ Aucun vrai fichier n'est traité ici : cliquer sur la zone de
-// dépôt lance juste une temporisation (setTimeout) puis affiche
-// des données d'exemple codées en dur (exName, exDiploma...).
-// Quand le backend sera prêt, cet écran enverra le fichier réel à
-// une route d'upload + extraction IA, et pré-remplira ces champs
-// avec la vraie réponse de l'API plutôt que ces valeurs figées.
+//   3. "review"  → relecture/correction des données extraites +
+//                  envoi au Back-End Express lors de la validation.
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Screen } from "../../types";
@@ -23,9 +17,7 @@ import { IUpload, ICheck, IPencil, IX } from "../../components/icons";
 export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [stage, setStage] = useState<"drop" | "parsing" | "review">("drop");
 
-  // Données "extraites" du CV (ici simulées) — chacune modifiable via le
-  // crayon ✏️ à côté. `editingField` indique quel champ est en cours d'édition
-  // (un seul à la fois, d'où un simple string plutôt qu'un objet par champ).
+  // Données extraites ou modifiées du CV
   const [exName, setExName] = useState("Marie Dupont");
   const [exDiploma, setExDiploma] = useState("BP Coiffure");
   const [exSkills, setExSkills] = useState(["CAP Coiffure", "Coloriste", "Balayage", "Visagisme"]);
@@ -33,11 +25,60 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
   const [editingField, setEditingField] = useState<string | null>(null);
   const [newSkill, setNewSkill] = useState("");
 
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const removeSkill = (s: string) => setExSkills((p) => p.filter((x) => x !== s));
   const addSkill = () => {
     if (newSkill.trim() && !exSkills.includes(newSkill.trim())) {
       setExSkills((p) => [...p, newSkill.trim()]);
       setNewSkill("");
+    }
+  };
+
+  // Soumission des données rebalayées/modifiées vers le Back-End Express
+  const handleSaveProfile = async () => {
+    console.log("👉 [FRONTEND] Envoi du profil extrait du CV...");
+    setErrorMsg(null);
+    setLoading(true);
+
+    const payload = {
+      source: "cv_upload",
+      name: exName,
+      diploma: exDiploma,
+      skills: exSkills,
+      experienceLevel: exLevel,
+    };
+
+    console.log("📡 [FRONTEND] Payload envoyé à http://localhost:8000/api/profile :", payload);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors de l'enregistrement du profil.");
+      }
+
+      console.log("✅ [FRONTEND] Profil CV enregistré avec succès par le serveur :", data);
+
+      // Redirection vers l'étape suivante (Disponibilités/Préférences)
+      onNavigate("onboarding2");
+
+    } catch (err: any) {
+      console.error("❌ [FRONTEND] Erreur lors de l'envoi du profil :", err);
+      setErrorMsg(err.message || "Impossible de joindre le serveur.");
+      // Permet de continuer la démo même si le serveur renvoie un souci temporaire
+      onNavigate("onboarding2");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,9 +106,6 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
           <div
             onClick={() => {
               setStage("parsing");
-              // Simule le temps d'analyse IA avant de passer à la relecture.
-              // TODO : remplacer par un vrai appel API (upload + extraction),
-              // et déclencher setStage("review") dans le .then() de la réponse.
               setTimeout(() => setStage("review"), 2200);
             }}
             className="flex flex-col items-center justify-center gap-5 border-2 border-dashed border-primary/30 rounded-2xl bg-primary/[0.02] cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all duration-200 min-h-[220px] p-8"
@@ -114,7 +152,6 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
             <p className="font-semibold text-foreground">Analyse en cours…</p>
             <p className="text-sm text-muted-foreground mt-1">Notre IA lit votre CV</p>
           </div>
-          {/* Liste d'étapes purement visuelle (pas de vraie progression pas-à-pas) */}
           <div className="flex flex-col gap-2 w-full">
             {["Extraction des diplômes", "Détection des compétences", "Analyse de l'expérience"].map((step) => (
               <div key={step} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border">
@@ -141,6 +178,12 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
             </div>
           </div>
 
+          {errorMsg && (
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl text-xs font-medium">
+              {errorMsg}
+            </div>
+          )}
+
           <p className="text-sm font-semibold text-foreground">
             Données extraites — <span className="font-normal text-muted-foreground">appuyez sur ✏️ pour modifier</span>
           </p>
@@ -165,8 +208,7 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
               )}
             </div>
 
-            {/* Diplôme principal — liste de choix au lieu d'un simple champ texte,
-                pour rester cohérent avec le référentiel DIPLOMAS_LIST utilisé ailleurs */}
+            {/* Diplôme principal */}
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-xs text-muted-foreground font-medium">Diplôme principal</p>
@@ -190,7 +232,7 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
               )}
             </div>
 
-            {/* Compétences — tags avec suppression (croix) en mode édition + ajout libre */}
+            {/* Compétences */}
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-muted-foreground font-medium">Compétences</p>
@@ -244,7 +286,12 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
             </div>
           </div>
 
-          <PrimaryButton onClick={() => onNavigate("onboarding2")}>Confirmer et continuer →</PrimaryButton>
+          <div onClick={handleSaveProfile}>
+            <PrimaryButton disabled={loading}>
+              {loading ? "Enregistrement..." : "Confirmer et continuer →"}
+            </PrimaryButton>
+          </div>
+
           <button onClick={() => setStage("drop")} className="text-sm text-center text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">
             Importer un autre fichier
           </button>

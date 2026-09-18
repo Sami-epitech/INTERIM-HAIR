@@ -1,5 +1,98 @@
 [
   {
+    "id": "214BVML",
+    "intitule": "Coiffeur polyvalent (H/F)",
+    "description": "Nous recrutons un(e) coiffeur(se) polyvalent(e) en CDI pour rejoindre notre salon de coiffure mixte situé à Ermont.\n\n VOS CONDITIONS DE TRAVAIL\nVous intégrez une équipe  de 5 professionnels, dans un environnement de travail agréable et dynamique.\n\n VOS MISSIONS\n- Réaliser toutes les techniques de coupe, brushing et coiffage pour tous publics (hommes, femmes, enfants)\n- Assurer l'accueil et le conseil auprès de la clientèle\n- Contribuer à la bonne ambiance et au travail d'équipe\n\n HORAIRES - 35h sur 4 jours\n- Mercredi et vendredi : 10h - 19h\n- Jeudi : 10h - 20h\n- Samedi : 8h30 - 18h\n\nTEMPS PARTIEL POSSIBLE \n\n RÉMUNÉRATION\n1 945 € brut mensuel\n\n PROFIL RECHERCHÉ\n- Diplôme exigé : CAP Coiffure minimum\n- Débutant(e) accepté(e) - votre motivation et votre sérieux feront la différence !\n- Sens du service client et esprit d'équipe\n\nVous êtes passionné(e) par votre métier et souhaitez rejoindre une équipe bienveillante ? Envoyez votre candidature",
+    "dateCreation": "2026-09-18T11:17:08.045Z",
+    "dateActualisation": "2026-09-18T11:17:46.857Z",
+    "lieuTravail": {
+      "libelle": "95 - ERMONT",
+      "latitude": 48.991891,
+      "longitude": 2.258856,
+      "codePostal": "95120",
+      "commune": "95219"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse",
+    "entreprise": {
+      "nom": "SALON 216",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDI",
+    "typeContratLibelle": "CDI",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "E",
+    "experienceLibelle": "2 An(s)",
+    "formations": [
+      {
+        "codeFormation": "42050",
+        "domaineLibelle": "Coiffure",
+        "niveauLibelle": "CAP, BEP et équivalents",
+        "exigence": "S"
+      }
+    ],
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "E"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "E"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "E"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "E"
+      }
+    ],
+    "salaire": {
+      "libelle": "Mensuel de 1945.0 Euros"
+    },
+    "dureeTravailLibelle": "35H/semaine\nTravail le samedi",
+    "dureeTravailLibelleConverti": "Temps plein",
+    "alternance": false,
+    "contact": {
+      "nom": "Agence France Travail Ermont",
+      "coordonnees1": "90 RUE RAOUL DAUTRY",
+      "coordonnees2": "95120 Ermont",
+      "coordonnees3": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214BVML"
+    },
+    "agence": {
+      "courriel": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214BVML"
+    },
+    "nombrePostes": 1,
+    "accessibleTH": false,
+    "deplacementCode": "1",
+    "deplacementLibelle": "Jamais",
+    "qualificationCode": "6",
+    "qualificationLibelle": "Employé qualifié",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "trancheEffectifEtab": "3 à 5 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214BVML"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "35H/semaine\nTravail le samedi"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
     "id": "214BTWV",
     "intitule": "Coiffeur Mixte (H/F)",
     "description": "Notre salon est un salon de coiffure mixte de quartier, existant depuis 39 ans.\nNous sommes spécialisés dans les prestations de coiffure pour hommes et femmes, et nous sommes reconnus pour notre clientèle fidèle et de qualité. \nPoste basé à Toulouse - Quartier Saint-Simon\n\nEn tant que coiffeur / coiffeuse mixte, vous serez responsable de :\n- Prendre en charge une clientèle et la développer par des conseils et une écoute attentive. \nPour cela vous avez de l'expérience et maîtrisez les techniques de coupe femme, homme, coloration, mèches & balayage. Barber serait un plus\n\n\nProfil recherché :\n- Personne sérieuse, fiable et investie\n- Envie de s'impliquer dans un projet stable et en développement",
@@ -16849,105 +16942,6 @@
     "contexteTravail": {
       "horaires": [
         "35H/semaine\nTravail le samedi"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213VLYD",
-    "intitule": "Coiffeur / Coiffeuse (H/F)",
-    "description": "Nous recherchons un/e coiffeur/euse  qualifié(e). et Polyvalente \nUn temps partiel est envisageable. Vous aurez des formations prévus ",
-    "dateCreation": "2026-09-14T12:30:54.487Z",
-    "dateActualisation": "2026-09-14T12:59:50.097Z",
-    "lieuTravail": {
-      "libelle": "17 - LA ROCHELLE",
-      "latitude": 46.159637,
-      "longitude": -1.151192,
-      "codePostal": "17000",
-      "commune": "17300"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse",
-    "entreprise": {
-      "nom": "SAINT ALGUE",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDI",
-    "typeContratLibelle": "CDI",
-    "natureContrat": "Contrat travail",
-    "experienceExige": "D",
-    "experienceLibelle": "Débutant accepté",
-    "formations": [
-      {
-        "codeFormation": "42050",
-        "domaineLibelle": "Coiffure",
-        "niveauLibelle": "CAP, BEP et équivalents",
-        "exigence": "E"
-      }
-    ],
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "E"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "E"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "E"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "E"
-      }
-    ],
-    "salaire": {
-      "libelle": "Mensuel de 1950.0 Euros à 1980.0 Euros",
-      "complement1": "Primes",
-      "complement2": "Complémentaire santé",
-      "listeComplements": [
-        {
-          "code": "1",
-          "libelle": "Primes"
-        },
-        {
-          "code": "7",
-          "libelle": "Complémentaire santé"
-        }
-      ]
-    },
-    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": false,
-    "contact": {
-      "nom": "SAINT ALGUE - M. Marc MAFFRAY",
-      "coordonnees1": "Tél : 0546415707",
-      "telephone": "0546415707"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "6",
-    "qualificationLibelle": "Employé qualifié",
-    "codeNAF": "96.02A",
-    "secteurActivite": "96",
-    "secteurActiviteLibelle": "Coiffure",
-    "trancheEffectifEtab": "0 salarié (n'ayant pas d'effectif au 31/12 mais ayant employé des salariés au cours de l'année de référence)",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213VLYD"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "35H/semaine\nTravail en journée"
       ]
     },
     "entrepriseAdaptee": false,
