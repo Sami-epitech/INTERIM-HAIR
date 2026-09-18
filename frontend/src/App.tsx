@@ -66,7 +66,12 @@ export default function App() {
   const [missions, setMissions] = useState<Mission[]>(MISSIONS_INIT);
 
   // Raccourci utilisé partout comme callback de navigation (`onNavigate={go}`)
-  const go = (s: Screen) => setScreen(s);
+  // window.scrollTo(0,0) : sans vrai routeur, le navigateur ne remet jamais
+  // le scroll en haut tout seul quand on change d'écran — on le force nous-mêmes.
+  const go = (s: Screen) => {
+    setScreen(s);
+    window.scrollTo(0, 0);
+  };
 
   // Vérifie si l'utilisateur revient d'une connexion OAuth (Google)
   useState(() => {

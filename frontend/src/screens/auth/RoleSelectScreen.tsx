@@ -35,15 +35,6 @@ export function RoleSelectScreen({
         <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-primary/8" />
         <div className="absolute -bottom-16 -left-8 w-40 h-40 rounded-full bg-accent/25" />
         <div className="relative flex flex-col items-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center">
-            {/* Logo : deux têtes (candidat/recruteur) reliées par une flèche de mise en relation */}
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <circle cx="11" cy="11" r="5" stroke="#C4697B" strokeWidth="1.8" />
-              <circle cx="11" cy="25" r="5" stroke="#C4697B" strokeWidth="1.8" />
-              <path d="M15 15l12-4M15 21l12 4" stroke="#C4697B" strokeWidth="1.8" strokeLinecap="round" />
-              <path d="M15 15.5l3 2.5-3 2.5" stroke="#C4697B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
           <AppName size="lg" />
           <p className="text-sm text-muted-foreground">La plateforme des talents de la coiffure</p>
         </div>
