@@ -73,6 +73,20 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  // Vérifie si l'utilisateur revient d'une connexion OAuth (Google)
+  useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("auth_token", token);
+      console.log("✅ [AUTH] Token OAuth reçu et stocké avec succès !");
+      // Nettoie l'URL sans recharger la page
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Redirige vers l'onboarding candidat ou le dashboard selon le mode
+      setScreen(userMode === "candidate" ? "onboarding1" : "r-dashboard");
+    }
+  });
+
   // Prépare l'édition d'une mission : on mémorise LAQUELLE, puis on navigue.
   const handleEditMission = (m: Mission) => {
     setEditingMission(m);
