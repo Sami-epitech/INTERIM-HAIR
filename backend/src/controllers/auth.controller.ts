@@ -1,28 +1,55 @@
 import { Request, Response } from 'express';
 import { airtableBase as base } from '../config/airtable';
 import { createUser } from '../services/airtableService';
+import { hashPassword, verifyPassword } from '../auth/hashing';
+import { generateToken } from '../auth/jwt';
 
 // Inscription (Signup)
 export const signup = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, userMode } = req.body;
+    const { name, email, password, userMode, rememberMe } = req.body;
 
-    // Validation de base
-    if (!email || !password || !userMode || !name) {
-      return res.status(400).json({ message: "Veuillez remplir tous les champs requis." });
+    // Validation de base : email, password et userMode uniquement
+    if (!email || !password || !userMode) {
+      return res.status(400).json({ message: "Veuillez renseigner un email et un mot de passe." });
     }
 
-    // Appel au service Airtable pour insérer dans la bonne table
-    const newUser = await createUser({ name, email, password, userMode });
+    // Hachage immédiat du mot de passe avec Argon2
+    const passwordHash = await hashPassword(password);
 
+    // Envoi du profil et du hash du mot de passe vers Airtable
+    const newUser = await createUser({
+      name: name || "",
+      email,
+      password: passwordHash,
+      userMode,
+    });
+
+    // Durée du token : 24 heures si "Rester connecté" est coché, sinon 30 secondes
+    const tokenDuration = rememberMe ? '24h' : '30s';
+
+    const token = generateToken(
+      {
+        userId: newUser.id,
+        email: newUser.fields.email ? String(newUser.fields.email) : undefined,
+        name: newUser.fields.name ? String(newUser.fields.name) : undefined,
+        role: userMode,
+      },
+      tokenDuration
+    );
+
+    console.log(`📥 [BACKEND] Inscription réussie sur Airtable pour : ${email} (${userMode})`);
+
+    // Réponse sécurisée : token JWT + infos publiques
     return res.status(201).json({
       message: "Compte créé avec succès",
+      token,
       userId: newUser.id,
       user: {
         email: newUser.fields.email,
         name: newUser.fields.name,
-        userMode
-      }
+        userMode,
+      },
     });
   } catch (error: any) {
     console.error("❌ [BACKEND] Erreur /api/auth/signup :", error);
@@ -33,7 +60,7 @@ export const signup = async (req: Request, res: Response) => {
 // Connexion (Login)
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password, userMode } = req.body;
+    const { email, password, userMode, rememberMe } = req.body;
 
     if (!email || !password || !userMode) {
       return res.status(400).json({ message: "Email, mot de passe et rôle requis." });
@@ -55,23 +82,46 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const user = records[0];
-    
-    // Vérification basique du mot de passe (en clair pour le projet d'école)
-    if (user.fields.password !== password) {
+    const storedHash = user.fields.password as string | undefined;
+
+    if (!storedHash) {
       return res.status(401).json({ message: "Email ou mot de passe incorrect." });
     }
 
+    // Vérification du mot de passe input avec le hash stocké dans Airtable via Argon2
+    const isPasswordValid = await verifyPassword(storedHash, password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Email ou mot de passe incorrect." });
+    }
+
+    // Durée du token : 24 heures si "Rester connecté" est coché, sinon 30 secondes
+    const tokenDuration = rememberMe ? '24h' : '30s';
+
+    const token = generateToken(
+      {
+        userId: user.id,
+        email: user.fields.email ? String(user.fields.email) : undefined,
+        name: user.fields.name ? String(user.fields.name) : undefined,
+        role: userMode,
+      },
+      tokenDuration
+    );
+
+    console.log(`✅ [BACKEND] Connexion validée via Airtable pour : ${email} (${userMode})`);
+
     return res.status(200).json({
       message: "Connexion réussie",
+      token,
       userId: user.id,
       user: {
         email: user.fields.email,
         name: user.fields.name,
-        userMode
-      }
+        userMode,
+      },
     });
   } catch (error: any) {
     console.error("❌ [BACKEND] Erreur /api/auth/login :", error);
     return res.status(500).json({ message: error.message || "Erreur interne du serveur." });
   }
-};
+};

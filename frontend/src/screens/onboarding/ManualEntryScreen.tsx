@@ -12,7 +12,6 @@ import { BackBtn, Divider, Input, PrimaryButton } from "../../components/ui";
 export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [diploma, setDiploma] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
@@ -25,8 +24,8 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
   // Ajoute/retire une compétence de la sélection
   const toggleSkill = (s: string) => setSelectedSkills((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
 
-  // Champs obligatoires avant de pouvoir continuer
-  const canContinue = Boolean(firstName && lastName && email && selectedSkills.length > 0 && experience);
+  // Champs obligatoires avant de pouvoir continuer (nom, prénom, compétences, expérience)
+  const canContinue = Boolean(firstName && lastName && selectedSkills.length > 0 && experience);
 
   // Soumission des données vers le Back-End Express
   const handleSaveProfile = async () => {
@@ -34,11 +33,14 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
     setErrorMsg(null);
     setLoading(true);
 
+    const userId = localStorage.getItem("userId") || undefined;
+    const token = localStorage.getItem("auth_token") || undefined;
+
     const payload = {
       source: "manual_entry",
+      userId,
       firstName,
       lastName,
-      email,
       phone,
       diploma,
       skills: selectedSkills,
@@ -53,6 +55,7 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });
@@ -108,7 +111,6 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
             <Input label="Prénom" placeholder="Marie" value={firstName} onChange={setFirstName} />
             <Input label="Nom" placeholder="Dupont" value={lastName} onChange={setLastName} />
           </div>
-          <Input label="Email" type="email" placeholder="marie@exemple.fr" value={email} onChange={setEmail} />
           <Input label="Téléphone" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={setPhone} />
         </div>
 
