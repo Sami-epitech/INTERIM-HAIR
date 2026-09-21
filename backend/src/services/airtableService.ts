@@ -184,3 +184,148 @@ export const createCandidature = async (candidateRecordId: string, missionRecord
 
   return record[0];
 };
+
+// ════════════════════════════════════════════════════════════
+// 3. GESTION DES FAVORIS (Intérimaires <-> Offres d'emploi)
+// ════════════════════════════════════════════════════════════
+
+export const getInterimaireFavorites = async (candidateId: string) => {
+  try {
+    const candidate = await airtableBase('Intérimaires').find(candidateId);
+    const favoriteIds: string[] = (candidate.fields.favorites as string[]) || [];
+
+    if (favoriteIds.length === 0) {
+      return { favoriteIds: [], jobs: [] };
+    }
+
+    // Récupération des offres correspondantes dans "Offres d'emploi"
+    const jobs = await Promise.all(
+      favoriteIds.map(async (offerId) => {
+        try {
+          const offerRecord = await airtableBase("Offres d'emploi").find(offerId);
+          return {
+            id: offerRecord.id,
+            title: (offerRecord.fields.title as string) || "Coiffeur / Coiffeuse",
+            description: (offerRecord.fields.description as string) || "Aucune description fournie.",
+            startDate: offerRecord.fields.startDate,
+            endDate: offerRecord.fields.endDate,
+            dates: offerRecord.fields.dates,
+            location: (offerRecord.fields.location as string) || "France",
+            rate: (offerRecord.fields.rate as number) || 16,
+            shift: (offerRecord.fields.shift as string) || "35h / sem.",
+            tags: (offerRecord.fields.skills as string[]) || ["Coiffure"],
+            status: offerRecord.fields.status,
+            salon: "Salon Partenaire",
+            contract: "Intérim",
+            diplomas: ["CAP Coiffure"],
+            benefits: ["Mutuelle", "primes"],
+            match: 85,
+            image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+          };
+        } catch (e) {
+          console.warn(`⚠️ [AIRTABLE] Offre favorite ${offerId} introuvable dans Offres d'emploi.`);
+          return null;
+        }
+      })
+    );
+
+    const validJobs = jobs.filter((j): j is NonNullable<typeof j> => j !== null);
+    return {
+      favoriteIds,
+      jobs: validJobs,
+    };
+  } catch (error) {
+    console.error(`❌ [AIRTABLE] Erreur lors de la récupération des favoris pour ${candidateId} :`, error);
+    throw error;
+  }
+};
+
+export const addInterimaireFavorite = async (candidateId: string, jobId: string, jobData?: any) => {
+  try {
+    const candidate = await airtableBase('Intérimaires').find(candidateId);
+    const currentFavorites: string[] = (candidate.fields.favorites as string[]) || [];
+
+    let targetJobId = jobId;
+
+    // Si ce n'est pas un ID Airtable natif (ex: offre France Travail non encore présente dans la table)
+    if (!targetJobId.startsWith('rec')) {
+      const cleanTitle = (jobData?.title || targetJobId).replace(/'/g, "\\'");
+      const existing = await airtableBase("Offres d'emploi")
+        .select({
+          filterByFormula: `{title} = '${cleanTitle}'`,
+          maxRecords: 1,
+        })
+        .firstPage();
+
+      if (existing.length > 0) {
+        targetJobId = existing[0].id;
+      } else {
+        const created = await airtableBase("Offres d'emploi").create([
+          {
+            fields: {
+              title: jobData?.title || `Offre ${jobId}`,
+              description: jobData?.description || "Offre importée",
+              location: jobData?.location || "France",
+              rate: jobData?.rate || 16,
+              shift: jobData?.shift || "35h / sem.",
+              status: "open",
+              skills: jobData?.tags || [],
+            },
+          },
+        ]);
+        targetJobId = created[0].id;
+      }
+    }
+
+    // Concaténation : ajout du nouvel ID aux favoris existants sans doublon
+    if (currentFavorites.includes(targetJobId)) {
+      return { favoriteIds: currentFavorites, addedId: targetJobId };
+    }
+
+    const newFavorites = [...currentFavorites, targetJobId];
+
+    const updated = await airtableBase('Intérimaires').update(candidateId, {
+      favorites: newFavorites,
+    });
+
+    const finalFavorites = (updated.fields.favorites as string[]) || [];
+    return { favoriteIds: finalFavorites, addedId: targetJobId };
+  } catch (error) {
+    console.error(`❌ [AIRTABLE] Erreur lors de l'ajout du favori ${jobId} pour ${candidateId} :`, error);
+    throw error;
+  }
+};
+
+export const removeInterimaireFavorite = async (candidateId: string, jobId: string) => {
+  try {
+    const candidate = await airtableBase('Intérimaires').find(candidateId);
+    const currentFavorites: string[] = (candidate.fields.favorites as string[]) || [];
+
+    let targetJobId = jobId;
+
+    if (!targetJobId.startsWith('rec')) {
+      for (const favId of currentFavorites) {
+        try {
+          const offer = await airtableBase("Offres d'emploi").find(favId);
+          if (offer.fields.title && offer.fields.title.toString().includes(jobId)) {
+            targetJobId = favId;
+            break;
+          }
+        } catch (e) {}
+      }
+    }
+
+    // Retrait : exclusion de l'offre
+    const newFavorites = currentFavorites.filter((id) => id !== targetJobId && id !== jobId);
+
+    const updated = await airtableBase('Intérimaires').update(candidateId, {
+      favorites: newFavorites,
+    });
+
+    const finalFavorites = (updated.fields.favorites as string[]) || [];
+    return { favoriteIds: finalFavorites, removedId: targetJobId };
+  } catch (error) {
+    console.error(`❌ [AIRTABLE] Erreur lors du retrait du favori ${jobId} pour ${candidateId} :`, error);
+    throw error;
+  }
+};

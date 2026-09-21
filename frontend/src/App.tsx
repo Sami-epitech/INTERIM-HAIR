@@ -15,9 +15,10 @@
 // un écran ne connaît que ce qu'on lui passe en props, il ne va
 // jamais chercher l'état d'un AUTRE écran directement.
 // ════════════════════════════════════════════════════════════
-import { useState } from "react";
-import type { Job, Mission, Screen, UserMode } from "./types";
+import { useEffect, useState } from "react";
+import type { DashTab, Job, Mission, Screen, UserMode } from "./types";
 import { JOBS, MISSIONS_INIT } from "./data/mockData";
+import { fetchUserFavorites, apiAddFavorite, apiRemoveFavorite } from "./services/favoriteService";
 import { AppName } from "./components/ui";
 
 import { RoleSelectScreen } from "./screens/auth/RoleSelectScreen";
@@ -34,18 +35,6 @@ import { MissionCreateScreen } from "./screens/recruiter/MissionCreateScreen";
 import { MissionEditScreen } from "./screens/recruiter/MissionEditScreen";
 
 // ── Deux familles d'écrans, deux traitements de mise en page ──
-//
-// FORM_FLOW_SCREENS : les parcours linéaires (choix de rôle, connexion,
-// inscription étape par étape...). Ce sont des formulaires qu'on lit de
-// haut en bas — les laisser s'étirer sur toute la largeur d'un écran
-// d'ordinateur les rendrait juste plus durs à lire. On les garde donc
-// dans une carte centrée, façon "app mobile", même sur grand écran.
-//
-// Tout le reste (feed, dashboards...) gère DIRECTEMENT sa propre mise en
-// page responsive (grilles, barre latérale...) — voir Sidebar.tsx et les
-// classes lg:grid-cols-* dans FeedScreen/CandidateDashboard/RecruiterDashboard.
-// Ces écrans-là ne doivent PAS être enfermés dans la carte étroite
-// ci-dessous, sinon leurs grilles n'auraient jamais la place de s'afficher.
 const FORM_FLOW_SCREENS: Screen[] = ["role-select", "auth", "onboarding1", "cv-upload", "manual-entry", "onboarding2"];
 
 export default function App() {
@@ -61,16 +50,71 @@ export default function App() {
   // "Modifier", lue par MissionEditScreen).
   const [editingMission, setEditingMission] = useState<Mission>(MISSIONS_INIT[0]);
   // Missions du recruteur — état "source de vérité" pour tout le module recruteur.
-  // Reste ici (et pas dans RecruiterDashboard) car MissionEditScreen doit
-  // pouvoir le modifier alors que c'est un écran différent.
   const [missions, setMissions] = useState<Mission[]>(MISSIONS_INIT);
 
+  // Onglet actif dans le dashboard candidat ("applications" | "favorites" | "profile")
+  const [candidateTab, setCandidateTab] = useState<DashTab>("applications");
+  // Favoris du candidat (IDs) synchronisés avec Airtable
+  const [favorites, setFavorites] = useState<(number | string)[]>([]);
+  // Objets complets des offres favorites chargées depuis Airtable
+  const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
+
   // Raccourci utilisé partout comme callback de navigation (`onNavigate={go}`)
-  // window.scrollTo(0,0) : sans vrai routeur, le navigateur ne remet jamais
-  // le scroll en haut tout seul quand on change d'écran — on le force nous-mêmes.
   const go = (s: Screen) => {
     setScreen(s);
     window.scrollTo(0, 0);
+  };
+
+  // Chargement des favoris de l'utilisateur depuis Airtable au démarrage ou connexion
+  useEffect(() => {
+    let isMounted = true;
+    setLoadingFavorites(true);
+
+    fetchUserFavorites()
+      .then((data) => {
+        if (isMounted) {
+          setFavorites(data.favoriteIds);
+          setFavoriteJobs(data.jobs);
+        }
+      })
+      .catch((err) => console.error("Erreur fetchUserFavorites :", err))
+      .finally(() => {
+        if (isMounted) setLoadingFavorites(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userMode, screen]);
+
+  // Bascule d'un favori : mise à jour optimiste + envoi à Airtable
+  const handleToggleFavorite = async (job: Job) => {
+    const isFav = favorites.includes(job.id);
+    if (isFav) {
+      setFavorites((prev) => prev.filter((id) => id !== job.id));
+      setFavoriteJobs((prev) => prev.filter((j) => j.id !== job.id));
+      try {
+        const updatedIds = await apiRemoveFavorite(job.id);
+        if (Array.isArray(updatedIds)) setFavorites(updatedIds);
+      } catch (err) {
+        console.error("Erreur suppression favori :", err);
+      }
+    } else {
+      setFavorites((prev) => [...prev, job.id]);
+      setFavoriteJobs((prev) => [...prev, job]);
+      try {
+        const updatedIds = await apiAddFavorite(job);
+        if (Array.isArray(updatedIds)) setFavorites(updatedIds);
+      } catch (err) {
+        console.error("Erreur ajout favori :", err);
+      }
+    }
+  };
+
+  const handleNavigateToCandidateTab = (tab: DashTab) => {
+    setCandidateTab(tab);
+    go("c-dashboard");
   };
 
   // Vérifie si l'utilisateur revient d'une connexion OAuth (Google)
@@ -80,31 +124,22 @@ export default function App() {
     if (token) {
       localStorage.setItem("auth_token", token);
       console.log("✅ [AUTH] Token OAuth reçu et stocké avec succès !");
-      // Nettoie l'URL sans recharger la page
       window.history.replaceState({}, document.title, window.location.pathname);
-      // Redirige vers l'onboarding candidat ou le dashboard selon le mode
       setScreen(userMode === "candidate" ? "onboarding1" : "r-dashboard");
     }
   });
 
-  // Prépare l'édition d'une mission : on mémorise LAQUELLE, puis on navigue.
+  // Prépare l'édition d'une mission
   const handleEditMission = (m: Mission) => {
     setEditingMission(m);
     go("r-mission-edit");
   };
 
-  // Remplace, dans la liste `missions`, celle dont l'id correspond à `updated`
-  // (les autres restent inchangées) — c'est le seul endroit qui modifie `missions`.
   const handleSaveMission = (updated: Mission) => setMissions((p) => p.map((m) => (m.id === updated.id ? updated : m)));
 
   const isFormFlow = FORM_FLOW_SCREENS.includes(screen);
 
-  // Le contenu à afficher est le même dans les deux cas — seul le
-  // conteneur qui l'entoure change (voir le `return` plus bas).
   const activeScreen = (
-    // `key={screen}` force React à remonter le composant à chaque
-    // changement d'écran, ce qui relance l'animation .screen-enter
-    // (voir index.css) à chaque navigation.
     <div key={screen} className="screen-enter">
       {screen === "role-select" && <RoleSelectScreen onNavigate={go} setUserMode={setUserMode} />}
       {screen === "auth" && <AuthScreen onNavigate={go} userMode={userMode} />}
@@ -114,9 +149,34 @@ export default function App() {
       {screen === "cv-upload" && <CVUploadScreen onNavigate={go} />}
       {screen === "manual-entry" && <ManualEntryScreen onNavigate={go} />}
       {screen === "onboarding2" && <Onboarding2Screen onNavigate={go} />}
-      {screen === "feed" && <FeedScreen onNavigate={go} setSelectedJob={setSelectedJob} />}
-      {screen === "job-detail" && <JobDetailScreen job={selectedJob} onNavigate={go} />}
-      {screen === "c-dashboard" && <CandidateDashboard onNavigate={go} />}
+      {screen === "feed" && (
+        <FeedScreen
+          onNavigate={go}
+          setSelectedJob={setSelectedJob}
+          favorites={favorites}
+          onToggleFavorite={handleToggleFavorite}
+          onNavigateToTab={handleNavigateToCandidateTab}
+        />
+      )}
+      {screen === "job-detail" && (
+        <JobDetailScreen
+          job={selectedJob}
+          onNavigate={go}
+          isFavorite={favorites.includes(selectedJob.id)}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      )}
+      {screen === "c-dashboard" && (
+        <CandidateDashboard
+          onNavigate={go}
+          activeTab={candidateTab}
+          onTabChange={setCandidateTab}
+          favoriteJobs={favoriteJobs}
+          onToggleFavorite={handleToggleFavorite}
+          onSelectJob={(j) => setSelectedJob(j)}
+          loadingFavorites={loadingFavorites}
+        />
+      )}
 
       {/* Parcours recruteur */}
       {screen === "r-dashboard" && <RecruiterDashboard onNavigate={go} missions={missions} onEditMission={handleEditMission} />}

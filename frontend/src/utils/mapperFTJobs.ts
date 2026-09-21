@@ -9,6 +9,26 @@ const DEFAULT_IMAGES = [
 ];
 
 export function mapFTToJob(ftOffer: any, index: number): Job {
+  // Si l'offre provient d'Airtable (champs déjà structurés)
+  if (ftOffer.title && ftOffer.salon) {
+    return {
+      id: ftOffer.id,
+      title: ftOffer.title,
+      salon: ftOffer.salon,
+      location: ftOffer.location || "France",
+      rate: ftOffer.rate || 16,
+      shift: ftOffer.shift || "35h / sem.",
+      contract: ftOffer.contract || "Intérim",
+      match: ftOffer.match ?? 80,
+      tags: ftOffer.tags && ftOffer.tags.length > 0 ? ftOffer.tags : ["Coiffure"],
+      image: ftOffer.image || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length],
+      description: ftOffer.description || "Aucune description fournie pour cette offre.",
+      diplomas: ftOffer.diplomas || ["CAP Coiffure"],
+      benefits: ftOffer.benefits || ["Mutuelle", "primes"],
+      urlOrigine: ftOffer.urlOrigine,
+    };
+  }
+
   // Extrait les compétences ou génère des tags par défaut
   const tags = ftOffer.competences && ftOffer.competences.length > 0
     ? ftOffer.competences.slice(0, 3).map((c: any) => c.libelle)
