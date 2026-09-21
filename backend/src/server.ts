@@ -17,7 +17,6 @@ import { applyToMission } from "./controllers/application.controller";
 
 // Import de tes routeurs modulaires existants (si tu veux les garder)
 import jobRoutes from "./routes/job.routes";
-import applicationRoutes from "./routes/application.routes";
 import authRoutes from "./routes/auth.routes";
 import { hashPassword } from "./auth/hashing";
 
@@ -52,7 +51,6 @@ app.post("/api/missions/:missionId/applications", applyToMission);
 
 // Routes modulaires additionnelles
 app.use("/api/jobs", jobRoutes);
-app.use("/api/applications", applicationRoutes);
 
 app.listen(PORT, () => {
   console.log(`[OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);

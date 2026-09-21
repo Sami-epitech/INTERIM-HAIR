@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { base } from '../config/airtable';
+import { airtableBase as base } from '../config/airtable';
 import { createMission, updateMission } from '../services/airtableService';
 import fs from 'fs';
 import path from 'path';

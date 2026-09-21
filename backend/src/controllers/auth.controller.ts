@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { base } from '../config/airtable';
+import { airtableBase as base } from '../config/airtable';
 import { createUser } from '../services/airtableService';
 import { hashPassword, verifyPassword } from '../auth/hashing';
 import { generateToken } from '../auth/jwt';
@@ -124,4 +124,4 @@ export const login = async (req: Request, res: Response) => {
     console.error("❌ [BACKEND] Erreur /api/auth/login :", error);
     return res.status(500).json({ message: error.message || "Erreur interne du serveur." });
   }
-};
+};
