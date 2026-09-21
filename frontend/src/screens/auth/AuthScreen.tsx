@@ -27,13 +27,21 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      const msg = "Format d'adresse email invalide.";
+      console.warn("⚠️ [FRONTEND]", msg);
+      setErrorMsg(msg);
+      return;
+    }
+
     setLoading(true);
 
     const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
-    const payload = { email, password, userMode, rememberMe };
+    const payload = { email: email.trim(), password, userMode, rememberMe };
 
     console.log(`📡 [FRONTEND] Envoi de la requête à http://localhost:8000${endpoint}`, {
-      email,
+      email: email.trim(),
       userMode,
       rememberMe,
     });
@@ -66,8 +74,14 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       // 🚨 Sauvegarde de l'e-mail pour les futurs appels API (ex: creation / filtrage de missions)
       localStorage.setItem("user_email", email);
 
-      // Redirection si l'API a répondu avec succès
-      onNavigate(userMode === "candidate" ? "onboarding1" : "r-dashboard");
+      // Redirection si l'API a répondu avec succès :
+      // Si connexion -> accès direct au feed/dashboard
+      // Si inscription -> parcours de création de profil (onboarding)
+      if (tab === "login") {
+        onNavigate(userMode === "candidate" ? "feed" : "r-dashboard");
+      } else {
+        onNavigate(userMode === "candidate" ? "onboarding1" : "r-dashboard");
+      }
 
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur lors de l'appel API :", err);

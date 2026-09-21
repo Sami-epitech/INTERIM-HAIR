@@ -159,7 +159,7 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
                             onClick={() => { setSelectedJob(job); onNavigate("job-detail"); }}
                             className="flex items-center gap-1.5 px-4 h-10 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity"
                           >
-                            Postuler <IArrow />
+                            Consulter <IArrow />
                           </button>
                         </div>
                       </div>
