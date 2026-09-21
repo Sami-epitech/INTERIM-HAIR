@@ -11,6 +11,6 @@ export const AppName = ({ size = "lg" }: { size?: "sm" | "lg" }) => (
   <img
     src={logo}
     alt="Interim'hair"
-    className={size === "lg" ? "h-16 w-auto" : "h-9 w-auto"}
+    className={size === "lg" ? "h-24 w-auto" : "h-9 w-auto"}
   />
 );

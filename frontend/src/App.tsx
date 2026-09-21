@@ -144,7 +144,7 @@ export default function App() {
       {/* Contenu du parcours : plein écran sur mobile (comportement inchangé),
           centré et plafonné en largeur sur grand écran. */}
       <div className="lg:flex-1 lg:flex lg:justify-center lg:overflow-y-auto lg:h-screen">
-        <div className="w-full lg:max-w-md lg:px-10 lg:py-10">
+        <div className="w-full lg:max-w-2xl lg:px-16 lg:py-14">
           {activeScreen}
         </div>
       </div>
