@@ -54,7 +54,7 @@ export default function App() {
   // Rôle choisi à l'écran role-select — conditionne le contenu de AuthScreen
   // et le parcours après connexion (onboarding candidat vs dashboard recruteur).
   const [userMode, setUserMode] = useState<UserMode>("candidate");
-  // Offre actuellement consultée (positionnée par FeedScreen au clic sur "Postuler",
+  // Offre actuellement consultée (positionnée par FeedScreen au clic sur "Consulter",
   // lue par JobDetailScreen).
   const [selectedJob, setSelectedJob] = useState<Job>(JOBS[0]);
   // Mission en cours d'édition (positionnée par RecruiterDashboard au clic sur
