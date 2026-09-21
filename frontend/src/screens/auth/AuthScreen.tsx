@@ -27,13 +27,21 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      const msg = "Format d'adresse email invalide.";
+      console.warn("⚠️ [FRONTEND]", msg);
+      setErrorMsg(msg);
+      return;
+    }
+
     setLoading(true);
 
     const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
-    const payload = { email, password, userMode, rememberMe };
+    const payload = { email: email.trim(), password, userMode, rememberMe };
 
     console.log(`📡 [FRONTEND] Envoi de la requête à http://localhost:8000${endpoint}`, {
-      email,
+      email: email.trim(),
       userMode,
       rememberMe,
     });

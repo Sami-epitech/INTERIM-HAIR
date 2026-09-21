@@ -2,12 +2,12 @@ import { hashPassword, verifyPassword } from './hashing';
 import { generateToken, verifyToken } from './jwt';
 
 async function runDemo() {
-    console.log('=== TEST DU MODULE HASHING (Argon2) ===');
+    console.log('=== TEST DU MODULE HASHING (Bcrypt) ===');
     const password = 'MonMotDePasseSecret123!';
     console.log('1. Mot de passe original :', password);
 
     const hash = await hashPassword(password);
-    console.log('2. Hash Argon2 généré    :', hash);
+    console.log('2. Hash Bcrypt généré    :', hash);
 
     const isMatch = await verifyPassword(hash, password);
     console.log('3. Mot de passe correct ? :', isMatch);
