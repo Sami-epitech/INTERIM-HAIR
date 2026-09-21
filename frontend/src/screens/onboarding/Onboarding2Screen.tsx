@@ -8,14 +8,12 @@
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Screen } from "../../types";
-import { SKILLS, DAYS, HOURS } from "../../data/mockData";
+import { DAYS, HOURS } from "../../data/mockData";
 import { BackBtn, Divider, Input, PrimaryButton } from "../../components/ui";
 import { ICalendar, IClock } from "../../components/icons";
 import { formatDate } from "../../utils/format";
 
 export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
-  const [selectedSkills, setSelectedSkills] = useState<string[]>(["CAP Coiffure", "Coloriste"]);
-  const [experience, setExperience] = useState<"Débutant" | "Confirmé" | "Expert">("Confirmé");
   const [city, setCity] = useState("Paris");
   const [radius, setRadius] = useState(25);
   const [selectedDays, setSelectedDays] = useState<string[]>(["Lun", "Mar", "Mer", "Jeu", "Ven"]);
@@ -27,7 +25,6 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const toggleSkill = (s: string) => setSelectedSkills((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
   const toggleDay = (d: string) => setSelectedDays((p) => (p.includes(d) ? p.filter((x) => x !== d) : [...p, d]));
 
   const startIdx = HOURS.indexOf(startHour);
@@ -47,8 +44,6 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
 
     const payload = {
       source: "preferences_onboarding",
-      skills: selectedSkills,
-      experienceLevel: experience,
       location: {
         city,
         radiusKm: radius,
@@ -64,15 +59,24 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
       },
     };
 
-    console.log("📡 [FRONTEND] Payload envoyé à http://localhost:8000/api/profile :", payload);
+    const userId = localStorage.getItem("userId") || undefined;
+    const token = localStorage.getItem("auth_token") || undefined;
+
+    const payloadWithUser = {
+      ...payload,
+      userId,
+    };
+
+    console.log("📡 [FRONTEND] Payload envoyé à http://localhost:8000/api/profile :", payloadWithUser);
 
     try {
       const response = await fetch("http://localhost:8000/api/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payloadWithUser),
       });
 
       const data = await response.json();
@@ -119,41 +123,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
           </div>
         )}
 
-        <div>
-          <p className="text-sm font-semibold text-foreground mb-3">Compétences recherchées</p>
-          <div className="flex flex-wrap gap-2">
-            {SKILLS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => toggleSkill(s)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 ${selectedSkills.includes(s) ? "bg-primary text-primary-foreground border-primary" : "bg-card text-foreground border-border hover:border-primary/50"}`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <Divider />
-
-        <div>
-          <p className="text-sm font-semibold text-foreground mb-3">Niveau d'expérience</p>
-          <div className="flex gap-3">
-            {(["Débutant", "Confirmé", "Expert"] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setExperience(l)}
-                className={`flex-1 py-3 rounded-xl text-sm font-medium border transition-all duration-150 ${experience === l ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-card text-foreground border-border hover:border-primary/40"}`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <Divider />
+        {/* Zone de travail */}
 
         {/* Zone de travail */}
         <div>

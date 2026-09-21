@@ -55,7 +55,7 @@ router.get(
         provider: user.provider,
         avatarUrl: user.avatarUrl,
       },
-      "7d"
+      "30s"
     );
 
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
