@@ -64,15 +64,18 @@ export const getRecruteurs = async () => {
 export const createUser = async (userData: any) => {
   const tableName = userData.userMode === 'candidate' ? 'Intérimaires' : 'Recruteurs';
   
-  const record = await airtableBase(tableName).create([
-    {
-      fields: {
-        name: userData.name,
-        email: userData.email,
-        password: userData.password,
+  const record = await airtableBase(tableName).create(
+    [
+      {
+        fields: {
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+        },
       },
-    },
-  ]);
+    ],
+    { typecast: true }
+  );
   
   return record[0];
 };
@@ -126,61 +129,75 @@ export const updateInterimaire = async (recordId: string, profileData: any) => {
 
 // Création d'une mission (MissionCreateScreen)
 export const createMission = async (recruiterRecordId: string, missionData: any) => {
-  const record = await airtableBase("Offres d'emploi").create([
-    {
-      fields: {
-        title: missionData.title,
-        description: missionData.description,
-        startDate: missionData.startDate,
-        endDate: missionData.endDate,
-        dates: missionData.dates,
-        location: missionData.location,
-        rate: missionData.rate,
-        shift: missionData.shift,
-        skills: missionData.skills,
-        status: missionData.status || 'open',
-        recruiterId: [recruiterRecordId],
+  const fields: any = {
+    title: missionData.title,
+    description: missionData.description,
+    startDate: missionData.startDate,
+    endDate: missionData.endDate,
+    dates: missionData.dates,
+    location: missionData.location,
+    rate: Number(missionData.rate),
+    shift: missionData.shift,
+    skills: missionData.skills,
+    status: missionData.status || 'open',
+  };
+
+  if (recruiterRecordId && recruiterRecordId !== "rec_default_id") {
+    fields.recruiterId = [recruiterRecordId];
+  }
+
+  const record = await airtableBase("Offres d'emploi").create(
+    [
+      {
+        fields,
       },
-    },
-  ]);
+    ],
+    { typecast: true }
+  );
 
   return record[0];
 };
 
 // Mise à jour d'une mission (MissionEditScreen)
 export const updateMission = async (missionId: string, updateData: any) => {
-  const record = await airtableBase("Offres d'emploi").update([
-    {
-      id: missionId,
-      fields: {
-        title: updateData.title,
-        description: updateData.description,
-        startDate: updateData.startDate,
-        endDate: updateData.endDate,
-        dates: updateData.dates,
-        location: updateData.location,
-        rate: updateData.rate,
-        shift: updateData.shift,
-        skills: updateData.skills,
-        status: updateData.status,
+  const record = await airtableBase("Offres d'emploi").update(
+    [
+      {
+        id: missionId,
+        fields: {
+          title: updateData.title,
+          description: updateData.description,
+          startDate: updateData.startDate,
+          endDate: updateData.endDate,
+          dates: updateData.dates,
+          location: updateData.location,
+          rate: Number(updateData.rate),
+          shift: updateData.shift,
+          skills: updateData.skills,
+          status: updateData.status,
+        },
       },
-    },
-  ]);
+    ],
+    { typecast: true }
+  );
 
   return record[0];
 };
 
 // Création d'une candidature (JobDetailScreen)
 export const createCandidature = async (candidateRecordId: string, missionRecordId: string) => {
-  const record = await airtableBase('Candidatures').create([
-    {
-      fields: {
-        interimaireId: [candidateRecordId],
-        missionId: [missionRecordId],
-        status: 'pending',
+  const record = await airtableBase('Candidatures').create(
+    [
+      {
+        fields: {
+          interimaireId: [candidateRecordId],
+          missionId: [missionRecordId],
+          status: 'pending',
+        },
       },
-    },
-  ]);
+    ],
+    { typecast: true }
+  );
 
   return record[0];
 };

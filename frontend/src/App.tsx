@@ -1,19 +1,5 @@
 // ════════════════════════════════════════════════════════════
-// App.tsx — état global + "routeur" fait main
-// ────────────────────────────────────────────────────────────
-// [Branche feature/frontend-recruiter — tous les écrans sont
-// maintenant branchés, l'app est fonctionnelle de bout en bout]
-//
-// L'app n'utilise pas de librairie de routing (react-router...) :
-// vu le nombre d'écrans et le fait qu'ils s'enchaînent comme un
-// parcours (wizard) plutôt que comme des pages indépendantes avec
-// URL, un simple `useState<Screen>` + rendu conditionnel suffit et
-// reste très lisible. L'écran affiché dépend uniquement de `screen`.
-//
-// C'est aussi ICI que vit tout l'état "partagé entre plusieurs
-// écrans" (screen, userMode, selectedJob, missions, editingMission) :
-// un écran ne connaît que ce qu'on lui passe en props, il ne va
-// jamais chercher l'état d'un AUTRE écran directement.
+// App.tsx — état global + routeur fait maison
 // ════════════════════════════════════════════════════════════
 import { useEffect, useState } from "react";
 import type { DashTab, Job, Mission, Screen, UserMode } from "./types";
@@ -34,23 +20,17 @@ import { RecruiterDashboard } from "./screens/recruiter/RecruiterDashboard";
 import { MissionCreateScreen } from "./screens/recruiter/MissionCreateScreen";
 import { MissionEditScreen } from "./screens/recruiter/MissionEditScreen";
 
-// ── Deux familles d'écrans, deux traitements de mise en page ──
 const FORM_FLOW_SCREENS: Screen[] = ["role-select", "auth", "onboarding1", "cv-upload", "manual-entry", "onboarding2"];
 
 export default function App() {
-  // Écran actuellement affiché. "role-select" = tout premier écran de l'app.
   const [screen, setScreen] = useState<Screen>("role-select");
-  // Rôle choisi à l'écran role-select — conditionne le contenu de AuthScreen
-  // et le parcours après connexion (onboarding candidat vs dashboard recruteur).
   const [userMode, setUserMode] = useState<UserMode>("candidate");
-  // Offre actuellement consultée (positionnée par FeedScreen au clic sur "Consulter",
-  // lue par JobDetailScreen).
   const [selectedJob, setSelectedJob] = useState<Job>(JOBS[0]);
-  // Mission en cours d'édition (positionnée par RecruiterDashboard au clic sur
-  // "Modifier", lue par MissionEditScreen).
   const [editingMission, setEditingMission] = useState<Mission>(MISSIONS_INIT[0]);
-  // Missions du recruteur — état "source de vérité" pour tout le module recruteur.
   const [missions, setMissions] = useState<Mission[]>(MISSIONS_INIT);
+
+  // E-mail de l'utilisateur connecté (stocké à la connexion)
+  const userEmail = localStorage.getItem("user_email") || "";
 
   // Onglet actif dans le dashboard candidat ("applications" | "favorites" | "profile")
   const [candidateTab, setCandidateTab] = useState<DashTab>("applications");
@@ -60,7 +40,6 @@ export default function App() {
   const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([]);
   const [loadingFavorites, setLoadingFavorites] = useState(false);
 
-  // Raccourci utilisé partout comme callback de navigation (`onNavigate={go}`)
   const go = (s: Screen) => {
     setScreen(s);
     window.scrollTo(0, 0);
@@ -117,17 +96,44 @@ export default function App() {
     go("c-dashboard");
   };
 
-  // Vérifie si l'utilisateur revient d'une connexion OAuth (Google)
-  useState(() => {
+  // Chargement des missions filtrées selon le profil connecté
+  useEffect(() => {
+    const url = userMode === "recruiter" && userEmail
+      ? `http://localhost:8000/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
+      : "http://localhost:8000/api/jobs?source=feed";
+
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error("Erreur réseau API");
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const formattedMissions: Mission[] = data
+            .filter((m: any) => m && m.title && m.title.trim() !== "")
+            .map((m: any) => ({
+              ...m,
+              sortDate: m.sortDate ? new Date(m.sortDate) : new Date(),
+            }));
+
+          console.log(`✅ [FRONTEND] Missions chargées (${userMode}) :`, formattedMissions);
+          setMissions(formattedMissions);
+        }
+      })
+      .catch((err) => console.warn("⚠️ [FRONTEND] Erreur chargement API :", err.message));
+  }, [userMode, userEmail, screen]);
+
+  // Gestion du retour d'authentification OAuth
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     if (token) {
       localStorage.setItem("auth_token", token);
-      console.log("✅ [AUTH] Token OAuth reçu et stocké avec succès !");
+      console.log("✅ [AUTH] Token OAuth reçu et stocké !");
       window.history.replaceState({}, document.title, window.location.pathname);
       setScreen(userMode === "candidate" ? "onboarding1" : "r-dashboard");
     }
-  });
+  }, [userMode]);
 
   // Prépare l'édition d'une mission
   const handleEditMission = (m: Mission) => {
@@ -135,7 +141,13 @@ export default function App() {
     go("r-mission-edit");
   };
 
-  const handleSaveMission = (updated: Mission) => setMissions((p) => p.map((m) => (m.id === updated.id ? updated : m)));
+  const handleSaveMission = (updated: Mission) => {
+    setMissions((p) => p.map((m) => (m.id === updated.id ? updated : m)));
+  };
+
+  const handleAddMission = (newMission: Mission) => {
+    setMissions((prev) => [newMission, ...prev]);
+  };
 
   const isFormFlow = FORM_FLOW_SCREENS.includes(screen);
 
@@ -144,7 +156,7 @@ export default function App() {
       {screen === "role-select" && <RoleSelectScreen onNavigate={go} setUserMode={setUserMode} />}
       {screen === "auth" && <AuthScreen onNavigate={go} userMode={userMode} />}
 
-      {/* Parcours candidat : inscription puis usage courant */}
+      {/* Parcours candidat */}
       {screen === "onboarding1" && <Onboarding1Screen onNavigate={go} />}
       {screen === "cv-upload" && <CVUploadScreen onNavigate={go} />}
       {screen === "manual-entry" && <ManualEntryScreen onNavigate={go} />}
@@ -180,33 +192,16 @@ export default function App() {
 
       {/* Parcours recruteur */}
       {screen === "r-dashboard" && <RecruiterDashboard onNavigate={go} missions={missions} onEditMission={handleEditMission} />}
-      {screen === "r-create" && <MissionCreateScreen onNavigate={go} />}
+      {screen === "r-create" && <MissionCreateScreen onNavigate={go} onCreateMission={handleAddMission} />}
       {screen === "r-mission-edit" && <MissionEditScreen mission={editingMission} onNavigate={go} onSave={handleSaveMission} />}
     </div>
   );
 
-  // Écrans "app" (feed, dashboards...) : aucun conteneur, l'écran occupe
-  // toute la fenêtre et gère lui-même sa mise en page responsive.
   if (!isFormFlow) return activeScreen;
 
-  // Écrans "formulaire", sur grand écran (lg+) : vrai écran divisé en deux,
-  // comme une page de connexion desktop classique (Slack, Stripe...) —
-  // panneau de marque fixe à gauche, contenu du parcours à droite, centré
-  // et plafonné en largeur (un formulaire étiré sur toute la largeur restante
-  // serait aussi peu lisible qu'en pleine largeur d'écran).
-  //
-  // Sur mobile, ce panneau de gauche est simplement `hidden` : chaque écran
-  // garde sa présentation d'origine en pleine largeur, avec son propre
-  // bandeau/logo quand il en a un (voir les classes `lg:hidden` sur ces
-  // bandeaux dans RoleSelectScreen et AuthScreen — sinon la marque
-  // apparaîtrait deux fois sur grand écran : une fois ici, une fois dans
-  // l'écran lui-même).
   return (
     <div className="min-h-screen bg-background lg:flex">
-      {/* Panneau de marque : uniquement affiché à partir de lg (1024px),
-          et "sticky" (reste visible) pendant que la partie droite défile. */}
       <div className="hidden lg:flex lg:w-[42%] lg:min-w-[380px] lg:max-w-[520px] lg:shrink-0 lg:h-screen lg:sticky lg:top-0 lg:flex-col lg:items-center lg:justify-center relative overflow-hidden bg-gradient-to-br from-secondary via-accent/20 to-muted">
-        {/* Deux cercles flous purement décoratifs (mêmes que RoleSelectScreen) */}
         <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-primary/8" />
         <div className="absolute -bottom-24 -left-12 w-64 h-64 rounded-full bg-accent/25" />
         <div className="relative flex flex-col items-center gap-4 text-center px-10">
@@ -215,8 +210,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Contenu du parcours : plein écran sur mobile (comportement inchangé),
-          centré et plafonné en largeur sur grand écran. */}
       <div className="lg:flex-1 lg:flex lg:justify-center lg:overflow-y-auto lg:h-screen">
         <div className="w-full lg:max-w-2xl lg:px-16 lg:py-14">
           {activeScreen}
