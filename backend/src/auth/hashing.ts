@@ -1,9 +1,10 @@
-import argon2 from 'argon2';
+import bcrypt from 'bcryptjs';
 
 export async function hashPassword(password: string): Promise<string> {
-    return await argon2.hash(password);
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
 }
 
 export async function verifyPassword(hash: string, password: string): Promise<boolean> {
-    return await argon2.verify(hash, password);
+    return await bcrypt.compare(password, hash);
 }

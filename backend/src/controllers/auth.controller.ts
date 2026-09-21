@@ -35,7 +35,7 @@ export const signup = async (req: Request, res: Response) => {
       return res.status(409).json({ message: "Un compte est déjà créé avec cette adresse email." });
     }
 
-    // Hachage immédiat du mot de passe avec Argon2
+    // Hachage immédiat du mot de passe avec Bcrypt
     const passwordHash = await hashPassword(password);
 
     // Envoi du profil et du hash du mot de passe vers Airtable
@@ -110,7 +110,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Email ou mot de passe incorrect." });
     }
 
-    // Vérification du mot de passe input avec le hash stocké dans Airtable via Argon2
+    // Vérification du mot de passe input avec le hash stocké dans Airtable via Bcrypt
     const isPasswordValid = await verifyPassword(storedHash, password);
 
     if (!isPasswordValid) {
