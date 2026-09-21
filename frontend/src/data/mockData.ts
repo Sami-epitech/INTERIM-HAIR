@@ -11,6 +11,7 @@
 
 import type { Job, Mission, Applicant, Application } from "../types";
 
+
 /** Offres affichées dans le fil candidat (écran FeedScreen) */
 export const JOBS: Job[] = [
   { id: 1, title: "Coiffeur Coloriste H/F", salon: "Salon Éclat Paris", location: "Paris 8e", rate: 18, shift: "9h – 18h", contract: "CDI", match: 94, tags: ["CAP Coiffure", "Coloriste", "Balayage"], image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=400&fit=crop&auto=format", description: "Rejoignez notre équipe au cœur du 8e arrondissement. Vous serez en charge des colorations, balayages et soins capillaires pour une clientèle haut de gamme, dans un salon réputé reconnu par Vogue Beauty.", diplomas: ["CAP Coiffure (obligatoire)", "BP Coiffure (souhaité)"], benefits: ["Tickets repas 9€/j", "Prime assiduité 150€/mois", "Navigo 50%", "Mutuelle premium"] },
@@ -20,12 +21,7 @@ export const JOBS: Job[] = [
 ];
 
 /** Missions gérées côté recruteur (écran RecruiterDashboard) */
-export const MISSIONS_INIT: Mission[] = [
-  { id: 1, title: "Coloriste Senior", dates: "15 – 30 sept. 2026", sortDate: new Date("2026-09-15"), startDate: "2026-09-15", endDate: "2026-09-30", location: "Paris 8e – 12 rue du Faubourg St-Honoré", rate: 22, shift: "9h – 18h", description: "Nous recherchons un·e coloriste senior expérimenté·e pour renforcer notre équipe durant la Fashion Week. Maîtrise des techniques balayage, ombré et couleurs tendance exigée.", skills: ["Coloriste", "Balayage", "BP Coiffure"], count: 8, status: "open" },
-  { id: 3, title: "Visagiste Weekend", dates: "20 sept. 2026", sortDate: new Date("2026-09-20"), startDate: "2026-09-20", endDate: "2026-09-21", location: "Paris 4e – 5 rue des Rosiers", rate: 16, shift: "10h – 19h", description: "Mission ponctuelle pour un shooting beauté le weekend. Profil créatif apprécié, portfolio requis.", skills: ["Visagisme", "Maquillage"], count: 3, status: "open" },
-  { id: 4, title: "Coiffeur Homme CDI", dates: "Dès que possible", sortDate: new Date("2026-09-16"), startDate: "2026-09-16", endDate: "", location: "Lyon 2e – 8 place Bellecour", rate: 15, shift: "8h – 17h", description: "Recrutement urgent pour poste en CDI. Spécialisation coupe homme et rasage traditionnel.", skills: ["Coupe Homme", "Rasage", "Dégradé"], count: 6, status: "open" },
-  { id: 2, title: "Coiffeur Balayage", dates: "1 – 15 oct. 2026", sortDate: new Date("2026-10-01"), startDate: "2026-10-01", endDate: "2026-10-15", location: "Paris 9e – 22 rue de la Paix", rate: 18, shift: "9h – 18h", description: "Mission longue durée pour couvrir un congé maternité. Expert·e balayage californien et mèches.", skills: ["Balayage", "CAP Coiffure"], count: 12, status: "filled" },
-];
+export const MISSIONS_INIT: Mission[] = [];
 
 /** Candidat·e·s ayant postulé, groupé par mission via `missionId` (écran RecruiterDashboard, onglet "Candidat·e·s") */
 export const ALL_APPLICANTS: Applicant[] = [

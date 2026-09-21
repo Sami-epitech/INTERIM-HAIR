@@ -55,13 +55,16 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
 
       console.log("✅ [FRONTEND] Réponse positive du serveur :", data);
 
-      // Stockage sécurisé du token JWT et de l'identifiant (sans passer par la barre d'URL)
+      // Stockage sécurisé du token, de l'ID utilisateur et de l'e-mail
       if (data.token) {
         localStorage.setItem("auth_token", data.token);
       }
       if (data.userId) {
         localStorage.setItem("userId", data.userId);
       }
+      
+      // 🚨 Sauvegarde de l'e-mail pour les futurs appels API (ex: creation / filtrage de missions)
+      localStorage.setItem("user_email", email);
 
       // Redirection si l'API a répondu avec succès
       onNavigate(userMode === "candidate" ? "onboarding1" : "r-dashboard");
@@ -146,7 +149,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
           </div>
         </div>
 
-        {/* Bouton de soumission avec conteneur de secours au cas où PrimaryButton n'a pas de prop onClick directe */}
+        {/* Bouton de soumission */}
         <div onClick={handleSubmit}>
           <PrimaryButton disabled={loading}>
             {loading ? "Chargement..." : tab === "login" ? "Se connecter" : "Créer mon compte"}
@@ -164,7 +167,6 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
           <button
             type="button"
             onClick={() => {
-              // Redirige directement vers le backend qui gère le flux OAuth Google
               window.location.href = "http://localhost:8000/api/auth/google";
             }}
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium hover:opacity-80 transition-opacity bg-white border-border text-foreground cursor-pointer shadow-xs"

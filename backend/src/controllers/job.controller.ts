@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
 import { airtableBase as base } from '../config/airtable';
-import { createMission, updateMission } from '../services/airtableService';
 import { calculateAndLogMatch } from '../services/matchingService';
 import { verifyToken, TokenPayload } from '../auth/jwt';
 import fs from 'fs';
 import path from 'path';
 
-// Récupérer toutes les offres (France Travail + Airtable)
+// Récupérer les offres (Filtrées par e-mail recruteur ou mode candidat)
 export const getJobs = async (req: Request, res: Response) => {
   try {
     let candidateId = req.query.candidateId as string;
+    const recruiterEmail = req.query.recruiterEmail as string;
+
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
@@ -19,51 +20,81 @@ export const getJobs = async (req: Request, res: Response) => {
           candidateId = String(decoded.userId);
         }
       } catch (e) {
-        console.warn("⚠️ [BACKEND] Token JWT ignoré ou invalide pour le matching.");
+        console.warn("⚠️ [BACKEND] Token JWT ignoré ou invalide.");
       }
     }
 
-    // Récupération des offres Airtable (sans filtre strict pour éviter de masquer les nouvelles missions créées)
+    // 1. Récupération des offres depuis Airtable
     const airtableRecords = await base("Offres d'emploi").select().firstPage();
     
-    let allJobs = airtableRecords.map((record: any) => ({
-      id: record.id,
-      title: record.fields.title || record.fields.Title || "Mission sans titre",
-      description: record.fields.description || "",
-      startDate: record.fields.startDate || "",
-      endDate: record.fields.endDate || "",
-      dates: record.fields.dates || `${record.fields.startDate || ""} – ${record.fields.endDate || ""}`,
-      location: record.fields.location || "",
-      rate: Number(record.fields.rate || 0),
-      shift: record.fields.shift || "09:00 - 18:00",
-      tags: record.fields.skills || record.fields.tags || [],
-      status: record.fields.status || "open",
-      salon: record.fields.salon || "Salon Partenaire",
-      contract: "Intérim",
-      diplomas: ["CAP Coiffure"],
-      benefits: ["Mutuelle", "Primes"],
-      match: 85,
-      image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600"
-    }));
+    let allJobs = airtableRecords
+      .map((record: any) => {
+        const f = record.fields;
 
-    // Chargement optionnel des offres France Travail
-    const jsonPath = path.join(__dirname, '../offres-ft.json');
-    if (fs.existsSync(jsonPath)) {
-      const fileData = fs.readFileSync(jsonPath, 'utf-8');
-      const ftJobs = JSON.parse(fileData);
-      allJobs = [...allJobs, ...ftJobs];
+        if (!f.title && !f.Title) return null;
+
+        // Récupération de l'email stocké dans Airtable (champ recruiterId ou recruiterEmail)
+        const storedEmail = f.recruiterId || f.recruiterEmail || "";
+        const recordRecruiterEmail = Array.isArray(storedEmail) ? storedEmail[0] : storedEmail;
+
+        return {
+          id: record.id,
+          title: f.title || f.Title || "Mission sans titre",
+          description: f.description || "",
+          startDate: f.startDate || "",
+          endDate: f.endDate || "",
+          dates: f.dates || (f.startDate ? `${f.startDate} – ${f.endDate || ''}` : "Dates à convenir"),
+          sortDate: f.startDate ? f.startDate : new Date().toISOString(),
+          location: f.location || "Localisation non précisée",
+          rate: Number(f.rate || 0),
+          shift: f.shift || "9h - 18h",
+          skills: f.skills || f.tags || [],
+          status: f.status || "open",
+          salon: f.salon || "Salon Partenaire",
+          recruiterEmail: recordRecruiterEmail,
+          recruiterId: recordRecruiterEmail,
+          contract: "Intérim",
+          diplomas: ["CAP Coiffure"],
+          benefits: ["Mutuelle"],
+          match: 85,
+          image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600"
+        };
+      })
+      .filter((job): job is NonNullable<typeof job> => job !== null);
+
+    // 2. Si un filtre par e-mail recruteur est fourni (Dashboard Recruteur)
+    if (recruiterEmail) {
+      allJobs = allJobs.filter((job) => 
+        job.recruiterEmail && job.recruiterEmail.toLowerCase() === recruiterEmail.toLowerCase()
+      );
     }
 
-    // Algorithme de matching si candidat identifié
+    // 3. Si la requête vient du FIL CANDIDAT (?source=feed), on ajoute France Travail
+    const isCandidateFeed = req.query.source === 'feed' || Boolean(candidateId);
+    
+    if (isCandidateFeed) {
+      const jsonPath = path.join(__dirname, '../offres-ft.json');
+      if (fs.existsSync(jsonPath)) {
+        try {
+          const fileData = fs.readFileSync(jsonPath, 'utf-8');
+          const ftJobs = JSON.parse(fileData);
+          allJobs = [...allJobs, ...ftJobs];
+        } catch (err) {
+          console.warn("⚠️ Impossible de lire les offres France Travail :", err);
+        }
+      }
+    }
+
+    // 4. Algorithme de matching pour candidat identifié
     if (candidateId) {
       try {
         const candidateRecord = await base('Intérimaires').find(candidateId);
 
-        allJobs = await Promise.all(allJobs.map(async (job) => {
+        allJobs = await Promise.all(allJobs.map(async (job: any) => {
           const jobForMatching = {
             id: job.id,
             fields: {
-              skills: job.tags,
+              skills: job.skills,
               location: job.location,
               rate: job.rate,
               shift: job.shift,
@@ -76,10 +107,9 @@ export const getJobs = async (req: Request, res: Response) => {
           return { ...job, match: score };
         }));
 
-        allJobs.sort((a, b) => b.match - a.match);
-
+        allJobs.sort((a: any, b: any) => b.match - a.match);
       } catch (err) {
-        console.error("❌ [BACKEND] Erreur lors du calcul du matching :", err);
+        console.error("❌ Erreur lors du calcul du matching :", err);
       }
     }
 
@@ -93,38 +123,47 @@ export const getJobs = async (req: Request, res: Response) => {
 // Créer une nouvelle mission (Recruteur)
 export const postJob = async (req: Request, res: Response) => {
   try {
-    const { recruiterId, ...missionData } = req.body;
+    const { recruiterEmail, recruiterId, ...missionData } = req.body;
 
     if (!missionData.title || !missionData.location || !missionData.rate) {
       return res.status(400).json({ message: "Champs obligatoires manquants (titre, localisation, taux horaire)." });
     }
 
-    console.log("📥 [BACKEND] Création de la mission dans Airtable :", missionData);
+    // Extraction sécurisée de l'e-mail du recruteur
+    const emailToSave = recruiterEmail || recruiterId || "recruteur@example.com";
 
-    // Écriture directe dans la table "Offres d'emploi"
-    const createdRecord = await base("Offres d'emploi").create([
-      {
-        fields: {
-          title: missionData.title,
-          description: missionData.description || "",
-          startDate: missionData.startDate || "",
-          endDate: missionData.endDate || "",
-          dates: missionData.dates || "",
-          location: missionData.location,
-          rate: Number(missionData.rate),
-          shift: missionData.shift || "",
-          skills: missionData.skills || [],
-          status: "open",
+    console.log("📥 [BACKEND] Enregistrement de la mission sur Airtable avec recruiterId =", emailToSave);
+
+    // Mappage explicite vers les champs Airtable
+    const fieldsToCreate: any = {
+      title: missionData.title,
+      description: missionData.description || "",
+      startDate: missionData.startDate || "",
+      endDate: missionData.endDate || "",
+      dates: missionData.dates || "",
+      location: missionData.location,
+      rate: Number(missionData.rate),
+      shift: missionData.shift || "",
+      skills: Array.isArray(missionData.skills) ? missionData.skills : [],
+      status: missionData.status || "open",
+      recruiterId: emailToSave, // Doit correspondre exactement au nom du champ sur Airtable
+    };
+
+    const createdRecord = await base("Offres d'emploi").create(
+      [
+        {
+          fields: fieldsToCreate,
         },
-      },
-    ]);
+      ],
+      { typecast: true }
+    );
 
     const createdMission = {
       id: createdRecord[0].id,
       ...createdRecord[0].fields,
     };
 
-    console.log("✅ [AIRTABLE] Mission ajoutée avec succès dans Airtable ! ID :", createdRecord[0].id);
+    console.log("✅ [AIRTABLE] Enregistrement réussi ! ID :", createdRecord[0].id);
 
     return res.status(201).json({
       message: "Mission créée avec succès",
@@ -132,7 +171,7 @@ export const postJob = async (req: Request, res: Response) => {
       job: createdMission,
     });
   } catch (error: any) {
-    console.error("❌ [BACKEND] Erreur lors de la création Airtable POST /api/jobs :", error);
+    console.error("❌ [BACKEND] Erreur POST /api/jobs :", error);
     return res.status(500).json({ message: error.message || "Erreur lors de l'enregistrement sur Airtable." });
   }
 };
@@ -143,19 +182,36 @@ export const patchJob = async (req: Request, res: Response) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    const updatedRecord = await base("Offres d'emploi").update([
-      {
-        id,
-        fields: {
-          title: updateData.title,
-          description: updateData.description,
-          location: updateData.location,
-          rate: Number(updateData.rate),
-          shift: updateData.shift,
-          status: updateData.status,
+    if (!id || typeof id !== 'string' || !id.startsWith('rec')) {
+      console.warn(`⚠️ [BACKEND] Tentative de mise à jour d'un enregistrement local/mock (ID: ${id})`);
+      return res.status(200).json({
+        message: "Mise à jour simulée (enregistrement local/mock)",
+        mission: { id, ...updateData },
+      });
+    }
+
+    const fieldsToUpdate: any = {
+      title: updateData.title,
+      description: updateData.description,
+      location: updateData.location,
+      rate: Number(updateData.rate),
+      shift: updateData.shift,
+      status: updateData.status,
+    };
+
+    if (updateData.skills) {
+      fieldsToUpdate.skills = Array.isArray(updateData.skills) ? updateData.skills : [];
+    }
+
+    const updatedRecord = await base("Offres d'emploi").update(
+      [
+        {
+          id,
+          fields: fieldsToUpdate,
         },
-      },
-    ]);
+      ],
+      { typecast: true }
+    );
 
     return res.status(200).json({
       message: "Mission mise à jour avec succès",
