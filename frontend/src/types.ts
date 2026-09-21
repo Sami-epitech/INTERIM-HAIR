@@ -37,7 +37,7 @@ export type Mission = {
   id: number;
   title: string;
   dates: string;
-  sortDate: Date;
+  sortDate: Date | string;
   startDate: string;
   endDate: string;
   location: string;
