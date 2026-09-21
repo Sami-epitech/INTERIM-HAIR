@@ -55,13 +55,17 @@ app.use("/api/jobs", jobRoutes);
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/interimhair";
 
-mongoose.connect(MONGO_URI)
+// Démarrage du serveur Express
+app.listen(PORT, () => {
+  console.log(`🚀 [OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);
+});
+
+// Connexion optionnelle à MongoDB (sans bloquer le serveur si MongoDB n'est pas démarré)
+mongoose
+  .connect(MONGO_URI)
   .then(() => {
     console.log("✅ [MONGODB] Connecté avec succès à la base NoSQL !");
-    app.listen(PORT, () => {
-      console.log(`🚀 [OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);
-    });
   })
   .catch((err) => {
-    console.error("❌ [MONGODB] Erreur de connexion :", err);
+    console.warn("⚠️ [MONGODB] Base NoSQL non disponible (démarrez Docker ou ignorez si non utilisé) :", err.message);
   });

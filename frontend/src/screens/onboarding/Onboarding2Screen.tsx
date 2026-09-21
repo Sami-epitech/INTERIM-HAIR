@@ -45,8 +45,6 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
 
     const payload = {
       source: "preferences_onboarding",
-      skills: selectedSkills,
-      experienceLevel: experience,
       expectedRate: Number(expectedRate),
       location: {
         city,

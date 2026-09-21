@@ -1,6 +1,6 @@
 // backend/src/services/matchingService.ts
 
-import { MatchingLog } from '../models/MatchLog';
+import { MatchingLog } from '../models/MatchingLog';
 
 // 1. Les fameuses pondérations (en pourcentages)
 const WEIGHTS = {
