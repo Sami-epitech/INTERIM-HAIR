@@ -14,9 +14,19 @@
 import { useState } from "react";
 import type { Job, Screen } from "../../types";
 import { BackBtn, Divider, MatchRing, PrimaryButton, Tag } from "../../components/ui";
-import { IClock, ILocation } from "../../components/icons";
+import { IClock, IHeart, ILocation } from "../../components/icons";
 
-export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s: Screen) => void }) {
+export function JobDetailScreen({
+  job,
+  onNavigate,
+  isFavorite = false,
+  onToggleFavorite,
+}: {
+  job: Job;
+  onNavigate: (s: Screen) => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (j: Job) => void;
+}) {
   const [applied, setApplied] = useState(false);
 
   const handleApply = () => {
@@ -35,6 +45,15 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
         <img src={job.image} alt={job.salon} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <div className="absolute top-12 left-4"><BackBtn onClick={() => onNavigate("feed")} /></div>
+        <div className="absolute top-12 right-4">
+          <button
+            onClick={() => onToggleFavorite && onToggleFavorite(job)}
+            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white shadow-md transition-colors"
+            title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          >
+            <IHeart filled={isFavorite} />
+          </button>
+        </div>
         <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-md"><MatchRing score={job.match} size={56} /></div>
       </div>
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Filters, Job, Screen } from "../../types";
+import type { DashTab, Filters, Job, Screen } from "../../types";
 import { JOBS } from "../../data/mockData";
 import { AppName, BackBtn, MatchRing, Tag } from "../../components/ui";
 import { IArrow, IClock, IFilter, IHeart, ILocation } from "../../components/icons";
@@ -9,16 +9,37 @@ import { Sidebar } from "../../components/candidate/Sidebar";
 
 const DEFAULT_FILTERS: Filters = { contract: "Tous", location: "", rateMin: 10, matchMin: 0 };
 
-export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Screen) => void; setSelectedJob: (j: Job) => void }) {
+export function FeedScreen({
+  onNavigate,
+  setSelectedJob,
+  favorites = [],
+  onToggleFavorite,
+  onNavigateToTab,
+}: {
+  onNavigate: (s: Screen) => void;
+  setSelectedJob: (j: Job) => void;
+  favorites?: (number | string)[];
+  onToggleFavorite?: (job: Job) => void;
+  onNavigateToTab?: (tab: DashTab) => void;
+}) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [favorites, setFavorites] = useState<(number | string)[]>([]);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Récupération de l'ensemble des offres (Airtable + France Travail) grâce à ?source=feed
+  // Récupération des offres (Airtable + France Travail) depuis l'API Express Back-End
   useEffect(() => {
-    fetch("http://localhost:8000/api/jobs?source=feed")
+    const token = localStorage.getItem("auth_token");
+    const userId = localStorage.getItem("userId");
+
+    const headers: Record<string, string> = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const url = userId
+      ? `http://localhost:8000/api/jobs?candidateId=${encodeURIComponent(userId)}`
+      : "http://localhost:8000/api/jobs";
+
+    fetch(url, { headers })
       .then((res) => {
         if (!res.ok) throw new Error("Erreur réseau API");
         return res.json();
@@ -51,14 +72,17 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
         }
       })
       .catch((err) => {
-        console.error("❌ Erreur lors du chargement du feed candidat :", err);
+        console.error("Erreur lors du chargement des offres :", err);
         setJobs(JOBS);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  const toggleFav = (id: number | string) => 
-    setFavorites((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
+  const toggleFav = (job: Job) => {
+    if (onToggleFavorite) {
+      onToggleFavorite(job);
+    }
+  };
 
   const filtered = useMemo(
     () =>
@@ -78,7 +102,7 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
     <div className="h-screen overflow-hidden bg-background flex flex-col lg:flex-row">
       {showFilters && <FilterModal filters={filters} onApply={setFilters} onClose={() => setShowFilters(false)} />}
 
-      <Sidebar active="feed" onNavigate={onNavigate} />
+      <Sidebar active="feed" onNavigate={onNavigate} onTabChange={onNavigateToTab} />
 
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-4 flex items-center justify-between">
@@ -91,7 +115,13 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
               </p>
             </div>
           </div>
-          <button onClick={() => onNavigate("c-dashboard")} className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent/40 border border-border">
+          <button
+            onClick={() => {
+              if (onNavigateToTab) onNavigateToTab("profile");
+              onNavigate("c-dashboard");
+            }}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-secondary to-accent/40 border border-border"
+          >
             <span className="text-xs font-semibold text-foreground">MD</span>
           </button>
         </div>
@@ -157,7 +187,7 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
                           <span className="text-xs text-muted-foreground">/h</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <button onClick={() => toggleFav(job.id)} className="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-background hover:bg-secondary transition-colors">
+                          <button onClick={() => toggleFav(job)} className="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-background hover:bg-secondary transition-colors">
                             <IHeart filled={favorites.includes(job.id)} />
                           </button>
                           <button
@@ -176,7 +206,7 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
           </div>
         </div>
 
-        <BottomNav active="feed" onNavigate={onNavigate} />
+        <BottomNav active="feed" onNavigate={onNavigate} onTabChange={onNavigateToTab} />
       </div>
     </div>
   );

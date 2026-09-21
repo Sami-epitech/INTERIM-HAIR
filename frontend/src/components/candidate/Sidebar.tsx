@@ -12,16 +12,31 @@
 // reste identique entre les deux — à garder synchronisée si un
 // jour un 4e onglet est ajouté.
 // ════════════════════════════════════════════════════════════
-import type { Screen } from "../../types";
+import type { DashTab, Screen } from "../../types";
 import { AppName } from "../ui";
 import { IBriefcase, ILogout, IStar, IUser } from "../icons";
 
-export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (s: Screen) => void }) {
-  const items = [
-    { key: "feed", label: "Offres", icon: <IBriefcase />, s: "feed" as Screen },
-    { key: "favorites", label: "Favoris", icon: <IStar />, s: "c-dashboard" as Screen },
-    { key: "profile", label: "Profil", icon: <IUser />, s: "c-dashboard" as Screen },
+export function Sidebar({
+  active,
+  onNavigate,
+  onTabChange,
+}: {
+  active: string;
+  onNavigate: (s: Screen) => void;
+  onTabChange?: (tab: DashTab) => void;
+}) {
+  const items: { key: string; label: string; icon: any; s: Screen; tab?: DashTab }[] = [
+    { key: "feed", label: "Offres", icon: <IBriefcase />, s: "feed" },
+    { key: "favorites", label: "Favoris", icon: <IStar />, s: "c-dashboard", tab: "favorites" },
+    { key: "profile", label: "Profil", icon: <IUser />, s: "c-dashboard", tab: "profile" },
   ];
+
+  const handleItemClick = (item: (typeof items)[0]) => {
+    if (item.tab && onTabChange) {
+      onTabChange(item.tab);
+    }
+    onNavigate(item.s);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
@@ -39,7 +54,7 @@ export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (s
         {items.map((item) => (
           <button
             key={item.key}
-            onClick={() => onNavigate(item.s)}
+            onClick={() => handleItemClick(item)}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 ${
               active === item.key ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}

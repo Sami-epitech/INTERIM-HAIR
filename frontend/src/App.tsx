@@ -1,9 +1,10 @@
 // ════════════════════════════════════════════════════════════
 // App.tsx — état global + routeur fait maison
 // ════════════════════════════════════════════════════════════
-import { useState, useEffect } from "react";
-import type { Job, Mission, Screen, UserMode } from "./types";
+import { useEffect, useState } from "react";
+import type { DashTab, Job, Mission, Screen, UserMode } from "./types";
 import { JOBS, MISSIONS_INIT } from "./data/mockData";
+import { fetchUserFavorites, apiAddFavorite, apiRemoveFavorite } from "./services/favoriteService";
 import { AppName } from "./components/ui";
 
 import { RoleSelectScreen } from "./screens/auth/RoleSelectScreen";
@@ -31,12 +32,71 @@ export default function App() {
   // E-mail du recruteur stocké lors de la connexion
   const userEmail = localStorage.getItem("user_email") || "";
 
+  // Onglet actif dans le dashboard candidat ("applications" | "favorites" | "profile")
+  const [candidateTab, setCandidateTab] = useState<DashTab>("applications");
+  // Favoris du candidat (IDs) synchronisés avec Airtable
+  const [favorites, setFavorites] = useState<(number | string)[]>([]);
+  // Objets complets des offres favorites chargées depuis Airtable
+  const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
+
   const go = (s: Screen) => {
     setScreen(s);
     window.scrollTo(0, 0);
   };
 
-  // Chargement dynamique des missions selon le rôle (Recruteur vs Candidat)
+  // Chargement des favoris de l'utilisateur depuis Airtable au démarrage ou connexion
+  useEffect(() => {
+    let isMounted = true;
+    setLoadingFavorites(true);
+
+    fetchUserFavorites()
+      .then((data) => {
+        if (isMounted) {
+          setFavorites(data.favoriteIds);
+          setFavoriteJobs(data.jobs);
+        }
+      })
+      .catch((err) => console.error("Erreur fetchUserFavorites :", err))
+      .finally(() => {
+        if (isMounted) setLoadingFavorites(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userMode, screen]);
+
+  // Bascule d'un favori : mise à jour optimiste + envoi à Airtable
+  const handleToggleFavorite = async (job: Job) => {
+    const isFav = favorites.includes(job.id);
+    if (isFav) {
+      setFavorites((prev) => prev.filter((id) => id !== job.id));
+      setFavoriteJobs((prev) => prev.filter((j) => j.id !== job.id));
+      try {
+        const updatedIds = await apiRemoveFavorite(job.id);
+        if (Array.isArray(updatedIds)) setFavorites(updatedIds);
+      } catch (err) {
+        console.error("Erreur suppression favori :", err);
+      }
+    } else {
+      setFavorites((prev) => [...prev, job.id]);
+      setFavoriteJobs((prev) => [...prev, job]);
+      try {
+        const updatedIds = await apiAddFavorite(job);
+        if (Array.isArray(updatedIds)) setFavorites(updatedIds);
+      } catch (err) {
+        console.error("Erreur ajout favori :", err);
+      }
+    }
+  };
+
+  const handleNavigateToCandidateTab = (tab: DashTab) => {
+    setCandidateTab(tab);
+    go("c-dashboard");
+  };
+
+  // Chargement des missions filtrées selon le profil connecté
   useEffect(() => {
     const url = userMode === "recruiter" && userEmail
       ? `http://localhost:8000/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
@@ -79,6 +139,7 @@ export default function App() {
     }
   }, [userMode]);
 
+  // Prépare l'édition d'une mission
   const handleEditMission = (m: Mission) => {
     setEditingMission(m);
     go("r-mission-edit");
@@ -104,9 +165,34 @@ export default function App() {
       {screen === "cv-upload" && <CVUploadScreen onNavigate={go} />}
       {screen === "manual-entry" && <ManualEntryScreen onNavigate={go} />}
       {screen === "onboarding2" && <Onboarding2Screen onNavigate={go} />}
-      {screen === "feed" && <FeedScreen onNavigate={go} setSelectedJob={setSelectedJob} />}
-      {screen === "job-detail" && <JobDetailScreen job={selectedJob} onNavigate={go} />}
-      {screen === "c-dashboard" && <CandidateDashboard onNavigate={go} />}
+      {screen === "feed" && (
+        <FeedScreen
+          onNavigate={go}
+          setSelectedJob={setSelectedJob}
+          favorites={favorites}
+          onToggleFavorite={handleToggleFavorite}
+          onNavigateToTab={handleNavigateToCandidateTab}
+        />
+      )}
+      {screen === "job-detail" && (
+        <JobDetailScreen
+          job={selectedJob}
+          onNavigate={go}
+          isFavorite={favorites.includes(selectedJob.id)}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      )}
+      {screen === "c-dashboard" && (
+        <CandidateDashboard
+          onNavigate={go}
+          activeTab={candidateTab}
+          onTabChange={setCandidateTab}
+          favoriteJobs={favoriteJobs}
+          onToggleFavorite={handleToggleFavorite}
+          onSelectJob={(j) => setSelectedJob(j)}
+          loadingFavorites={loadingFavorites}
+        />
+      )}
 
       {/* Parcours recruteur */}
       {screen === "r-dashboard" && <RecruiterDashboard onNavigate={go} missions={missions} onEditMission={handleEditMission} />}
