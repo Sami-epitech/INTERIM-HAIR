@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
+import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
 import passport from "./auth/passport";
@@ -52,6 +53,15 @@ app.post("/api/missions/:missionId/applications", applyToMission);
 // Routes modulaires additionnelles
 app.use("/api/jobs", jobRoutes);
 
-app.listen(PORT, () => {
-  console.log(`[OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);
-});
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/interimhair";
+
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log("✅ [MONGODB] Connecté avec succès à la base NoSQL !");
+    app.listen(PORT, () => {
+      console.log(`🚀 [OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ [MONGODB] Erreur de connexion :", err);
+  });
