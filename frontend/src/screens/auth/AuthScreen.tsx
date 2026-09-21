@@ -11,7 +11,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
   const [tab, setTab] = useState<AuthTab>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
     setErrorMsg(null);
 
     // Validation minimale côté front
-    if (!email || !password || (tab === "signup" && !name)) {
+    if (!email || !password) {
       const msg = "Veuillez remplir tous les champs requis.";
       console.warn("⚠️ [FRONTEND]", msg);
       setErrorMsg(msg);
@@ -30,14 +30,12 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
     setLoading(true);
 
     const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
-    const payload = tab === "login" 
-      ? { email, password, userMode } 
-      : { name, email, password, userMode };
+    const payload = { email, password, userMode, rememberMe };
 
     console.log(`📡 [FRONTEND] Envoi de la requête à http://localhost:8000${endpoint}`, {
       email,
       userMode,
-      ...(tab === "signup" ? { name } : {}),
+      rememberMe,
     });
 
     try {
@@ -56,6 +54,14 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       }
 
       console.log("✅ [FRONTEND] Réponse positive du serveur :", data);
+
+      // Stockage sécurisé du token JWT et de l'identifiant (sans passer par la barre d'URL)
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token);
+      }
+      if (data.userId) {
+        localStorage.setItem("userId", data.userId);
+      }
 
       // Redirection si l'API a répondu avec succès
       onNavigate(userMode === "candidate" ? "onboarding1" : "r-dashboard");
@@ -123,10 +129,21 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
 
         {/* Champs du formulaire */}
         <div className="flex flex-col gap-4">
-          {tab === "signup" && <Input label="Prénom & Nom" placeholder="Marie Dupont" value={name} onChange={setName} />}
           <Input label="Email" type="email" placeholder="marie@exemple.fr" value={email} onChange={setEmail} />
           <Input label="Mot de passe" type="password" placeholder="••••••••" value={password} onChange={setPassword} />
-          {tab === "login" && <button className="text-xs text-primary font-medium text-right -mt-2">Mot de passe oublié ?</button>}
+          
+          <div className="flex items-center justify-between -mt-1">
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary/20 accent-primary cursor-pointer"
+              />
+              <span>Rester connecté ?</span>
+            </label>
+            {tab === "login" && <button type="button" className="text-xs text-primary font-medium">Mot de passe oublié ?</button>}
+          </div>
         </div>
 
         {/* Bouton de soumission avec conteneur de secours au cas où PrimaryButton n'a pas de prop onClick directe */}
