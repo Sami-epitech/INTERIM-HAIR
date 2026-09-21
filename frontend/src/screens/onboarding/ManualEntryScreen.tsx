@@ -1,10 +1,8 @@
 // ════════════════════════════════════════════════════════════
 // screens/onboarding/ManualEntryScreen.tsx
 // ────────────────────────────────────────────────────────────
-// Étape 2/3 (variante "saisie manuelle") : formulaire complet du
-// profil candidat. `canContinue` conditionne le bouton final —
-// c'est une simple validation "tout ou rien" (pas de message
-// d'erreur par champ pour l'instant, à ajouter si besoin plus tard).
+// Étape 2/3 (variante "saisie manuelle") : formulaire complet
+// du profil candidat, connecté à l'API Express Back-End.
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Screen } from "../../types";
@@ -14,18 +12,74 @@ import { BackBtn, Divider, Input, PrimaryButton } from "../../components/ui";
 export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [diploma, setDiploma] = useState("");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [experience, setExperience] = useState<"" | "Débutant" | "Confirmé" | "Expert">("");
   const [bio, setBio] = useState("");
 
-  // Ajoute/retire une compétence de la sélection (tags cliquables multi-choix)
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Ajoute/retire une compétence de la sélection
   const toggleSkill = (s: string) => setSelectedSkills((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
 
-  // Champs obligatoires avant de pouvoir continuer (bio et téléphone restent optionnels)
-  const canContinue = firstName && lastName && email && selectedSkills.length > 0 && experience;
+  // Champs obligatoires avant de pouvoir continuer (nom, prénom, compétences, expérience)
+  const canContinue = Boolean(firstName && lastName && selectedSkills.length > 0 && experience);
+
+  // Soumission des données vers le Back-End Express
+  const handleSaveProfile = async () => {
+    console.log("👉 [FRONTEND] Envoi du profil saisi manuellement...");
+    setErrorMsg(null);
+    setLoading(true);
+
+    const userId = localStorage.getItem("userId") || undefined;
+    const token = localStorage.getItem("auth_token") || undefined;
+
+    const payload = {
+      source: "manual_entry",
+      userId,
+      firstName,
+      lastName,
+      phone,
+      diploma,
+      skills: selectedSkills,
+      experienceLevel: experience,
+      bio,
+    };
+
+    console.log("📡 [FRONTEND] Payload envoyé à http://localhost:8000/api/profile :", payload);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors de l'enregistrement du profil.");
+      }
+
+      console.log("✅ [FRONTEND] Profil enregistré avec succès par le serveur :", data);
+
+      // Redirection vers l'étape suivante (Disponibilités/Préférences)
+      onNavigate("onboarding2");
+
+    } catch (err: any) {
+      console.error("❌ [FRONTEND] Erreur lors de l'envoi du profil :", err);
+      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+      // Permet de continuer l'expérience même en cas de problème de réseau temporaire
+      onNavigate("onboarding2");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -43,28 +97,33 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
         <p className="text-sm text-muted-foreground">Renseignez vos informations pour créer votre fiche candidat.</p>
       </div>
 
-      {/* Contenu scrollable : le formulaire peut être plus grand que l'écran,
-          seule cette zone défile (le bouton "Continuer" reste fixe en bas). */}
+      {/* Contenu scrollable */}
       <div className="flex-1 overflow-y-auto scrollable px-6 pb-6 flex flex-col gap-7">
+        {errorMsg && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl text-xs font-medium">
+            {errorMsg}
+          </div>
+        )}
+
         <div className="flex flex-col gap-4">
           <p className="text-sm font-semibold text-foreground">Identité</p>
           <div className="grid grid-cols-2 gap-3">
             <Input label="Prénom" placeholder="Marie" value={firstName} onChange={setFirstName} />
             <Input label="Nom" placeholder="Dupont" value={lastName} onChange={setLastName} />
           </div>
-          <Input label="Email" type="email" placeholder="marie@exemple.fr" value={email} onChange={setEmail} />
           <Input label="Téléphone" type="tel" placeholder="+33 6 12 34 56 78" value={phone} onChange={setPhone} />
         </div>
 
         <Divider />
 
-        {/* Diplôme : choix unique parmi le référentiel DIPLOMAS_LIST */}
+        {/* Diplôme */}
         <div>
           <p className="text-sm font-semibold text-foreground mb-3">Diplôme principal</p>
           <div className="flex flex-col gap-2">
             {DIPLOMAS_LIST.map((d) => (
               <button
                 key={d}
+                type="button"
                 onClick={() => setDiploma(d)}
                 className={`flex items-center justify-between px-4 py-3 rounded-xl border text-sm text-left transition-all duration-150 ${diploma === d ? "border-primary bg-primary/5 text-foreground font-medium" : "border-border bg-card text-foreground hover:border-primary/40"}`}
               >
@@ -79,7 +138,7 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
 
         <Divider />
 
-        {/* Compétences : choix multiple parmi le référentiel SKILLS */}
+        {/* Compétences */}
         <div>
           <p className="text-sm font-semibold text-foreground mb-3">
             Compétences <span className="text-muted-foreground font-normal">(plusieurs choix)</span>
@@ -88,6 +147,7 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
             {SKILLS.map((s) => (
               <button
                 key={s}
+                type="button"
                 onClick={() => toggleSkill(s)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 ${selectedSkills.includes(s) ? "bg-primary text-primary-foreground border-primary" : "bg-card text-foreground border-border hover:border-primary/50"}`}
               >
@@ -99,12 +159,14 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
 
         <Divider />
 
+        {/* Niveau d'expérience */}
         <div>
           <p className="text-sm font-semibold text-foreground mb-3">Niveau d'expérience</p>
           <div className="flex gap-3">
             {(["Débutant", "Confirmé", "Expert"] as const).map((l) => (
               <button
                 key={l}
+                type="button"
                 onClick={() => setExperience(l)}
                 className={`flex-1 py-3 rounded-xl text-sm font-medium border transition-all duration-150 ${experience === l ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-card text-foreground border-border hover:border-primary/40"}`}
               >
@@ -116,6 +178,7 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
 
         <Divider />
 
+        {/* Présentation */}
         <div>
           <p className="text-sm font-semibold text-foreground mb-2">
             Présentation <span className="text-muted-foreground font-normal">(optionnel)</span>
@@ -130,9 +193,11 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
         </div>
       </div>
 
-      {/* Barre d'action fixe en bas, séparée du formulaire par une bordure */}
-      <div className="px-6 pb-8 pt-4 border-t border-border bg-background">
-        <PrimaryButton onClick={() => onNavigate("onboarding2")} disabled={!canContinue}>Continuer →</PrimaryButton>
+      {/* Barre d'action fixe en bas */}
+      <div className="px-6 pb-8 pt-4 border-t border-border bg-background" onClick={canContinue && !loading ? handleSaveProfile : undefined}>
+        <PrimaryButton disabled={!canContinue || loading}>
+          {loading ? "Enregistrement..." : "Continuer →"}
+        </PrimaryButton>
       </div>
     </div>
   );

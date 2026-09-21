@@ -14,10 +14,29 @@
 import { useState } from "react";
 import type { Job, Screen } from "../../types";
 import { BackBtn, Divider, MatchRing, PrimaryButton, Tag } from "../../components/ui";
-import { IClock, ILocation } from "../../components/icons";
+import { IClock, IHeart, ILocation } from "../../components/icons";
 
-export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s: Screen) => void }) {
+export function JobDetailScreen({
+  job,
+  onNavigate,
+  isFavorite = false,
+  onToggleFavorite,
+}: {
+  job: Job;
+  onNavigate: (s: Screen) => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (j: Job) => void;
+}) {
   const [applied, setApplied] = useState(false);
+
+  const handleApply = () => {
+    setApplied(true);
+    const targetUrl =
+      job.urlOrigine ||
+      (job.id ? `https://candidat.francetravail.fr/offres/recherche/detail/${job.id}` : "https://candidat.francetravail.fr/offres/recherche");
+
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -26,6 +45,15 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
         <img src={job.image} alt={job.salon} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         <div className="absolute top-12 left-4"><BackBtn onClick={() => onNavigate("feed")} /></div>
+        <div className="absolute top-12 right-4">
+          <button
+            onClick={() => onToggleFavorite && onToggleFavorite(job)}
+            className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white shadow-md transition-colors"
+            title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+          >
+            <IHeart filled={isFavorite} />
+          </button>
+        </div>
         <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-md"><MatchRing score={job.match} size={56} /></div>
       </div>
 
@@ -87,17 +115,30 @@ export function JobDetailScreen({ job, onNavigate }: { job: Job; onNavigate: (s:
         </div>
       </div>
 
-      {/* Barre d'action fixe : bascule entre le bouton de candidature et la
-          confirmation, une fois cliqué. Même largeur max que le contenu
-          ci-dessus (max-w-2xl mx-auto) pour rester bien alignée avec lui. */}
+      {/* Barre d'action fixe : bouton Postuler qui redirige vers l'offre France Travail (urlOrigine) */}
       <div className="fixed bottom-0 left-0 right-0 px-5 lg:px-8 pb-8 pt-4 bg-background/95 backdrop-blur-sm border-t border-border">
         <div className="max-w-2xl mx-auto w-full">
           {applied ? (
-            <div className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-emerald-50 border border-emerald-200">
-              <span className="text-emerald-600 font-semibold text-sm">✓ Candidature envoyée !</span>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+              <span className="text-emerald-700 dark:text-emerald-300 font-semibold text-sm">
+                ✓ Redirection vers France Travail effectuée !
+              </span>
+              <button
+                onClick={handleApply}
+                className="text-xs text-primary font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity"
+              >
+                Réouvrir l'offre sur France Travail
+              </button>
             </div>
           ) : (
-            <PrimaryButton onClick={() => setApplied(true)}>Confirmer ma candidature</PrimaryButton>
+            <PrimaryButton onClick={handleApply} className="flex items-center justify-center gap-2">
+              <span>Postuler</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-80">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </PrimaryButton>
           )}
         </div>
       </div>

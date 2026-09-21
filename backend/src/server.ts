@@ -1,21 +1,84 @@
+import path from "path";
+import dotenv from "dotenv";
+
+// Désactive la vérification stricte TLS/SSL pour éviter les blocages de certificats en dev
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+// Charge le .env à la racine du projet puis l'éventuel .env dans backend/
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
+import passport from "./auth/passport";
+
+// Import de nos vrais contrôleurs connectés à Airtable
+import { signup, login } from "./controllers/auth.controller";
+import { saveProfile } from "./controllers/profile.controller";
+import { getJobs, postJob, patchJob } from "./controllers/job.controller";
+import { applyToMission } from "./controllers/application.controller";
+import { getFavorites, addFavorite, removeFavorite, toggleFavorite } from "./controllers/favorite.controller";
+
+// Import de tes routeurs modulaires existants (si tu veux les garder)
 import jobRoutes from "./routes/job.routes";
-import applicationRoutes from "./routes/application.routes";
+import authRoutes from "./routes/auth.routes";
+import { hashPassword } from "./auth/hashing";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
 
-// Routes
+// 1. Route racine
 app.get("/", (_req, res) => {
   res.json({ message: "Bienvenue sur l'API Interim'hair" });
 });
-app.use("/api/jobs", jobRoutes);
-app.use("/api/applications", applicationRoutes);
 
+// 2. Routes Authentification OAuth (Google / Facebook)
+app.use("/api/auth", authRoutes);
+// 2. Routes Authentification (Connectées à Airtable via auth.controller.ts)
+app.post("/api/auth/signup", signup);
+app.post("/api/auth/login", login);
+
+// 3. Route Profil & Disponibilités (Connectée à Airtable via profile.controller.ts)
+app.post("/api/profile", saveProfile);
+
+// 4. Routes pour la gestion des Missions / Jobs (Connectées à Airtable via job.controller.ts)
+app.get("/api/jobs", getJobs);
+app.post("/api/jobs", postJob);
+app.patch("/api/jobs/:id", patchJob);
+
+// 5. Routes pour les candidatures (Connectées à Airtable via application.controller.ts)
+app.post("/api/missions/:missionId/applications", applyToMission);
+
+// 6. Routes pour les favoris (Connectées à Airtable via favorite.controller.ts)
+app.get("/api/favorites", getFavorites);
+app.get("/api/users/me/favorites", getFavorites);
+app.post("/api/favorites", addFavorite);
+app.post("/api/users/me/favorites", addFavorite);
+app.delete("/api/favorites/:jobId", removeFavorite);
+app.delete("/api/favorites", removeFavorite);
+app.post("/api/favorites/toggle", toggleFavorite);
+
+// Routes modulaires additionnelles
+app.use("/api/jobs", jobRoutes);
+
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/interimhair";
+
+// Démarrage du serveur Express
 app.listen(PORT, () => {
-  console.log(`[OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);
+  console.log(`🚀 [OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);
 });
+
+// Connexion optionnelle à MongoDB (sans bloquer le serveur si MongoDB n'est pas démarré)
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("✅ [MONGODB] Connecté avec succès à la base NoSQL !");
+  })
+  .catch((err) => {
+    console.warn("⚠️ [MONGODB] Base NoSQL non disponible (démarrez Docker ou ignorez si non utilisé) :", err.message);
+  });

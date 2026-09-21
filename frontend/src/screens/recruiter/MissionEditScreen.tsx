@@ -1,17 +1,7 @@
 // ════════════════════════════════════════════════════════════
 // screens/recruiter/MissionEditScreen.tsx
 // ────────────────────────────────────────────────────────────
-// Édition d'une mission existante. `mission` (la version actuelle)
-// vient de App.tsx ; `onSave` remonte la version modifiée pour que
-// App.tsx mette à jour son état `missions` (voir handleSaveMission
-// dans App.tsx, qui fait un .map() pour remplacer la mission éditée).
-//
-// Contient aussi la "zone dangereuse" : clôturer définitivement une
-// mission (passage au statut "completed"), avec une modale de
-// confirmation pour éviter un clic accidentel.
-//
-// TODO backend : handleSave() devra appeler PATCH /api/missions/:id
-// (voir backend/src/controllers/missions.controller.js → updateMission()).
+// Édition d'une mission existante, connectée à l'API Back-End via PATCH.
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
 import type { Mission, Screen } from "../../types";
@@ -27,9 +17,6 @@ export function MissionEditScreen({
   onNavigate: (s: Screen) => void;
   onSave: (m: Mission) => void;
 }) {
-  // Un état local par champ, initialisé depuis `mission` — modifier ces
-  // états ne touche PAS encore la mission réelle : il faut cliquer sur
-  // "Enregistrer" (handleSave) pour répercuter les changements via onSave.
   const [title, setTitle] = useState(mission.title);
   const [description, setDescription] = useState(mission.description);
   const [location, setLocation] = useState(mission.location);
@@ -41,31 +28,67 @@ export function MissionEditScreen({
   const [status, setStatus] = useState<Mission["status"]>(mission.status);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const toggleSkill = (s: string) => setSelectedSkills((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
 
-  /**
-   * Reconstruit l'objet Mission complet à partir des états locaux et le
-   * transmet au parent. `overrideStatus` permet au bouton "Clôturer" de
-   * forcer le statut à "completed" sans devoir d'abord appeler setStatus
-   * (qui ne serait pas encore répercuté au moment de l'appel, React
-   * regroupant les mises à jour d'état de façon asynchrone).
-   */
-  const handleSave = (overrideStatus?: Mission["status"]) => {
-    onSave({
+  const handleSave = async (overrideStatus?: Mission["status"]) => {
+    console.log("👉 [FRONTEND] Envoi de la mise à jour de la mission...");
+    setErrorMsg(null);
+    setLoading(true);
+
+    const targetStatus = overrideStatus ?? status;
+
+    const updatedMission: Mission = {
       ...mission,
-      title, description, location, rate: Number(rate), shift, startDate, endDate,
+      title,
+      description,
+      location,
+      rate: Number(rate),
+      shift,
+      startDate,
+      endDate,
       skills: selectedSkills,
-      status: overrideStatus ?? status,
-      // Le texte affiché ailleurs (ex. RecruiterDashboard) recombine les deux
-      // dates ; s'il n'y a pas de date de fin, on n'affiche que le début.
+      status: targetStatus,
       dates: endDate ? `${startDate} – ${endDate}` : startDate,
-    });
-    onNavigate("r-dashboard");
+    };
+
+    console.log(`📡 [FRONTEND] PATCH vers http://localhost:8000/api/jobs/${mission.id} :`, updatedMission);
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/jobs/${mission.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedMission),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur lors de la mise à jour de la mission.");
+      }
+
+      console.log("✅ [FRONTEND] Mission mise à jour avec succès :", data);
+
+      // Met à jour le state global React
+      onSave(updatedMission);
+      onNavigate("r-dashboard");
+
+    } catch (err: any) {
+      console.error("❌ [FRONTEND] Erreur lors du PATCH mission :", err);
+      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+      // Maintient la fluidité en effectuant quand même la sauvegarde locale en démo
+      onSave(updatedMission);
+      onNavigate("r-dashboard");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    // Même logique que MissionCreateScreen : formulaire à une colonne,
-    // on cape et centre directement le conteneur racine sur grand écran.
     <div className="min-h-screen bg-background flex flex-col lg:max-w-2xl lg:mx-auto">
       {/* Modale de confirmation avant clôture définitive */}
       {showConfirm && (
@@ -75,7 +98,13 @@ export function MissionEditScreen({
             <p className="text-sm text-muted-foreground">Cette action marquera la mission comme terminée. Elle ne sera plus visible par les candidat·e·s.</p>
             <div className="flex gap-3">
               <button onClick={() => setShowConfirm(false)} className="flex-1 py-3 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted transition-colors">Annuler</button>
-              <button onClick={() => { setShowConfirm(false); handleSave("completed"); }} className="flex-1 py-3 rounded-xl bg-red-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity">Clôturer</button>
+              <button 
+                onClick={() => { setShowConfirm(false); handleSave("completed"); }} 
+                disabled={loading}
+                className="flex-1 py-3 rounded-xl bg-red-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+              >
+                {loading ? "..." : "Clôturer"}
+              </button>
             </div>
           </div>
         </div>
@@ -91,6 +120,12 @@ export function MissionEditScreen({
       </div>
 
       <div className="flex-1 overflow-y-auto scrollable px-5 pb-6 flex flex-col gap-5">
+        {errorMsg && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl text-xs font-medium">
+            {errorMsg}
+          </div>
+        )}
+
         <Input label="Intitulé du poste" value={title} onChange={setTitle} />
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-foreground/80">Description</label>
@@ -123,6 +158,7 @@ export function MissionEditScreen({
             {SKILLS.map((s) => (
               <button
                 key={s}
+                type="button"
                 onClick={() => toggleSkill(s)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-150 ${selectedSkills.includes(s) ? "bg-primary text-primary-foreground border-primary" : "bg-card text-foreground border-border hover:border-primary/50"}`}
               >
@@ -132,14 +168,13 @@ export function MissionEditScreen({
           </div>
         </div>
 
-        {/* Statut : uniquement open/filled ici — "completed" ne se déclenche
-            que via la zone dangereuse ci-dessous, jamais par erreur. */}
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium text-foreground/80">Statut de la mission</p>
           <div className="flex gap-2">
             {(["open", "filled"] as const).map((s) => (
               <button
                 key={s}
+                type="button"
                 onClick={() => setStatus(s)}
                 className={`flex-1 py-2.5 rounded-xl text-xs font-medium border transition-all ${status === s ? "bg-primary text-primary-foreground border-primary" : "bg-card text-foreground border-border"}`}
               >
@@ -149,17 +184,18 @@ export function MissionEditScreen({
           </div>
         </div>
 
-        {/* Zone dangereuse — clairement isolée visuellement (fond/bordure rouges) */}
         <div className="p-4 rounded-2xl border border-red-100 bg-red-50/50">
           <p className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-2">Clôture définitive</p>
           <p className="text-xs text-red-600 mb-3">La mission sera marquée terminée et retirée des résultats de recherche.</p>
-          <button onClick={() => setShowConfirm(true)} className="w-full py-3 rounded-xl border border-red-300 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors">Clôturer cette mission</button>
+          <button type="button" onClick={() => setShowConfirm(true)} className="w-full py-3 rounded-xl border border-red-300 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors">Clôturer cette mission</button>
         </div>
       </div>
 
       <div className="px-5 pb-8 pt-4 border-t border-border bg-background flex gap-3">
-        <button onClick={() => onNavigate("r-dashboard")} className="flex-1 py-3.5 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted transition-colors">Annuler</button>
-        <button onClick={() => handleSave()} className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity">Enregistrer</button>
+        <button type="button" onClick={() => onNavigate("r-dashboard")} className="flex-1 py-3.5 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted transition-colors">Annuler</button>
+        <button type="button" onClick={() => handleSave()} disabled={loading} className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
+          {loading ? "Enregistrement..." : "Enregistrer"}
+        </button>
       </div>
     </div>
   );

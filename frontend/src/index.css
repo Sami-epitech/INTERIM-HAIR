@@ -81,6 +81,16 @@ input:focus, select:focus, textarea:focus {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Apparition en fondu décalée des chiffres clés (RoleSelectScreen) */
+.stat-fade-in {
+  opacity: 0;
+  animation: statFadeIn 0.5s ease forwards;
+}
+@keyframes statFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Curseur slider (rayon de recherche, taux horaire minimum...) coloré en rose */
 input[type="range"] {
   accent-color: #C4697B;
