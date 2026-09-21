@@ -50,6 +50,7 @@ export const getJobs = async (req: Request, res: Response) => {
           shift: f.shift || "9h - 18h",
           skills: f.skills || f.tags || [],
           status: f.status || "open",
+          publishedAt: f.publishedAt || new Date().toISOString(),
           salon: f.salon || "Salon Partenaire",
           recruiterEmail: recordRecruiterEmail,
           recruiterId: recordRecruiterEmail,

@@ -127,33 +127,26 @@ export const updateInterimaire = async (recordId: string, profileData: any) => {
   return record[0];
 };
 
-// Création d'une mission (MissionCreateScreen)
+// Création d'une mission (Recruteur)
 export const createMission = async (recruiterRecordId: string, missionData: any) => {
-  const fields: any = {
-    title: missionData.title,
-    description: missionData.description,
-    startDate: missionData.startDate,
-    endDate: missionData.endDate,
-    dates: missionData.dates,
-    location: missionData.location,
-    rate: Number(missionData.rate),
-    shift: missionData.shift,
-    skills: missionData.skills,
-    status: missionData.status || 'open',
-  };
-
-  if (recruiterRecordId && recruiterRecordId !== "rec_default_id") {
-    fields.recruiterId = [recruiterRecordId];
-  }
-
-  const record = await airtableBase("Offres d'emploi").create(
-    [
-      {
-        fields,
+  const record = await airtableBase("Offres d'emploi").create([
+    {
+      fields: {
+        title: missionData.title,
+        description: missionData.description,
+        startDate: missionData.startDate,
+        endDate: missionData.endDate,
+        dates: missionData.dates,
+        location: missionData.location,
+        rate: missionData.rate,
+        shift: missionData.shift,
+        skills: missionData.skills,
+        status: missionData.status || 'open',
+        recruiterId: [recruiterRecordId],
+        publishedAt: new Date().toISOString() 
       },
-    ],
-    { typecast: true }
-  );
+    },
+  ]);
 
   return record[0];
 };
