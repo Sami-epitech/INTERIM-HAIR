@@ -95,6 +95,7 @@ export const updateInterimaire = async (recordId: string, profileData: any) => {
   if (profileData.diploma) fieldsToUpdate.diploma = profileData.diploma;
   if (profileData.skills) fieldsToUpdate.skills = profileData.skills;
   if (profileData.experienceLevel) fieldsToUpdate.experienceLevel = profileData.experienceLevel;
+  if (profileData.expectedRate) fieldsToUpdate.expectedRate = profileData.expectedRate;
 
   if (profileData.location) {
     fieldsToUpdate.locationCity = profileData.location.city;

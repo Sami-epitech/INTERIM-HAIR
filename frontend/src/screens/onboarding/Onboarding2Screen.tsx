@@ -23,6 +23,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
   const [endHour, setEndHour] = useState("18h");
   const [availFrom, setAvailFrom] = useState("2026-09-15");
   const [availTo, setAvailTo] = useState("2026-12-31");
+  const [expectedRate, setExpectedRate] = useState("12");
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -49,6 +50,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
       source: "preferences_onboarding",
       skills: selectedSkills,
       experienceLevel: experience,
+      expectedRate: Number(expectedRate),
       location: {
         city,
         radiusKm: radius,
@@ -150,6 +152,23 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
                 {l}
               </button>
             ))}
+          </div>
+        </div>
+
+        <Divider />
+
+        {/* Taux horaire */}
+        <div>
+          <p className="text-sm font-semibold text-foreground mb-3">Taux horaire minimum souhaité</p>
+          <div className="relative">
+            <input 
+              type="number" 
+              placeholder="12.00" 
+              value={expectedRate} 
+              onChange={(e) => setExpectedRate(e.target.value)} 
+              className="w-full px-4 py-3 pr-10 rounded-xl border border-border bg-card text-foreground text-sm focus:border-primary transition-colors" 
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">€/h</span>
           </div>
         </div>
 
