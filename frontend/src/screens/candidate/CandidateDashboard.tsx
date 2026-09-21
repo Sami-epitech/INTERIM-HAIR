@@ -15,12 +15,18 @@ import { useState, type ReactNode } from "react";
 import type { DashTab, Screen } from "../../types";
 import { APPLICATIONS, DAYS, FAVORITES_DATA } from "../../data/mockData";
 import { BackBtn, MatchRing, StatusBadge, Tag } from "../../components/ui";
-import { IBriefcase, ICalendar, IClock, IPencil, IStar, IUser } from "../../components/icons";
+import { IBriefcase, ICalendar, IClock, ILogout, IPencil, IStar, IUser } from "../../components/icons";
 import { BottomNav } from "../../components/candidate/BottomNav";
 import { Sidebar } from "../../components/candidate/Sidebar";
 
 export function CandidateDashboard({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [tab, setTab] = useState<DashTab>("applications");
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("userId");
+    onNavigate("role-select");
+  };
 
   const TABS: { key: DashTab; label: string; icon: ReactNode }[] = [
     { key: "applications", label: "Candidatures", icon: <IBriefcase /> },
@@ -37,12 +43,22 @@ export function CandidateDashboard({ onNavigate }: { onNavigate: (s: Screen) => 
       <Sidebar active={navActive} onNavigate={onNavigate} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-5 flex items-center gap-3">
-          <BackBtn onClick={() => onNavigate("feed")} />
-          <div>
-            <h1 className="font-serif text-2xl text-foreground">Mon espace</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Marie Dupont · Coloriste Expert</p>
+        <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BackBtn onClick={() => onNavigate("feed")} />
+            <div>
+              <h1 className="font-serif text-2xl text-foreground">Mon espace</h1>
+              <p className="text-xs text-muted-foreground mt-0.5">Marie Dupont · Coloriste Expert</p>
+            </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 rounded-xl hover:bg-red-100 dark:hover:bg-red-950/60 transition-colors shadow-sm"
+            title="Se déconnecter"
+          >
+            <ILogout />
+            <span className="hidden sm:inline">Déconnexion</span>
+          </button>
         </div>
 
         {/* Onglets — scroll horizontal si jamais ça déborde sur petit écran, sans scrollbar visible */}
@@ -154,6 +170,17 @@ export function CandidateDashboard({ onNavigate }: { onNavigate: (s: Screen) => 
                       <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
                     </div>
                   ))}
+                </div>
+
+                {/* Bouton de déconnexion */}
+                <div className="pt-2 lg:max-w-2xl">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-semibold text-sm hover:bg-red-100 dark:hover:bg-red-950/60 transition-colors shadow-sm"
+                  >
+                    <ILogout />
+                    <span>Se déconnecter de mon compte</span>
+                  </button>
                 </div>
               </div>
             )}

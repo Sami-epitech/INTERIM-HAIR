@@ -14,7 +14,7 @@
 // ════════════════════════════════════════════════════════════
 import type { Screen } from "../../types";
 import { AppName } from "../ui";
-import { IBriefcase, IStar, IUser } from "../icons";
+import { IBriefcase, ILogout, IStar, IUser } from "../icons";
 
 export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (s: Screen) => void }) {
   const items = [
@@ -22,6 +22,12 @@ export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (s
     { key: "favorites", label: "Favoris", icon: <IStar />, s: "c-dashboard" as Screen },
     { key: "profile", label: "Profil", icon: <IUser />, s: "c-dashboard" as Screen },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("userId");
+    onNavigate("role-select");
+  };
 
   return (
     // "hidden" par défaut (mobile/tablette) → redevient visible en colonne
@@ -43,6 +49,16 @@ export function Sidebar({ active, onNavigate }: { active: string; onNavigate: (s
           </button>
         ))}
       </nav>
+
+      <div className="mt-auto pt-4 border-t border-border">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors w-full text-left"
+        >
+          <ILogout />
+          Déconnexion
+        </button>
+      </div>
     </div>
   );
 }
