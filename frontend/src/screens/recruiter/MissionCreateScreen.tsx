@@ -1,18 +1,21 @@
 // ════════════════════════════════════════════════════════════
 // screens/recruiter/MissionCreateScreen.tsx
-// ────────────────────────────────────────────────────────────
-// Création d'une nouvelle mission connectée au Back-End Express.
 // ════════════════════════════════════════════════════════════
 import { useState } from "react";
-import type { Screen } from "../../types";
+import type { Mission, Screen } from "../../types";
 import { SKILLS } from "../../data/mockData";
 import { BackBtn, Input } from "../../components/ui";
 import { IUpload } from "../../components/icons";
 
-export function MissionCreateScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
+export function MissionCreateScreen({
+  onNavigate,
+  onCreateMission,
+}: {
+  onNavigate: (s: Screen) => void;
+  onCreateMission?: (m: Mission) => void;
+}) {
   const [mode, setMode] = useState<"import" | "manual">("manual");
-  
-  // États locaux pour capturer toutes les entrées du formulaire
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -28,15 +31,16 @@ export function MissionCreateScreen({ onNavigate }: { onNavigate: (s: Screen) =>
   const toggleSkill = (s: string) => setSelectedSkills((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
 
   const handleCreateMission = async () => {
-    console.log("👉 [FRONTEND] Publication d'une nouvelle mission...");
     setErrorMsg(null);
 
     if (!title || !location || !rate) {
-      setErrorMsg("Veuillez renseigner au moins l'intitulé, la localisation et le taux horaire.");
+      setErrorMsg("Veuillez renseigner l'intitulé, la localisation et le taux horaire.");
       return;
     }
 
     setLoading(true);
+
+    const userEmail = localStorage.getItem("user_email") || "";
 
     const payload = {
       title,
@@ -48,10 +52,9 @@ export function MissionCreateScreen({ onNavigate }: { onNavigate: (s: Screen) =>
       rate: Number(rate),
       shift,
       skills: selectedSkills,
+      recruiterEmail: userEmail,
       status: "open",
     };
-
-    console.log("📡 [FRONTEND] POST vers http://localhost:8000/api/jobs :", payload);
 
     try {
       const response = await fetch("http://localhost:8000/api/jobs", {
@@ -69,13 +72,31 @@ export function MissionCreateScreen({ onNavigate }: { onNavigate: (s: Screen) =>
       }
 
       console.log("✅ [FRONTEND] Mission créée avec succès :", data);
-      onNavigate("r-dashboard");
 
+      const createdMission: Mission = {
+        id: data.job?.id || data.mission?.id || Date.now().toString(),
+        title,
+        description,
+        startDate,
+        endDate,
+        dates: endDate ? `${startDate} – ${endDate}` : startDate,
+        sortDate: startDate ? new Date(startDate) : new Date(),
+        location,
+        rate: Number(rate),
+        shift: shift || "9h - 18h",
+        skills: selectedSkills,
+        count: 0,
+        status: "open",
+      };
+
+      if (onCreateMission) {
+        onCreateMission(createdMission);
+      }
+
+      onNavigate("r-dashboard");
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur lors du POST mission :", err);
       setErrorMsg(err.message || "Impossible de contacter le serveur.");
-      // Navigation de secours pour la démo
-      onNavigate("r-dashboard");
     } finally {
       setLoading(false);
     }
@@ -98,7 +119,6 @@ export function MissionCreateScreen({ onNavigate }: { onNavigate: (s: Screen) =>
           </div>
         )}
 
-        {/* Sélecteur de mode */}
         <div className="flex gap-1 p-1 bg-muted rounded-xl">
           {(["import", "manual"] as const).map((m) => (
             <button

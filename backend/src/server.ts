@@ -18,6 +18,7 @@ import { signup, login } from "./controllers/auth.controller";
 import { saveProfile } from "./controllers/profile.controller";
 import { getJobs, postJob, patchJob } from "./controllers/job.controller";
 import { applyToMission } from "./controllers/application.controller";
+import { getFavorites, addFavorite, removeFavorite, toggleFavorite } from "./controllers/favorite.controller";
 
 // Import de tes routeurs modulaires existants (si tu veux les garder)
 import jobRoutes from "./routes/job.routes";
@@ -52,6 +53,15 @@ app.patch("/api/jobs/:id", patchJob);
 
 // 5. Routes pour les candidatures (Connectées à Airtable via application.controller.ts)
 app.post("/api/missions/:missionId/applications", applyToMission);
+
+// 6. Routes pour les favoris (Connectées à Airtable via favorite.controller.ts)
+app.get("/api/favorites", getFavorites);
+app.get("/api/users/me/favorites", getFavorites);
+app.post("/api/favorites", addFavorite);
+app.post("/api/users/me/favorites", addFavorite);
+app.delete("/api/favorites/:jobId", removeFavorite);
+app.delete("/api/favorites", removeFavorite);
+app.post("/api/favorites/toggle", toggleFavorite);
 
 // Routes modulaires additionnelles
 app.use("/api/jobs", jobRoutes);
