@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Filters, Job, Screen } from "../../types";
 import { JOBS } from "../../data/mockData";
-import { mapFTToJob } from "../../utils/mapperFTJobs";
 import { AppName, BackBtn, MatchRing, Tag } from "../../components/ui";
 import { IArrow, IClock, IFilter, IHeart, ILocation } from "../../components/icons";
 import { FilterModal } from "../../components/candidate/FilterModal";
@@ -17,23 +16,42 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Récupération des 150 offres France Travail depuis l'API Express Back-End
+  // Récupération de l'ensemble des offres (Airtable + France Travail) grâce à ?source=feed
   useEffect(() => {
-    fetch("http://localhost:8000/api/jobs")
+    fetch("http://localhost:8000/api/jobs?source=feed")
       .then((res) => {
-        if (!res.ok) throw new Error("Erreur réseau");
+        if (!res.ok) throw new Error("Erreur réseau API");
         return res.json();
       })
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          const mappedJobs = data.map((offer: any, idx: number) => mapFTToJob(offer, idx));
-          setJobs(mappedJobs);
+          // Normalisation sécurisée des objets reçus depuis le backend
+          const formattedJobs: Job[] = data.map((item: any, idx: number) => ({
+            id: item.id || `job-ft-${idx}`,
+            title: item.title || item.intitule || "Mission sans titre",
+            salon: item.salon || (item.entreprise ? item.entreprise.nom : "Salon Partenaire"),
+            location: item.location || (item.lieuTravail ? item.lieuTravail.libelle : "Localisation non précisée"),
+            contract: item.contract || item.typeContratLibelle || "Intérim",
+            rate: Number(item.rate || 15),
+            shift: item.shift || "09:00 - 18:00",
+            tags: item.tags || item.skills || ["Coiffure"],
+            skills: item.skills || item.tags || [],
+            match: item.match || 80,
+            image: item.image || "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+            description: item.description || "",
+            dates: item.dates || "Dates à convenir",
+            diplomas: item.diplomas || ["CAP Coiffure"],
+            benefits: item.benefits || ["Mutuelle"],
+          }));
+
+          console.log(`✅ [FRONTEND CANDIDAT] ${formattedJobs.length} offres chargées (Airtable + France Travail)`);
+          setJobs(formattedJobs);
         } else {
-          setJobs(JOBS); // Données de secours
+          setJobs(JOBS);
         }
       })
       .catch((err) => {
-        console.error("Erreur lors du chargement des offres France Travail :", err);
+        console.error("❌ Erreur lors du chargement du feed candidat :", err);
         setJobs(JOBS);
       })
       .finally(() => setLoading(false));
@@ -57,29 +75,16 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
   const activeCount = [filters.contract !== "Tous", filters.location !== "", filters.rateMin > 10, filters.matchMin > 0].filter(Boolean).length;
 
   return (
-    // lg:flex-row : à partir de 1024px, la Sidebar (colonne fixe) et le
-    // contenu principal se placent côte à côte au lieu de s'empiler.
-    // h-screen + overflow-hidden (au lieu de min-h-screen) : borne la hauteur
-    // à l'écran pour que ce soit le bloc scrollable ci-dessous (et lui seul)
-    // qui défile, plutôt que la page entière.
     <div className="h-screen overflow-hidden bg-background flex flex-col lg:flex-row">
       {showFilters && <FilterModal filters={filters} onApply={setFilters} onClose={() => setShowFilters(false)} />}
 
       <Sidebar active="feed" onNavigate={onNavigate} />
 
-      {/* min-w-0 + min-h-0 : essentiels dans un enfant flex pour que son contenu
-          (la grille de cartes) puisse rétrécir sous sa largeur ET sa hauteur
-          naturelles, plutôt que de forcer la Sidebar à sortir de l'écran ou
-          la page entière à défiler. */}
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BackBtn onClick={() => onNavigate("role-select")} />
             <div>
-              {/* Le logo n'a plus besoin d'être répété ici sur desktop : il
-                  est déjà affiché en haut de la Sidebar. On le garde quand
-                  même visible en permanence (masqué uniquement à lg) pour
-                  ne pas casser l'en-tête mobile. */}
               <div className="lg:hidden"><AppName size="sm" /></div>
               <p className="text-xs text-muted-foreground mt-0.5 lg:mt-0 lg:text-sm">
                 France · {loading ? "Chargement..." : `${filtered.length} offres disponibles`}
@@ -111,7 +116,7 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
           <div className="max-w-6xl mx-auto w-full">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <p className="text-sm text-muted-foreground animate-pulse">Récupération des 150 offres France Travail...</p>
+                <p className="text-sm text-muted-foreground animate-pulse">Récupération des offres de la plateforme et de France Travail...</p>
               </div>
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
@@ -143,7 +148,7 @@ export function FeedScreen({ onNavigate, setSelectedJob }: { onNavigate: (s: Scr
                         <span className="flex items-center gap-1 shrink-0"><IClock />{job.shift}</span>
                       </div>
                       <div className="flex flex-wrap gap-1.5 mb-4 h-12 overflow-hidden">
-                        {job.tags.map((t) => <Tag key={t}>{t}</Tag>)}
+                        {(job.tags || []).map((t) => <Tag key={t}>{t}</Tag>)}
                       </div>
 
                       <div className="flex items-center justify-between gap-3">

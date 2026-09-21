@@ -71,16 +71,21 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
         localStorage.setItem("userId", data.userId);
       }
       
-      // 🚨 Sauvegarde de l'e-mail pour les futurs appels API (ex: creation / filtrage de missions)
       localStorage.setItem("user_email", email);
 
-      // Redirection si l'API a répondu avec succès :
-      // Si connexion -> accès direct au feed/dashboard
-      // Si inscription -> parcours de création de profil (onboarding)
-      if (tab === "login") {
-        onNavigate(userMode === "candidate" ? "feed" : "r-dashboard");
+      // REDIRECTION INTELLIGENTE :
+      if (userMode === "candidate") {
+        if (tab === "signup") {
+          // Inscription -> passage obligatoire par l'onboarding
+          onNavigate("onboarding1");
+        } else {
+          // Connexion -> si le profil est complété (selon l'API) ou par défaut sur un login -> feed
+          const isProfileComplete = data.isOnboarded ?? data.hasProfile ?? true;
+          onNavigate(isProfileComplete ? "feed" : "onboarding1");
+        }
       } else {
-        onNavigate(userMode === "candidate" ? "onboarding1" : "r-dashboard");
+        // Parcours recruteur
+        onNavigate("r-dashboard");
       }
 
     } catch (err: any) {
