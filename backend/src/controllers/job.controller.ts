@@ -5,11 +5,12 @@ import { verifyToken, TokenPayload } from '../auth/jwt';
 import fs from 'fs';
 import path from 'path';
 
-// Récupérer les offres (Filtrées par e-mail recruteur ou mode candidat)
+// Récupérer les offres (Filtrées par e-mail recruteur OU Fil Candidat avec France Travail)
 export const getJobs = async (req: Request, res: Response) => {
   try {
     let candidateId = req.query.candidateId as string;
     const recruiterEmail = req.query.recruiterEmail as string;
+    const source = req.query.source as string;
 
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -33,7 +34,6 @@ export const getJobs = async (req: Request, res: Response) => {
 
         if (!f.title && !f.Title) return null;
 
-        // Récupération de l'email stocké dans Airtable (champ recruiterId ou recruiterEmail)
         const storedEmail = f.recruiterId || f.recruiterEmail || "";
         const recordRecruiterEmail = Array.isArray(storedEmail) ? storedEmail[0] : storedEmail;
 
@@ -62,30 +62,42 @@ export const getJobs = async (req: Request, res: Response) => {
       })
       .filter((job): job is NonNullable<typeof job> => job !== null);
 
-    // 2. Si un filtre par e-mail recruteur est fourni (Dashboard Recruteur)
+    // 2. Si filtre par e-mail recruteur (Dashboard Recruteur)
     if (recruiterEmail) {
       allJobs = allJobs.filter((job) => 
         job.recruiterEmail && job.recruiterEmail.toLowerCase() === recruiterEmail.toLowerCase()
       );
     }
 
-    // 3. Si la requête vient du FIL CANDIDAT (?source=feed), on ajoute France Travail
-    const isCandidateFeed = req.query.source === 'feed' || Boolean(candidateId);
+    // 3. Si vue candidat (source === 'feed' ou candidateId présent), ajout des offres France Travail
+    const isCandidateFeed = source === 'feed' || Boolean(candidateId) || (!recruiterEmail && source !== 'recruiter');
     
     if (isCandidateFeed) {
-      const jsonPath = path.join(__dirname, '../offres-ft.json');
-      if (fs.existsSync(jsonPath)) {
+      // Détection dynamique du fichier offres-ft.json selon l'arborescence (dist ou src)
+      const possiblePaths = [
+        path.join(__dirname, '../offres-ft.json'),
+        path.join(__dirname, '../../src/offres-ft.json'),
+        path.join(process.cwd(), 'src/offres-ft.json'),
+        path.join(process.cwd(), 'offres-ft.json')
+      ];
+
+      const jsonPath = possiblePaths.find(p => fs.existsSync(p));
+
+      if (jsonPath) {
         try {
           const fileData = fs.readFileSync(jsonPath, 'utf-8');
           const ftJobs = JSON.parse(fileData);
           allJobs = [...allJobs, ...ftJobs];
+          console.log(`✅ [BACKEND] ${ftJobs.length} offres France Travail ajoutées au feed candidat.`);
         } catch (err) {
-          console.warn("⚠️ Impossible de lire les offres France Travail :", err);
+          console.warn("⚠️ [BACKEND] Erreur lors de la lecture du fichier France Travail :", err);
         }
+      } else {
+        console.warn("⚠️ [BACKEND] Fichier offres-ft.json introuvable.");
       }
     }
 
-    // 4. Algorithme de matching pour candidat identifié
+    // 4. Algorithme de matching si candidat identifié
     if (candidateId) {
       try {
         const candidateRecord = await base('Intérimaires').find(candidateId);
@@ -129,12 +141,10 @@ export const postJob = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Champs obligatoires manquants (titre, localisation, taux horaire)." });
     }
 
-    // Extraction sécurisée de l'e-mail du recruteur
     const emailToSave = recruiterEmail || recruiterId || "recruteur@example.com";
 
     console.log("📥 [BACKEND] Enregistrement de la mission sur Airtable avec recruiterId =", emailToSave);
 
-    // Mappage explicite vers les champs Airtable
     const fieldsToCreate: any = {
       title: missionData.title,
       description: missionData.description || "",
@@ -146,7 +156,7 @@ export const postJob = async (req: Request, res: Response) => {
       shift: missionData.shift || "",
       skills: Array.isArray(missionData.skills) ? missionData.skills : [],
       status: missionData.status || "open",
-      recruiterId: emailToSave, // Doit correspondre exactement au nom du champ sur Airtable
+      recruiterId: emailToSave,
     };
 
     const createdRecord = await base("Offres d'emploi").create(

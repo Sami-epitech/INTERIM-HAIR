@@ -29,7 +29,7 @@ export default function App() {
   const [editingMission, setEditingMission] = useState<Mission>(MISSIONS_INIT[0]);
   const [missions, setMissions] = useState<Mission[]>(MISSIONS_INIT);
 
-  // E-mail de l'utilisateur connecté (stocké à la connexion)
+  // E-mail du recruteur stocké lors de la connexion
   const userEmail = localStorage.getItem("user_email") || "";
 
   // Onglet actif dans le dashboard candidat ("applications" | "favorites" | "profile")
@@ -110,20 +110,24 @@ export default function App() {
       .then((data) => {
         if (Array.isArray(data)) {
           const formattedMissions: Mission[] = data
-            .filter((m: any) => m && m.title && m.title.trim() !== "")
+            .filter((m: any) => m && (m.title || m.intitule))
             .map((m: any) => ({
               ...m,
+              title: m.title || m.intitule || "Mission sans titre",
+              location: m.location || (m.lieuTravail ? m.lieuTravail.libelle : "Localisation non précisée"),
+              rate: Number(m.rate || 15),
+              dates: m.dates || (m.startDate ? `${m.startDate} – ${m.endDate || ''}` : "Dates à convenir"),
               sortDate: m.sortDate ? new Date(m.sortDate) : new Date(),
             }));
 
-          console.log(`✅ [FRONTEND] Missions chargées (${userMode}) :`, formattedMissions);
+          console.log(`✅ [FRONTEND] ${formattedMissions.length} missions chargées pour le mode : ${userMode}`);
           setMissions(formattedMissions);
         }
       })
-      .catch((err) => console.warn("⚠️ [FRONTEND] Erreur chargement API :", err.message));
+      .catch((err) => console.warn("⚠️ [FRONTEND] Impossible de charger les offres depuis l'API :", err.message));
   }, [userMode, userEmail, screen]);
 
-  // Gestion du retour d'authentification OAuth
+  // Gestion du retour OAuth
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
