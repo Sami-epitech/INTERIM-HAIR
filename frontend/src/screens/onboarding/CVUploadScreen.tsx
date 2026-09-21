@@ -42,8 +42,12 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
     setErrorMsg(null);
     setLoading(true);
 
+    const userId = localStorage.getItem("userId") || undefined;
+    const token = localStorage.getItem("auth_token") || undefined;
+
     const payload = {
       source: "cv_upload",
+      userId,
       name: exName,
       diploma: exDiploma,
       skills: exSkills,
@@ -57,6 +61,7 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });

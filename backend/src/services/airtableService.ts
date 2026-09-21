@@ -111,12 +111,15 @@ export const updateInterimaire = async (recordId: string, profileData: any) => {
     }
   }
 
-  const record = await airtableBase('Intérimaires').update([
-    {
-      id: recordId,
-      fields: fieldsToUpdate,
-    },
-  ]);
+  const record = await airtableBase('Intérimaires').update(
+    [
+      {
+        id: recordId,
+        fields: fieldsToUpdate,
+      },
+    ],
+    { typecast: true }
+  );
 
   return record[0];
 };

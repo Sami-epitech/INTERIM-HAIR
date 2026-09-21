@@ -1,12 +1,21 @@
 import { Request, Response } from 'express';
 import { updateInterimaire } from '../services/airtableService';
+import { verifyToken, TokenPayload } from '../auth/jwt';
 
 export const saveProfile = async (req: Request, res: Response) => {
   try {
-    // Dans un vrai projet, l'ID de l'utilisateur vient du token JWT (req.user.id).
-    // Pour la démo, on s'attend à le recevoir dans le body ou les headers, 
-    // ou on gère une mise à jour sur la base de l'email/id transmis.
-    const { userId, ...profileData } = req.body;
+    const { userId: bodyUserId, ...profileData } = req.body;
+
+    // Récupération de l'identifiant soit depuis le token JWT (Authorization: Bearer <token>), soit depuis le body
+    let userId = bodyUserId;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const decoded = verifyToken<TokenPayload>(token);
+      if (decoded && decoded.userId) {
+        userId = String(decoded.userId);
+      }
+    }
 
     if (!userId) {
       return res.status(400).json({ message: "Identifiant utilisateur manquant pour la mise à jour du profil." });
