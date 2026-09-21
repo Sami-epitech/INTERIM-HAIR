@@ -14,6 +14,12 @@ export function mapFTToJob(ftOffer: any, index: number): Job {
     ? ftOffer.competences.slice(0, 3).map((c: any) => c.libelle)
     : ["Coiffure", "Savoir-faire", "Accueil"];
 
+  // Récupération de l'URL d'origine France Travail
+  const urlOrigine =
+    ftOffer.origineOffre?.urlOrigine ||
+    ftOffer.urlOrigine ||
+    (ftOffer.id ? `https://candidat.francetravail.fr/offres/recherche/detail/${ftOffer.id}` : "https://candidat.francetravail.fr/offres/recherche");
+
   return {
     id: ftOffer.id,
     title: ftOffer.intitule || "Coiffeur / Coiffeuse",
@@ -27,6 +33,7 @@ export function mapFTToJob(ftOffer: any, index: number): Job {
     image: DEFAULT_IMAGES[index % DEFAULT_IMAGES.length],
     description: ftOffer.description || "Aucune description fournie pour cette offre.",
     diplomas: ["CAP Coiffure (souhaité)"],
-    benefits: ["Mutuelle", "Avantages entreprise"]
+    benefits: ["Mutuelle", "Avantages entreprise"],
+    urlOrigine: urlOrigine,
   };
 }

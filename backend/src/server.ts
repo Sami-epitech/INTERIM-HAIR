@@ -1,6 +1,9 @@
 import path from "path";
 import dotenv from "dotenv";
 
+// Désactive la vérification stricte TLS/SSL pour éviter les blocages de certificats en dev
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 // Charge le .env à la racine du projet puis l'éventuel .env dans backend/
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 dotenv.config({ path: path.resolve(__dirname, "../.env") });

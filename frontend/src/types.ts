@@ -31,6 +31,7 @@ export type Job = {
   description: string;
   diplomas: string[];
   benefits: string[];
+  urlOrigine?: string;
 };
 
 export type Mission = {
