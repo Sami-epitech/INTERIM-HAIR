@@ -9,7 +9,7 @@
 import { useState } from "react";
 import type { Screen } from "../../types";
 import { DAYS, HOURS } from "../../data/mockData";
-import { BackBtn, Divider, Input, PrimaryButton } from "../../components/ui";
+import { BackBtn, Divider, PrimaryButton } from "../../components/ui";
 import { ICalendar, IClock } from "../../components/icons";
 import { formatDate } from "../../utils/format";
 
@@ -62,7 +62,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
     };
 
     const userId = localStorage.getItem("userId") || undefined;
-    const token = localStorage.getItem("auth_token") || undefined;
+    const token = localStorage.getItem("auth_token") || localStorage.getItem("token") || undefined;
 
     const payloadWithUser = {
       ...payload,
@@ -125,8 +125,6 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
           </div>
         )}
 
-        {/* Zone de travail */}
-
         {/* Taux horaire */}
         <div>
           <p className="text-sm font-semibold text-foreground mb-3">Taux horaire minimum souhaité</p>
@@ -144,12 +142,31 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
 
         <Divider />
 
-        {/* Zone de travail */}
+        {/* Zone de travail normalisée */}
         <div>
           <p className="text-sm font-semibold text-foreground mb-3">Zone de travail</p>
           <div className="mb-4">
-            <Input label="Ville de référence" placeholder="ex. Paris, Lyon, Bordeaux…" value={city} onChange={setCity} />
+            <label className="text-xs text-muted-foreground mb-1.5 block">Ville de référence</label>
+            <select 
+              value={city} 
+              onChange={(e) => setCity(e.target.value)} 
+              className="w-full px-4 py-3 rounded-xl border border-border bg-card text-foreground text-sm font-medium focus:border-primary transition-colors appearance-none cursor-pointer"
+              style={dropStyle}
+            >
+              <option value="Paris">Paris et Île-de-France</option>
+              <option value="Lyon">Lyon</option>
+              <option value="Marseille">Marseille</option>
+              <option value="Bordeaux">Bordeaux</option>
+              <option value="Lille">Lille</option>
+              <option value="Toulouse">Toulouse</option>
+              <option value="Nice">Nice</option>
+              <option value="Nantes">Nantes</option>
+              <option value="Strasbourg">Strasbourg</option>
+              <option value="Rennes">Rennes</option>
+              <option value="Toute la France">Toute la France (Mobilité nationale)</option>
+            </select>
           </div>
+
           <div className="flex items-center justify-between mb-2">
             <label className="text-sm text-muted-foreground">Distance maximale</label>
             <span className="font-mono text-sm font-medium text-primary">{radius} km</span>
@@ -234,8 +251,8 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
       </div>
 
       {/* Bouton de validation connecté à handleSavePreferences */}
-      <div className="px-6 pb-8 pt-4 border-t border-border bg-background" onClick={!loading ? handleSavePreferences : undefined}>
-        <PrimaryButton disabled={loading}>
+      <div className="px-6 pb-8 pt-4 border-t border-border bg-background">
+        <PrimaryButton disabled={loading} onClick={handleSavePreferences}>
           {loading ? "Enregistrement..." : "Accéder aux offres →"}
         </PrimaryButton>
       </div>
