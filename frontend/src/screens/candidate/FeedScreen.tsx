@@ -47,18 +47,30 @@ export function FeedScreen({
   const wheelAccumulator = useRef<number>(0);
   const wheelTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  // 👇 C'EST ICI QUE TOUT SE JOUE : La fonction qui charge les offres
   const loadJobs = async (isPull = false) => {
-    if (isPull) {
-      setIsRefreshing(true);
-    } else {
-      setLoading(true);
-    }
+    if (isPull) setIsRefreshing(true);
+    else setLoading(true);
 
     try {
       const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
-      const res = await fetch(`http://${apiHost}:8000/api/jobs?source=feed`);
+      
+      // 1. On récupère le token
+      const token = localStorage.getItem("token") || localStorage.getItem("auth_token") || localStorage.getItem("jwt");
+
+      // 2. On l'envoie dans le fetch
+      const res = await fetch(`http://${apiHost}:8000/api/jobs?source=feed`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      });
+      
       if (!res.ok) throw new Error("Erreur réseau API");
+      
       const data = await res.json();
+      
       if (Array.isArray(data) && data.length > 0) {
         const formattedJobs: Job[] = data.map((item: any, idx: number) => ({
           id: item.id || `job-ft-${idx}`,
@@ -70,7 +82,10 @@ export function FeedScreen({
           shift: item.shift || "09:00 - 18:00",
           tags: item.tags || item.skills || ["Coiffure"],
           skills: item.skills || item.tags || [],
-          match: item.match || 80,
+          
+          // 3. On récupère le vrai score
+          match: item.match !== undefined ? item.match : 0, 
+
           image: getJobImage(item.id || idx, item.image),
           description: item.description || "Aucune description disponible.",
           dates: item.dates || "Dates à convenir",
@@ -131,7 +146,6 @@ export function FeedScreen({
     const currentY = e.touches[0].clientY;
     const diff = currentY - touchStartY.current;
 
-    // L'utilisateur tire vers le bas alors qu'on est au sommet (scrollTop <= 0)
     if (scrollRef.current.scrollTop <= 0 && diff > 0) {
       const dist = Math.min(diff * 0.45, 80);
       setPullDistance(dist);
@@ -144,9 +158,7 @@ export function FeedScreen({
     if (!isPulling.current) return;
     isPulling.current = false;
     if (pullDistance >= 45 && !isRefreshing) {
-      try {
-        navigator.vibrate?.(30);
-      } catch (e) {}
+      try { navigator.vibrate?.(30); } catch (e) {}
       loadJobs(true);
     }
     setPullDistance(0);
@@ -154,8 +166,6 @@ export function FeedScreen({
 
   const handleWheel = (e: React.WheelEvent) => {
     if (!scrollRef.current || isRefreshing) return;
-
-    // Détection de scroll vers le haut quand on est déjà tout en haut (scrollTop <= 0 et deltaY négatif)
     if (scrollRef.current.scrollTop <= 0 && e.deltaY < 0) {
       wheelAccumulator.current += Math.abs(e.deltaY);
       const dist = Math.min(wheelAccumulator.current * 0.35, 75);
@@ -164,59 +174,11 @@ export function FeedScreen({
       if (wheelTimeout.current) clearTimeout(wheelTimeout.current);
       wheelTimeout.current = setTimeout(() => {
         if (wheelAccumulator.current > 100 && !isRefreshing) {
-          try {
-            navigator.vibrate?.(30);
-          } catch (e) {}
+          try { navigator.vibrate?.(30); } catch (e) {}
           loadJobs(true);
-  useEffect(() => {
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
-    
-    // 👇 On récupère le token JWT stocké lors du login/signup
-    const token = localStorage.getItem("token") || localStorage.getItem("jwt");
-
-    fetch(`http://${apiHost}:8000/api/jobs?source=feed`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        // 👇 On transmet le token au backend pour qu'il identifie le candidat et lance le matching
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
-      }
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Erreur réseau API");
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          const formattedJobs: Job[] = data.map((item: any, idx: number) => ({
-            id: item.id || `job-ft-${idx}`,
-            title: item.title || item.intitule || "Mission sans titre",
-            salon: item.salon || (item.entreprise ? item.entreprise.nom : "Salon Partenaire"),
-            location: item.location || (item.lieuTravail ? item.lieuTravail.libelle : "Localisation non précisée"),
-            contract: item.contract || item.typeContratLibelle || "Intérim",
-            rate: Number(item.rate || 15),
-            shift: item.shift || "09:00 - 18:00",
-            tags: item.tags || item.skills || ["Coiffure"],
-            skills: item.skills || item.tags || [],
-            
-            match: item.match !== undefined ? item.match : 80, 
-
-            image: getJobImage(item.id || idx, item.image),
-            description: item.description || "Aucune description disponible.",
-            dates: item.dates || "Dates à convenir",
-            diplomas: item.diplomas || ["CAP Coiffure"],
-            benefits: item.benefits || ["Mutuelle"],
-            urlOrigine: item.urlOrigine || (item.origineOffre ? item.origineOffre.urlOrigine : undefined),
-            isInternal: Boolean(String(item.id || "").startsWith("rec") && !item.urlOrigine && !item.origineOffre),
-            recruiterEmail: item.recruiterEmail || item.recruiterId || undefined,
-          }));
-
-          setJobs(formattedJobs);
-        } else {
-          setJobs(JOBS);
+          wheelAccumulator.current = 0;
+          setPullDistance(0);
         }
-        wheelAccumulator.current = 0;
-        setPullDistance(0);
       }, 250);
     }
   };
@@ -225,7 +187,6 @@ export function FeedScreen({
     () =>
       jobs.filter((j) => {
         if (filters.contract !== "Tous" && !j.contract.toLowerCase().includes(filters.contract.toLowerCase())) return false;
-        
         if (filters.location) {
           const targetCity = normalizeCity(filters.location);
           const jobCity = normalizeCity(j.location);
@@ -233,7 +194,6 @@ export function FeedScreen({
             return false;
           }
         }
-
         if (j.rate < filters.rateMin) return false;
         if (j.match < filters.matchMin) return false;
         return true;

@@ -59,7 +59,7 @@ export const getJobs = async (req: Request, res: Response) => {
           contract: "Intérim",
           diplomas: ["CAP Coiffure"],
           benefits: ["Mutuelle"],
-          match: 85,
+          match: 50,
           image: getSalonImage(record.id, f.image || f.photo)
         };
       })
