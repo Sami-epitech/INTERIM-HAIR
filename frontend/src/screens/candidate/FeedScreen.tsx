@@ -63,6 +63,9 @@ export function FeedScreen({
             dates: item.dates || "Dates à convenir",
             diplomas: item.diplomas || ["CAP Coiffure"],
             benefits: item.benefits || ["Mutuelle"],
+            urlOrigine: item.urlOrigine || (item.origineOffre ? item.origineOffre.urlOrigine : undefined),
+            isInternal: Boolean(String(item.id || "").startsWith("rec") && !item.urlOrigine && !item.origineOffre),
+            recruiterEmail: item.recruiterEmail || item.recruiterId || undefined,
           }));
 
           console.log(`✅ [FRONTEND CANDIDAT] ${formattedJobs.length} offres chargées (Airtable + France Travail)`);
