@@ -6,6 +6,7 @@ import { IArrow, IClock, IFilter, IHeart, ILocation, IUser } from "../../compone
 import { FilterModal } from "../../components/candidate/FilterModal";
 import { BottomNav } from "../../components/candidate/BottomNav";
 import { Sidebar } from "../../components/candidate/Sidebar";
+import { getJobImage } from "../../utils/mapperFTJobs";
 
 const DEFAULT_FILTERS: Filters = { contract: "Tous", location: "", rateMin: 10, matchMin: 0 };
 
@@ -72,7 +73,7 @@ export function FeedScreen({
             tags: item.tags || item.skills || ["Coiffure"],
             skills: item.skills || item.tags || [],
             match: item.match || 80,
-            image: item.image || "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+            image: getJobImage(item.id || idx, item.image),
             description: item.description || "Aucune description disponible.",
             dates: item.dates || "Dates à convenir",
             diplomas: item.diplomas || ["CAP Coiffure"],

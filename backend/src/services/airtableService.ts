@@ -1,4 +1,5 @@
 import { airtableBase } from '../config/airtable';
+import { getSalonImage } from '../utils/salonImages';
 
 // ════════════════════════════════════════════════════════════
 // 1. FONCTIONS DE LECTURE (Déjà présentes dans ton service)
@@ -565,7 +566,7 @@ export const getInterimaireFavorites = async (candidateId: string) => {
             diplomas: ["CAP Coiffure"],
             benefits: ["Mutuelle", "primes"],
             match: 85,
-            image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+            image: getSalonImage(offerRecord.id, offerRecord.fields.image),
           };
         } catch (e) {
           console.warn(`⚠️ [AIRTABLE] Offre favorite ${offerId} introuvable dans Offres d'emploi.`);
