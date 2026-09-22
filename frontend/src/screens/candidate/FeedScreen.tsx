@@ -47,18 +47,20 @@ export function FeedScreen({
   const wheelAccumulator = useRef<number>(0);
   const wheelTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // 👇 C'EST ICI QUE TOUT SE JOUE : La fonction qui charge les offres
+  // 👇 LA FONCTION UNIQUE ET SÉCURISÉE POUR CHARGER LES OFFRES
   const loadJobs = async (isPull = false) => {
-    if (isPull) setIsRefreshing(true);
-    else setLoading(true);
+    if (isPull) {
+      setIsRefreshing(true);
+    } else {
+      setLoading(true);
+    }
 
     try {
       const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
       
-      // 1. On récupère le token
+      // On récupère le token à chaque requête (chargement ET scroll)
       const token = localStorage.getItem("token") || localStorage.getItem("auth_token") || localStorage.getItem("jwt");
 
-      // 2. On l'envoie dans le fetch
       const res = await fetch(`http://${apiHost}:8000/api/jobs?source=feed`, {
         method: "GET",
         headers: {
@@ -83,7 +85,6 @@ export function FeedScreen({
           tags: item.tags || item.skills || ["Coiffure"],
           skills: item.skills || item.tags || [],
           
-          // 3. On récupère le vrai score
           match: item.match !== undefined ? item.match : 0, 
 
           image: getJobImage(item.id || idx, item.image),
@@ -114,10 +115,12 @@ export function FeedScreen({
     }
   };
 
+  // Chargement initial
   useEffect(() => {
     loadJobs(false);
   }, []);
 
+  // Restauration du scroll
   useEffect(() => {
     if (!loading && scrollRef.current) {
       setTimeout(() => {
@@ -159,13 +162,14 @@ export function FeedScreen({
     isPulling.current = false;
     if (pullDistance >= 45 && !isRefreshing) {
       try { navigator.vibrate?.(30); } catch (e) {}
-      loadJobs(true);
+      loadJobs(true); // Recharge avec le token !
     }
     setPullDistance(0);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
     if (!scrollRef.current || isRefreshing) return;
+
     if (scrollRef.current.scrollTop <= 0 && e.deltaY < 0) {
       wheelAccumulator.current += Math.abs(e.deltaY);
       const dist = Math.min(wheelAccumulator.current * 0.35, 75);
@@ -175,7 +179,7 @@ export function FeedScreen({
       wheelTimeout.current = setTimeout(() => {
         if (wheelAccumulator.current > 100 && !isRefreshing) {
           try { navigator.vibrate?.(30); } catch (e) {}
-          loadJobs(true);
+          loadJobs(true); // Recharge avec le token !
           wheelAccumulator.current = 0;
           setPullDistance(0);
         }
@@ -187,6 +191,7 @@ export function FeedScreen({
     () =>
       jobs.filter((j) => {
         if (filters.contract !== "Tous" && !j.contract.toLowerCase().includes(filters.contract.toLowerCase())) return false;
+        
         if (filters.location) {
           const targetCity = normalizeCity(filters.location);
           const jobCity = normalizeCity(j.location);
@@ -194,6 +199,7 @@ export function FeedScreen({
             return false;
           }
         }
+
         if (j.rate < filters.rateMin) return false;
         if (j.match < filters.matchMin) return false;
         return true;
