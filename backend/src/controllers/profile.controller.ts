@@ -79,16 +79,16 @@ export const saveProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Identifiant utilisateur manquant pour la mise à jour du profil." });
     }
 
-    // 👇 TRAITEMENT SÉCURISÉ DE LA LOCALISATION
-    // Si le front envoie un objet { city, radiusKm }, on extrait proprement les valeurs pour Airtable
+    // 👇 TRAITEMENT SÉCURISÉ DE LA LOCALISATION ET DE LA MOBILITÉ
     const dataToUpdate: any = { ...profileData };
 
     if (location) {
       if (typeof location === 'object' && location !== null) {
         dataToUpdate.location = location.city || "";
-        dataToUpdate.radius = Number(location.radiusKm || 25);
+        dataToUpdate.mobility = location.mobility || "local"; // Enregistre "local" ou "national"
       } else {
         dataToUpdate.location = String(location);
+        dataToUpdate.mobility = "local";
       }
     }
 

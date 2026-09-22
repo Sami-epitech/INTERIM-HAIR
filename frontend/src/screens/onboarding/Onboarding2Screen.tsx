@@ -15,7 +15,7 @@ import { formatDate } from "../../utils/format";
 
 export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [city, setCity] = useState("Paris");
-  const [radius, setRadius] = useState(25);
+  const [mobility, setMobility] = useState<"local" | "national">("local"); // 👈 État mobilité : "local" ou "national"
   const [selectedDays, setSelectedDays] = useState<string[]>(["Lun", "Mar", "Mer", "Jeu", "Ven"]);
   const [startHour, setStartHour] = useState("9h");
   const [endHour, setEndHour] = useState("18h");
@@ -48,7 +48,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
       expectedRate: Number(expectedRate),
       location: {
         city,
-        radiusKm: radius,
+        mobility, // 👈 On envoie le choix "local" ou "national"
       },
       availability: {
         from: availFrom,
@@ -142,7 +142,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
 
         <Divider />
 
-        {/* Zone de travail normalisée */}
+        {/* Zone de travail & Mobilité */}
         <div>
           <p className="text-sm font-semibold text-foreground mb-3">Zone de travail</p>
           <div className="mb-4">
@@ -163,21 +163,35 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
               <option value="Nantes">Nantes</option>
               <option value="Strasbourg">Strasbourg</option>
               <option value="Rennes">Rennes</option>
-              <option value="Toute la France">Toute la France (Mobilité nationale)</option>
             </select>
           </div>
 
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm text-muted-foreground">Distance maximale</label>
-            <span className="font-mono text-sm font-medium text-primary">{radius} km</span>
+          {/* Choix de la mobilité */}
+          <p className="text-xs text-muted-foreground mb-2">Mobilité géographique</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setMobility("local")}
+              className={`py-3 px-4 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                mobility === "local" 
+                  ? "bg-primary text-primary-foreground border-primary" 
+                  : "bg-card text-foreground border-border hover:border-primary/40"
+              }`}
+            >
+              📍 Uniquement {city}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobility("national")}
+              className={`py-3 px-4 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                mobility === "national" 
+                  ? "bg-primary text-primary-foreground border-primary" 
+                  : "bg-card text-foreground border-border hover:border-primary/40"
+              }`}
+            >
+              🚄 Mobile
+            </button>
           </div>
-          <input type="range" min={5} max={100} step={5} value={radius} onChange={(e) => setRadius(+e.target.value)} className="w-full h-2 rounded-full appearance-none" />
-          <div className="flex justify-between text-xs text-muted-foreground mt-1.5"><span>5 km</span><span>100 km</span></div>
-          {city && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Missions dans un rayon de <span className="font-semibold text-foreground">{radius} km</span> autour de <span className="font-semibold text-foreground">{city}</span>
-            </p>
-          )}
         </div>
 
         <Divider />
