@@ -57,18 +57,7 @@ export function FeedScreen({
 
     try {
       const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
-      
-      // On récupère le token à chaque requête (chargement ET scroll)
-      const token = localStorage.getItem("token") || localStorage.getItem("auth_token") || localStorage.getItem("jwt");
-
-      const res = await fetch(`http://${apiHost}:8000/api/jobs?source=feed`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        }
-      });
-      
+      const res = await fetch(`http://${apiHost}:8000/api/jobs?source=feed`);
       if (!res.ok) throw new Error("Erreur réseau API");
       
       const data = await res.json();
@@ -84,9 +73,7 @@ export function FeedScreen({
           shift: item.shift || "09:00 - 18:00",
           tags: item.tags || item.skills || ["Coiffure"],
           skills: item.skills || item.tags || [],
-          
-          match: item.match !== undefined ? item.match : 0, 
-
+          match: item.match || 80,
           image: getJobImage(item.id || idx, item.image),
           description: item.description || "Aucune description disponible.",
           dates: item.dates || "Dates à convenir",
@@ -178,11 +165,59 @@ export function FeedScreen({
       if (wheelTimeout.current) clearTimeout(wheelTimeout.current);
       wheelTimeout.current = setTimeout(() => {
         if (wheelAccumulator.current > 100 && !isRefreshing) {
-          try { navigator.vibrate?.(30); } catch (e) {}
-          loadJobs(true); // Recharge avec le token !
-          wheelAccumulator.current = 0;
-          setPullDistance(0);
+          try {
+            navigator.vibrate?.(30);
+          } catch (e) {}
+          loadJobs(true);
+  useEffect(() => {
+    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
+    
+    // 👇 On récupère le token JWT stocké lors du login/signup
+    const token = localStorage.getItem("token") || localStorage.getItem("jwt");
+
+    fetch(`http://${apiHost}:8000/api/jobs?source=feed`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // 👇 On transmet le token au backend pour qu'il identifie le candidat et lance le matching
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Erreur réseau API");
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const formattedJobs: Job[] = data.map((item: any, idx: number) => ({
+            id: item.id || `job-ft-${idx}`,
+            title: item.title || item.intitule || "Mission sans titre",
+            salon: item.salon || (item.entreprise ? item.entreprise.nom : "Salon Partenaire"),
+            location: item.location || (item.lieuTravail ? item.lieuTravail.libelle : "Localisation non précisée"),
+            contract: item.contract || item.typeContratLibelle || "Intérim",
+            rate: Number(item.rate || 15),
+            shift: item.shift || "09:00 - 18:00",
+            tags: item.tags || item.skills || ["Coiffure"],
+            skills: item.skills || item.tags || [],
+            
+            match: item.match !== undefined ? item.match : 80, 
+
+            image: getJobImage(item.id || idx, item.image),
+            description: item.description || "Aucune description disponible.",
+            dates: item.dates || "Dates à convenir",
+            diplomas: item.diplomas || ["CAP Coiffure"],
+            benefits: item.benefits || ["Mutuelle"],
+            urlOrigine: item.urlOrigine || (item.origineOffre ? item.origineOffre.urlOrigine : undefined),
+            isInternal: Boolean(String(item.id || "").startsWith("rec") && !item.urlOrigine && !item.origineOffre),
+            recruiterEmail: item.recruiterEmail || item.recruiterId || undefined,
+          }));
+
+          setJobs(formattedJobs);
+        } else {
+          setJobs(JOBS);
         }
+        wheelAccumulator.current = 0;
+        setPullDistance(0);
       }, 250);
     }
   };
