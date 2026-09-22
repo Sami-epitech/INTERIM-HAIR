@@ -30,13 +30,40 @@ export default function App() {
   const [jobsList, setJobsList] = useState<Job[]>(JOBS);
   const [dashTab, setDashTab] = useState<DashTab>("applications");
 
-  // Centralisation des favoris avec persistance
+  // Centralisation des favoris avec persistance Airtable
   const [favoriteJobIds, setFavoriteJobIds] = useState<(string | number)[]>(() => {
     const saved = localStorage.getItem("candidate_favorites");
     return saved ? JSON.parse(saved) : [];
   });
+  const [apiFavoriteJobs, setApiFavoriteJobs] = useState<Job[]>([]);
 
   const userEmail = localStorage.getItem("user_email") || "";
+
+  // Chargement et synchronisation des favoris depuis Airtable
+  useEffect(() => {
+    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
+    const token = localStorage.getItem("auth_token");
+    const userId = localStorage.getItem("userId") || localStorage.getItem("user_email");
+
+    const favUrl = userId
+      ? `http://${apiHost}:8000/api/favorites?candidateId=${encodeURIComponent(userId)}`
+      : `http://${apiHost}:8000/api/favorites`;
+
+    fetch(favUrl, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && Array.isArray(data.favoriteIds)) {
+          setFavoriteJobIds(data.favoriteIds);
+          localStorage.setItem("candidate_favorites", JSON.stringify(data.favoriteIds));
+        }
+        if (data && Array.isArray(data.jobs) && data.jobs.length > 0) {
+          setApiFavoriteJobs(data.jobs);
+        }
+      })
+      .catch((err) => console.warn("⚠️ [FAVORIS] Erreur chargement Airtable :", err));
+  }, [userEmail, screen]);
 
   useEffect(() => {
     // Synchronise l'URL initiale au chargement
@@ -67,15 +94,52 @@ export default function App() {
     window.history.pushState({ screen: s }, "", `#${s}`);
   };
 
-  const handleToggleFavorite = (job: Job) => {
-    setFavoriteJobIds((prev) => {
-      const updated = prev.includes(job.id) ? prev.filter((id) => id !== job.id) : [...prev, job.id];
-      localStorage.setItem("candidate_favorites", JSON.stringify(updated));
-      return updated;
-    });
+  // Bascule de favori avec synchronisation directe dans Airtable
+  const handleToggleFavorite = async (job: Job) => {
+    const isFav = favoriteJobIds.includes(job.id);
+    const updated = isFav ? favoriteJobIds.filter((id) => id !== job.id) : [...favoriteJobIds, job.id];
+    setFavoriteJobIds(updated);
+    localStorage.setItem("candidate_favorites", JSON.stringify(updated));
+
+    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
+    const token = localStorage.getItem("auth_token");
+    const userId = localStorage.getItem("userId") || localStorage.getItem("user_email");
+
+    try {
+      const res = await fetch(`http://${apiHost}:8000/api/favorites/toggle`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          candidateId: userId,
+          jobId: job.id,
+          jobData: job,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.favoriteIds)) {
+          setFavoriteJobIds(data.favoriteIds);
+          localStorage.setItem("candidate_favorites", JSON.stringify(data.favoriteIds));
+        }
+      }
+    } catch (e) {
+      console.warn("⚠️ [FAVORIS] Erreur synchronisation Airtable :", e);
+    }
   };
 
-  const favoriteJobs = jobsList.filter((j) => favoriteJobIds.includes(j.id));
+  // Combinaison des offres locales et chargées depuis Airtable
+  const favoriteJobs = Array.from(
+    new Map(
+      [
+        ...jobsList.filter((j) => favoriteJobIds.includes(j.id)),
+        ...apiFavoriteJobs.filter((j: any) => favoriteJobIds.includes(j.id) || (j.airtableId && favoriteJobIds.includes(j.airtableId))),
+      ].map((j) => [j.id, j])
+    ).values()
+  );
 
   useEffect(() => {
     const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
@@ -156,7 +220,14 @@ export default function App() {
         />
       )}
       
-      {screen === "job-detail" && <JobDetailScreen job={selectedJob} onNavigate={go} />}
+      {screen === "job-detail" && (
+        <JobDetailScreen
+          job={selectedJob}
+          onNavigate={go}
+          isFavorite={favoriteJobIds.includes(selectedJob.id)}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      )}
       
       {screen === "c-dashboard" && (
         <CandidateDashboard

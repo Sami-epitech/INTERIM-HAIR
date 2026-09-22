@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import type { DashTab, Filters, Job, Screen } from "../../types";
 import { JOBS } from "../../data/mockData";
 import { AppName, BackBtn, MatchRing } from "../../components/ui";
-import { IArrow, IClock, IFilter, IHeart, ILocation } from "../../components/icons";
+import { IArrow, IClock, IFilter, IHeart, ILocation, IUser } from "../../components/icons";
 import { FilterModal } from "../../components/candidate/FilterModal";
 import { BottomNav } from "../../components/candidate/BottomNav";
 import { Sidebar } from "../../components/candidate/Sidebar";
@@ -148,8 +148,12 @@ export function FeedScreen({
               {activeCount > 0 && <span className="w-4 h-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">{activeCount}</span>}
             </button>
 
-            <button onClick={() => onNavigate("c-dashboard")} className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 border border-white/30 backdrop-blur-md">
-              <span className="text-xs font-semibold text-white">MD</span>
+            <button 
+              onClick={() => onNavigate("c-dashboard")} 
+              title="Mon profil"
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 border border-white/30 backdrop-blur-md text-white hover:bg-white/30 transition-colors cursor-pointer"
+            >
+              <IUser />
             </button>
           </div>
         </div>

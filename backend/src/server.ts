@@ -15,9 +15,9 @@ import passport from "./auth/passport";
 
 // Import de nos vrais contrôleurs connectés à Airtable
 import { signup, login } from "./controllers/auth.controller";
-import { saveProfile } from "./controllers/profile.controller";
+import { saveProfile, getProfile } from "./controllers/profile.controller";
 import { getJobs, postJob, patchJob } from "./controllers/job.controller";
-import { applyToMission } from "./controllers/application.controller";
+import { applyToMission, getApplications } from "./controllers/application.controller";
 import { getFavorites, addFavorite, removeFavorite, toggleFavorite } from "./controllers/favorite.controller";
 
 // Import de tes routeurs modulaires existants (si tu veux les garder)
@@ -44,7 +44,10 @@ app.post("/api/auth/signup", signup);
 app.post("/api/auth/login", login);
 
 // 3. Route Profil & Disponibilités (Connectée à Airtable via profile.controller.ts)
+app.get("/api/profile", getProfile);
+app.get("/api/users/me", getProfile);
 app.post("/api/profile", saveProfile);
+app.put("/api/profile", saveProfile);
 
 // 4. Routes pour la gestion des Missions / Jobs (Connectées à Airtable via job.controller.ts)
 app.get("/api/jobs", getJobs);
@@ -52,6 +55,8 @@ app.post("/api/jobs", postJob);
 app.patch("/api/jobs/:id", patchJob);
 
 // 5. Routes pour les candidatures (Connectées à Airtable via application.controller.ts)
+app.get("/api/applications", getApplications);
+app.get("/api/missions/:missionId/applications", getApplications);
 app.post("/api/missions/:missionId/applications", applyToMission);
 app.post("/api/jobs/:missionId/applications", applyToMission);
 
