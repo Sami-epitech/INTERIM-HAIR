@@ -86,6 +86,11 @@ export function RecruiterDashboard({
     onNavigate("role-select");
   };
 
+  // Calcul des KPIs
+  const activeMissionsCount = missions.length;
+  const totalApplicantsCount = applicants.length;
+  const pendingApplicantsCount = applicants.filter((a) => a.status === "En attente").length;
+
   // Filtrage typé des candidats
   const filteredApplicants: Applicant[] =
     selectedMissionId === "all"
@@ -143,6 +148,44 @@ export function RecruiterDashboard({
             <span>Publier une offre</span>
           </button>
         )}
+      </div>
+
+      {/* Mini Bandeau KPIs */}
+      <div className="px-5 pt-6 pb-2 bg-background">
+        <div className="max-w-6xl mx-auto grid grid-cols-3 gap-4 sm:gap-6">
+          {/* KPI 1 : Missions Actives */}
+          <div className="bg-card border border-border rounded-3xl px-4 sm:px-6 py-3 sm:py-4 flex flex-col items-center justify-center text-center shadow-xs">
+            <span className="font-serif text-3xl sm:text-4xl font-bold text-emerald-600 mb-1">
+              {activeMissionsCount}
+            </span>
+            <span className="text-xs sm:text-sm font-medium text-stone-500 dark:text-stone-400 whitespace-nowrap">
+              Missions actives
+            </span>
+          </div>
+
+          {/* KPI 2 : Candidatures Totales */}
+          <div className="bg-card border border-border rounded-3xl px-4 sm:px-6 py-3 sm:py-4 flex flex-col items-center justify-center text-center shadow-xs">
+            <span className="font-serif text-3xl sm:text-4xl font-bold text-foreground mb-1">
+              {totalApplicantsCount}
+            </span>
+            <span className="text-xs sm:text-sm font-medium text-stone-500 dark:text-stone-400 whitespace-nowrap">
+              Candidatures
+            </span>
+          </div>
+
+          {/* KPI 3 : À traiter */}
+          <div
+            onClick={() => setTab("applicants")}
+            className="bg-card border border-border rounded-3xl px-4 sm:px-6 py-3 sm:py-4 flex flex-col items-center justify-center text-center shadow-xs cursor-pointer hover:border-rose-300 transition-colors"
+          >
+            <span className="font-serif text-3xl sm:text-4xl font-bold text-rose-500 mb-1">
+              {pendingApplicantsCount}
+            </span>
+            <span className="text-xs sm:text-sm font-medium text-stone-500 dark:text-stone-400 whitespace-nowrap">
+              À traiter
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Contenu */}
