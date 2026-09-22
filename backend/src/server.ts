@@ -53,6 +53,7 @@ app.patch("/api/jobs/:id", patchJob);
 
 // 5. Routes pour les candidatures (Connectées à Airtable via application.controller.ts)
 app.post("/api/missions/:missionId/applications", applyToMission);
+app.post("/api/jobs/:missionId/applications", applyToMission);
 
 // 6. Routes pour les favoris (Connectées à Airtable via favorite.controller.ts)
 app.get("/api/favorites", getFavorites);

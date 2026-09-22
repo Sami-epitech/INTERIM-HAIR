@@ -179,12 +179,47 @@ export const updateMission = async (missionId: string, updateData: any) => {
 
 // Création d'une candidature (JobDetailScreen)
 export const createCandidature = async (candidateRecordId: string, missionRecordId: string) => {
+  let candidateData: any = null;
+  let missionData: any = null;
+
+  // Récupération des informations de l'intérimaire
+  try {
+    const candidate = await airtableBase('Intérimaires').find(candidateRecordId);
+    candidateData = {
+      id: candidate.id,
+      firstName: candidate.fields.firstName,
+      lastName: candidate.fields.lastName,
+      email: candidate.fields.email,
+      phone: candidate.fields.phone,
+      diploma: candidate.fields.diploma,
+      skills: candidate.fields.skills,
+      experienceLevel: candidate.fields.experienceLevel,
+      locationCity: candidate.fields.locationCity,
+      expectedRate: candidate.fields.expectedRate,
+    };
+  } catch (e) {
+    console.warn(`⚠️ [AIRTABLE] Intérimaire ${candidateRecordId} introuvable :`, e);
+  }
+
+  // Récupération des informations de la mission et du recruteur
+  try {
+    const mission = await airtableBase("Offres d'emploi").find(missionRecordId);
+    missionData = {
+      id: mission.id,
+      title: mission.fields.title,
+      recruiterId: mission.fields.recruiterId || mission.fields.recruiterEmail,
+      location: mission.fields.location,
+    };
+  } catch (e) {
+    console.warn(`⚠️ [AIRTABLE] Mission ${missionRecordId} introuvable :`, e);
+  }
+
+  // Enregistrement de la candidature dans la table "Candidatures" d'Airtable
   const record = await airtableBase('Candidatures').create(
     [
       {
         fields: {
-          interimaireId: [candidateRecordId],
-          missionId: [missionRecordId],
+          missionId: String(missionRecordId),
           status: 'pending',
         },
       },
@@ -192,7 +227,15 @@ export const createCandidature = async (candidateRecordId: string, missionRecord
     { typecast: true }
   );
 
-  return record[0];
+  console.log(
+    `📩 [CANDIDATURE AIRTABLE] Candidature créée (ID: ${record[0].id}) pour la mission "${missionData?.title || missionRecordId}" (Recruteur: ${missionData?.recruiterId || 'non spécifié'}) transmise pour l'intérimaire ${candidateData?.firstName || ''} ${candidateData?.lastName || ''} (${candidateData?.email || candidateRecordId})`
+  );
+
+  return {
+    ...record[0],
+    candidate: candidateData,
+    mission: missionData,
+  };
 };
 
 // ════════════════════════════════════════════════════════════
