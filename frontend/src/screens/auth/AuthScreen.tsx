@@ -164,7 +164,6 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
               />
               <span>Rester connecté ?</span>
             </label>
-            {tab === "login" && <button type="button" className="text-xs text-primary font-medium">Mot de passe oublié ?</button>}
           </div>
         </div>
 

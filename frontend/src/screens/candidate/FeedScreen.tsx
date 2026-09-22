@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import type { DashTab, Filters, Job, Screen } from "../../types";
 import { JOBS } from "../../data/mockData";
 import { AppName, BackBtn, MatchRing } from "../../components/ui";
@@ -8,6 +8,8 @@ import { BottomNav } from "../../components/candidate/BottomNav";
 import { Sidebar } from "../../components/candidate/Sidebar";
 
 const DEFAULT_FILTERS: Filters = { contract: "Tous", location: "", rateMin: 10, matchMin: 0 };
+
+let feedScrollPosition = 0;
 
 function normalizeCity(loc: string): string {
   if (!loc) return "";
@@ -34,6 +36,21 @@ export function FeedScreen({
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!loading && scrollRef.current) {
+      setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = feedScrollPosition;
+        }
+      }, 0);
+    }
+  }, [loading]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    feedScrollPosition = e.currentTarget.scrollTop;
+  };
 
   useEffect(() => {
     const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
@@ -138,7 +155,11 @@ export function FeedScreen({
         </div>
 
         {/* Snap Scroll Vertical */}
-        <div className="flex-1 overflow-y-auto snap-y snap-mandatory scrollable h-full w-full">
+        <div 
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto snap-y snap-mandatory scrollable h-full w-full"
+        >
           {loading ? (
             <div className="h-full w-full flex items-center justify-center text-white/70 text-sm animate-pulse">
               Chargement des offres...

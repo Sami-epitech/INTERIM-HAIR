@@ -145,7 +145,7 @@ export function JobDetailScreen({
           <Divider />
           <div className="py-5">
             <h4 className="font-semibold text-sm text-foreground mb-3">Diplômes requis</h4>
-            {job.diplomas.map((d) => (
+            {(job.diplomas || []).map((d) => (
               <div key={d} className="flex items-center gap-2 text-sm text-foreground mb-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                 {d}
@@ -157,7 +157,7 @@ export function JobDetailScreen({
           <div className="py-5">
             <h4 className="font-semibold text-sm text-foreground mb-3">Avantages</h4>
             <div className="flex flex-wrap gap-2">
-              {job.benefits.map((b) => (
+              {(job.benefits || []).map((b) => (
                 <span key={b} className="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">✓ {b}</span>
               ))}
             </div>
