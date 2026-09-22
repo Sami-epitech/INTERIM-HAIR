@@ -38,9 +38,33 @@ export default function App() {
 
   const userEmail = localStorage.getItem("user_email") || "";
 
+  useEffect(() => {
+    // Synchronise l'URL initiale au chargement
+    const hash = window.location.hash.replace("#", "") as Screen;
+    if (hash) {
+      setScreen(hash);
+    } else {
+      window.history.replaceState({ screen: "role-select" }, "", "#role-select");
+    }
+
+    // Écoute les retours en arrière (bouton physique ou navigateur)
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.screen) {
+        setScreen(event.state.screen);
+      } else {
+        const currentHash = window.location.hash.replace("#", "") as Screen;
+        if (currentHash) setScreen(currentHash);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   const go = (s: Screen) => {
     setScreen(s);
     window.scrollTo(0, 0);
+    window.history.pushState({ screen: s }, "", `#${s}`);
   };
 
   const handleToggleFavorite = (job: Job) => {

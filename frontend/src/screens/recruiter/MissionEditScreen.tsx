@@ -51,7 +51,7 @@ export function MissionEditScreen({
       endDate,
       skills: selectedSkills,
       status: targetStatus,
-      dates: endDate ? `${startDate} – ${endDate}` : startDate,
+      dates: endDate ? `${startDate || ""} – ${endDate}` : (startDate || ""),
     };
 
     console.log(`📡 [FRONTEND] PATCH vers http://localhost:8000/api/jobs/${mission.id} :`, updatedMission);
