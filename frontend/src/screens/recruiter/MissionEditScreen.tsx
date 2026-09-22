@@ -79,7 +79,7 @@ export function MissionEditScreen({
 
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur lors du PATCH mission :", err);
-      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+      setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
       // Maintient la fluidité en effectuant quand même la sauvegarde locale en démo
       onSave(updatedMission);
       onNavigate("r-dashboard");

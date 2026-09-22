@@ -1,5 +1,6 @@
 import { airtableBase } from '../config/airtable';
 import { getSalonImage } from '../utils/salonImages';
+import { encryptText, decryptText } from '../utils/cryptoService';
 
 // ════════════════════════════════════════════════════════════
 // 1. FONCTIONS DE LECTURE (Déjà présentes dans ton service)
@@ -114,7 +115,7 @@ export const getInterimaireProfile = async (identifier: string) => {
       fullName: fullName,
       name: fullName,
       email: f.email || "",
-      phone: f.phone || "",
+      phone: decryptText((f.phone as string) || ""),
       bio: f.bio || "",
       diploma: f.diploma || "CAP Coiffure",
       title: (f.diploma as string) || "Coiffeur / Coiffeuse",
@@ -206,7 +207,7 @@ export const updateInterimaire = async (recordId: string, profileData: any) => {
 
   if (profileData.firstName) fieldsToUpdate.firstName = profileData.firstName;
   if (profileData.lastName) fieldsToUpdate.lastName = profileData.lastName;
-  if (profileData.phone) fieldsToUpdate.phone = profileData.phone;
+  if (profileData.phone) fieldsToUpdate.phone = encryptText(profileData.phone);
   if (profileData.bio) fieldsToUpdate.bio = profileData.bio;
   if (profileData.diploma) fieldsToUpdate.diploma = profileData.diploma;
   if (profileData.title && !profileData.diploma) fieldsToUpdate.diploma = profileData.title;
@@ -311,7 +312,7 @@ export const createCandidature = async (candidateRecordId: string, missionRecord
       firstName: candidate.fields.firstName,
       lastName: candidate.fields.lastName,
       email: candidate.fields.email,
-      phone: candidate.fields.phone,
+      phone: decryptText((candidate.fields.phone as string) || ""),
       diploma: candidate.fields.diploma,
       skills: candidate.fields.skills,
       experienceLevel: candidate.fields.experienceLevel,
@@ -443,7 +444,7 @@ export const getCandidaturesWithDetails = async (filters?: { candidateId?: strin
                 id: cRec.id,
                 name: `${cRec.fields.firstName || ''} ${cRec.fields.lastName || ''}`.trim() || (cRec.fields.name as string) || "Candidat",
                 email: (cRec.fields.email as string) || "",
-                phone: (cRec.fields.phone as string) || "",
+                phone: decryptText((cRec.fields.phone as string) || ""),
                 level: (cRec.fields.experienceLevel as string) || "Confirmé",
                 skills: (cRec.fields.skills as string[]) || ["Coiffure"],
                 diploma: (cRec.fields.diploma as string) || "CAP Coiffure",
