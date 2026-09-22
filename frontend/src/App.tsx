@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import type { DashTab, Job, Mission, Screen, UserMode } from "./types";
 import { JOBS, MISSIONS_INIT } from "./data/mockData";
 import { AppName } from "./components/ui";
+import { getJobImage } from "./utils/mapperFTJobs";
 
 import { RoleSelectScreen } from "./screens/auth/RoleSelectScreen";
 import { AuthScreen } from "./screens/auth/AuthScreen";
@@ -167,7 +168,7 @@ export default function App() {
               tags: m.tags || m.skills || ["Coiffure"],
               skills: m.skills || m.tags || [],
               match: m.match || 80,
-              image: m.image || "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+              image: getJobImage(m.id || idx, m.image),
               description: m.description || "",
               dates: m.dates || "Dates à convenir",
               diplomas: m.diplomas || ["CAP Coiffure"],
@@ -266,7 +267,7 @@ export default function App() {
               tags: m.skills,
               skills: m.skills,
               match: 100,
-              image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+              image: getJobImage(m.id),
               description: m.description,
               dates: m.dates,
               diplomas: ["CAP Coiffure"],
