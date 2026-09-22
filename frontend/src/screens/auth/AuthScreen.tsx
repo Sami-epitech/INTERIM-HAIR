@@ -72,6 +72,9 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       }
       
       localStorage.setItem("user_email", email);
+      if (data.user?.name) {
+        localStorage.setItem("user_name", data.user.name);
+      }
 
       // REDIRECTION INTELLIGENTE :
       if (userMode === "candidate") {
