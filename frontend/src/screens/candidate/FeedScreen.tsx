@@ -55,7 +55,18 @@ export function FeedScreen({
 
   useEffect(() => {
     const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
-    fetch(`http://${apiHost}:8000/api/jobs?source=feed`)
+    
+    // 👇 On récupère le token JWT stocké lors du login/signup
+    const token = localStorage.getItem("token") || localStorage.getItem("jwt");
+
+    fetch(`http://${apiHost}:8000/api/jobs?source=feed`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // 👇 On transmet le token au backend pour qu'il identifie le candidat et lance le matching
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Erreur réseau API");
         return res.json();
@@ -72,7 +83,9 @@ export function FeedScreen({
             shift: item.shift || "09:00 - 18:00",
             tags: item.tags || item.skills || ["Coiffure"],
             skills: item.skills || item.tags || [],
-            match: item.match || 80,
+            
+            match: item.match !== undefined ? item.match : 80, 
+
             image: getJobImage(item.id || idx, item.image),
             description: item.description || "Aucune description disponible.",
             dates: item.dates || "Dates à convenir",
