@@ -15,6 +15,7 @@ const program = new Command();
 const FT_AUTH_URL = 'https://entreprise.francetravail.fr/connexion/oauth2/access_token?realm=%2Fpartenaire';
 const FT_API_URL = 'https://api.francetravail.io/partenaire/offresdemploi/v2/offres/search';
 const ROME_COIFFURE = 'D1202';
+const TARGET_CONTRACT_TYPES = 'CDD,MIS,SAI';
 
 interface JobOffer {
   id: string;
@@ -26,6 +27,7 @@ interface JobOffer {
   salaire?: { libelle?: string };
   competences?: Array<{ libelle: string }>;
   dateCreation?: string;
+  typeContrat?: string;
 }
 
 /**
@@ -45,15 +47,15 @@ async function getAccessToken(): Promise<string> {
     grant_type: 'client_credentials',
     client_id: clientId,
     client_secret: clientSecret,
-    scope: 'api_offresdemploiv2 o2dsoffre' 
+    scope: 'api_offresdemploiv2 o2dsoffre'
   });
 
   console.log(`🌐 Tentative de connexion vers : ${FT_AUTH_URL}`);
-  
+
   try {
     const response = await fetch(FT_AUTH_URL, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent': 'InterimHair-CLI/1.0'
       },
@@ -83,9 +85,8 @@ async function getAccessToken(): Promise<string> {
  * Step 2: Fetch job offers for Hairdressing
  */
 async function fetchHairdressingOffers(token: string): Promise<JobOffer[]> {
-  const searchUrl = FT_API_URL + '?codeROME=' + ROME_COIFFURE;
-  console.log(`🌐 Récupération des offres depuis : ${searchUrl}`);
-  
+  const searchUrl = `${FT_API_URL}?codeROME=${ROME_COIFFURE}&typeContrat=${TARGET_CONTRACT_TYPES}&range=0-149`;
+
   try {
     const response = await fetch(searchUrl, {
       headers: {
@@ -116,9 +117,13 @@ async function fetchHairdressingOffers(token: string): Promise<JobOffer[]> {
  * Step 3: Deduplicate the offers
  */
 function deduplicateOffers(offers: JobOffer[]): JobOffer[] {
+  const allowedContracts = ['CDD', 'MIS', 'SAI'];
   const uniqueOffersMap = new Map();
-  
+
   for (const offer of offers) {
+    if (offer.typeContrat && !allowedContracts.includes(offer.typeContrat)) {
+      continue;
+    }
     if (!uniqueOffersMap.has(offer.id)) {
       uniqueOffersMap.set(offer.id, offer);
     }
@@ -126,6 +131,7 @@ function deduplicateOffers(offers: JobOffer[]): JobOffer[] {
 
   return Array.from(uniqueOffersMap.values());
 }
+
 
 // --- CLI Setup ---
 
@@ -141,17 +147,17 @@ program
     try {
       console.log('⏳ Authenticating with France Travail...');
       const token = await getAccessToken();
-      
+
       console.log('✅ Authenticated! Fetching jobs for ROME D1202 (Coiffure)...');
       const rawOffers = await fetchHairdressingOffers(token);
       console.log(`📥 Fetched ${rawOffers.length} raw offers.`);
 
       const cleanOffers = deduplicateOffers(rawOffers);
       const duplicatesRemoved = rawOffers.length - cleanOffers.length;
-      
+
       console.log(`🧹 Deduplication complete. Removed ${duplicatesRemoved} duplicate(s).`);
       console.log(`🎯 Final count: ${cleanOffers.length} unique offers.`);
-      
+
       // Ecriture du fichier JSON pour le Back-End
       const outputDir = path.join(__dirname, '../../backend/src');
       if (!fs.existsSync(outputDir)) {

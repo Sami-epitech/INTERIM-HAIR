@@ -1,10 +1,9 @@
 // ════════════════════════════════════════════════════════════
-// App.tsx — état global + routeur fait maison
+// App.tsx — état global + routeur
 // ════════════════════════════════════════════════════════════
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import type { DashTab, Job, Mission, Screen, UserMode } from "./types";
 import { JOBS, MISSIONS_INIT } from "./data/mockData";
-import { fetchUserFavorites, apiAddFavorite, apiRemoveFavorite } from "./services/favoriteService";
 import { AppName } from "./components/ui";
 
 import { RoleSelectScreen } from "./screens/auth/RoleSelectScreen";
@@ -27,80 +26,38 @@ export default function App() {
   const [userMode, setUserMode] = useState<UserMode>("candidate");
   const [selectedJob, setSelectedJob] = useState<Job>(JOBS[0]);
   const [editingMission, setEditingMission] = useState<Mission>(MISSIONS_INIT[0]);
-  const [missions, setMissions] = useState<Mission[]>(MISSIONS_INIT);
+  
+  const [jobsList, setJobsList] = useState<Job[]>(JOBS);
+  const [dashTab, setDashTab] = useState<DashTab>("applications");
 
-  // E-mail du recruteur stocké lors de la connexion
+  // Centralisation des favoris avec persistance
+  const [favoriteJobIds, setFavoriteJobIds] = useState<(string | number)[]>(() => {
+    const saved = localStorage.getItem("candidate_favorites");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const userEmail = localStorage.getItem("user_email") || "";
-
-  // Onglet actif dans le dashboard candidat ("applications" | "favorites" | "profile")
-  const [candidateTab, setCandidateTab] = useState<DashTab>("applications");
-  // Favoris du candidat (IDs) synchronisés avec Airtable
-  const [favorites, setFavorites] = useState<(number | string)[]>([]);
-  // Objets complets des offres favorites chargées depuis Airtable
-  const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([]);
-  const [loadingFavorites, setLoadingFavorites] = useState(false);
 
   const go = (s: Screen) => {
     setScreen(s);
     window.scrollTo(0, 0);
   };
 
-  // Chargement des favoris de l'utilisateur depuis Airtable au démarrage ou connexion
-  useEffect(() => {
-    let isMounted = true;
-    setLoadingFavorites(true);
-
-    fetchUserFavorites()
-      .then((data) => {
-        if (isMounted) {
-          setFavorites(data.favoriteIds);
-          setFavoriteJobs(data.jobs);
-        }
-      })
-      .catch((err) => console.error("Erreur fetchUserFavorites :", err))
-      .finally(() => {
-        if (isMounted) setLoadingFavorites(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [userMode, screen]);
-
-  // Bascule d'un favori : mise à jour optimiste + envoi à Airtable
-  const handleToggleFavorite = async (job: Job) => {
-    const isFav = favorites.includes(job.id);
-    if (isFav) {
-      setFavorites((prev) => prev.filter((id) => id !== job.id));
-      setFavoriteJobs((prev) => prev.filter((j) => j.id !== job.id));
-      try {
-        const updatedIds = await apiRemoveFavorite(job.id);
-        if (Array.isArray(updatedIds)) setFavorites(updatedIds);
-      } catch (err) {
-        console.error("Erreur suppression favori :", err);
-      }
-    } else {
-      setFavorites((prev) => [...prev, job.id]);
-      setFavoriteJobs((prev) => [...prev, job]);
-      try {
-        const updatedIds = await apiAddFavorite(job);
-        if (Array.isArray(updatedIds)) setFavorites(updatedIds);
-      } catch (err) {
-        console.error("Erreur ajout favori :", err);
-      }
-    }
+  const handleToggleFavorite = (job: Job) => {
+    setFavoriteJobIds((prev) => {
+      const updated = prev.includes(job.id) ? prev.filter((id) => id !== job.id) : [...prev, job.id];
+      localStorage.setItem("candidate_favorites", JSON.stringify(updated));
+      return updated;
+    });
   };
 
-  const handleNavigateToCandidateTab = (tab: DashTab) => {
-    setCandidateTab(tab);
-    go("c-dashboard");
-  };
+  const favoriteJobs = jobsList.filter((j) => favoriteJobIds.includes(j.id));
 
-  // Chargement des missions filtrées selon le profil connecté
   useEffect(() => {
+    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const url = userMode === "recruiter" && userEmail
-      ? `http://localhost:8000/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
-      : "http://localhost:8000/api/jobs?source=feed";
+      ? `http://${apiHost}:8000/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
+      : `http://${apiHost}:8000/api/jobs?source=feed`;
 
     fetch(url)
       .then((res) => {
@@ -109,49 +66,49 @@ export default function App() {
       })
       .then((data) => {
         if (Array.isArray(data)) {
-          const formattedMissions: Mission[] = data
+          const formattedJobs: Job[] = data
             .filter((m: any) => m && (m.title || m.intitule))
-            .map((m: any) => ({
-              ...m,
+            .map((m: any, idx: number) => ({
+              id: m.id || `job-${idx}`,
               title: m.title || m.intitule || "Mission sans titre",
+              salon: m.salon || (m.entreprise ? m.entreprise.nom : "Salon Partenaire"),
               location: m.location || (m.lieuTravail ? m.lieuTravail.libelle : "Localisation non précisée"),
+              contract: m.contract || m.typeContratLibelle || "Intérim",
               rate: Number(m.rate || 15),
-              dates: m.dates || (m.startDate ? `${m.startDate} – ${m.endDate || ''}` : "Dates à convenir"),
-              sortDate: m.sortDate ? new Date(m.sortDate) : new Date(),
+              shift: m.shift || "09:00 - 18:00",
+              tags: m.tags || m.skills || ["Coiffure"],
+              skills: m.skills || m.tags || [],
+              match: m.match || 80,
+              image: m.image || "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+              description: m.description || "",
+              dates: m.dates || "Dates à convenir",
+              diplomas: m.diplomas || ["CAP Coiffure"],
+              benefits: m.benefits || ["Mutuelle"],
+              sortDate: m.startDate ? new Date(m.startDate) : new Date(),
             }));
 
-          console.log(`✅ [FRONTEND] ${formattedMissions.length} missions chargées pour le mode : ${userMode}`);
-          setMissions(formattedMissions);
+          setJobsList(formattedJobs);
         }
       })
-      .catch((err) => console.warn("⚠️ [FRONTEND] Impossible de charger les offres depuis l'API :", err.message));
+      .catch((err) => console.warn("⚠️ [FRONTEND] Erreur API :", err.message));
   }, [userMode, userEmail, screen]);
 
-  // Gestion du retour OAuth
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    if (token) {
-      localStorage.setItem("auth_token", token);
-      console.log("✅ [AUTH] Token OAuth reçu et stocké !");
-      window.history.replaceState({}, document.title, window.location.pathname);
-      setScreen(userMode === "candidate" ? "onboarding1" : "r-dashboard");
-    }
-  }, [userMode]);
-
-  // Prépare l'édition d'une mission
-  const handleEditMission = (m: Mission) => {
-    setEditingMission(m);
-    go("r-mission-edit");
-  };
-
-  const handleSaveMission = (updated: Mission) => {
-    setMissions((p) => p.map((m) => (m.id === updated.id ? updated : m)));
-  };
-
-  const handleAddMission = (newMission: Mission) => {
-    setMissions((prev) => [newMission, ...prev]);
-  };
+  // Conversion propre Job[] -> Mission[]
+  const recruiterMissions: Mission[] = jobsList.map((j) => ({
+    id: j.id,
+    title: j.title,
+    description: j.description || "",
+    startDate: "",
+    endDate: "",
+    dates: j.dates || "Dates à convenir",
+    sortDate: j.sortDate ? new Date(j.sortDate) : new Date(),
+    location: j.location,
+    rate: j.rate,
+    shift: j.shift,
+    skills: j.skills || j.tags || [],
+    count: 0,
+    status: "open",
+  }));
 
   const isFormFlow = FORM_FLOW_SCREENS.includes(screen);
 
@@ -165,39 +122,76 @@ export default function App() {
       {screen === "cv-upload" && <CVUploadScreen onNavigate={go} />}
       {screen === "manual-entry" && <ManualEntryScreen onNavigate={go} />}
       {screen === "onboarding2" && <Onboarding2Screen onNavigate={go} />}
+      
       {screen === "feed" && (
         <FeedScreen
           onNavigate={go}
           setSelectedJob={setSelectedJob}
-          favorites={favorites}
-          onToggleFavorite={handleToggleFavorite}
-          onNavigateToTab={handleNavigateToCandidateTab}
-        />
-      )}
-      {screen === "job-detail" && (
-        <JobDetailScreen
-          job={selectedJob}
-          onNavigate={go}
-          isFavorite={favorites.includes(selectedJob.id)}
+          favorites={favoriteJobIds}
           onToggleFavorite={handleToggleFavorite}
         />
       )}
+      
+      {screen === "job-detail" && <JobDetailScreen job={selectedJob} onNavigate={go} />}
+      
       {screen === "c-dashboard" && (
         <CandidateDashboard
           onNavigate={go}
-          activeTab={candidateTab}
-          onTabChange={setCandidateTab}
+          activeTab={dashTab}
+          onTabChange={setDashTab}
           favoriteJobs={favoriteJobs}
           onToggleFavorite={handleToggleFavorite}
-          onSelectJob={(j) => setSelectedJob(j)}
-          loadingFavorites={loadingFavorites}
+          onSelectJob={setSelectedJob}
         />
       )}
 
       {/* Parcours recruteur */}
-      {screen === "r-dashboard" && <RecruiterDashboard onNavigate={go} missions={missions} onEditMission={handleEditMission} />}
-      {screen === "r-create" && <MissionCreateScreen onNavigate={go} onCreateMission={handleAddMission} />}
-      {screen === "r-mission-edit" && <MissionEditScreen mission={editingMission} onNavigate={go} onSave={handleSaveMission} />}
+      {screen === "r-dashboard" && (
+        <RecruiterDashboard
+          onNavigate={go}
+          missions={recruiterMissions}
+          onEditMission={(m) => {
+            setEditingMission(m);
+            go("r-mission-edit");
+          }}
+        />
+      )}
+      {screen === "r-create" && (
+        <MissionCreateScreen
+          onNavigate={go}
+          onCreateMission={(m) => {
+            const newJob: Job = {
+              id: m.id,
+              title: m.title,
+              salon: "Votre Salon",
+              location: m.location,
+              contract: "Intérim",
+              rate: m.rate,
+              shift: m.shift,
+              tags: m.skills,
+              skills: m.skills,
+              match: 100,
+              image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600",
+              description: m.description,
+              dates: m.dates,
+              diplomas: ["CAP Coiffure"],
+              benefits: ["Mutuelle"],
+            };
+            setJobsList((prev) => [newJob, ...prev]);
+          }}
+        />
+      )}
+      {screen === "r-mission-edit" && (
+        <MissionEditScreen
+          mission={editingMission}
+          onNavigate={go}
+          onSave={(updated) =>
+            setJobsList((p) =>
+              p.map((j) => (String(j.id) === String(updated.id) ? { ...j, ...updated, tags: updated.skills } : j))
+            )
+          }
+        />
+      )}
     </div>
   );
 
@@ -210,7 +204,9 @@ export default function App() {
         <div className="absolute -bottom-24 -left-12 w-64 h-64 rounded-full bg-accent/25" />
         <div className="relative flex flex-col items-center gap-4 text-center px-10">
           <AppName size="lg" />
-          <p className="text-base text-muted-foreground max-w-[280px]">La plateforme qui connecte les talents de la coiffure aux salons qui les recherchent.</p>
+          <p className="text-base text-muted-foreground max-w-[280px]">
+            La plateforme qui connecte les talents de la coiffure aux salons qui les recherchent.
+          </p>
         </div>
       </div>
 
