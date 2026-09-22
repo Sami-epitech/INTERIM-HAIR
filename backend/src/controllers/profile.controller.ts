@@ -68,7 +68,7 @@ export const getProfile = async (req: Request, res: Response) => {
 // Enregistrer / Mettre à jour le profil dans Airtable
 export const saveProfile = async (req: Request, res: Response) => {
   try {
-    const { userId: bodyUserId, ...profileData } = req.body;
+    const { userId: bodyUserId, location, ...profileData } = req.body;
     let { userId } = resolveUserId(req);
 
     if (bodyUserId) {
@@ -79,15 +79,28 @@ export const saveProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Identifiant utilisateur manquant pour la mise à jour du profil." });
     }
 
-    // Mise à jour de l'intérimaire dans Airtable
-    const updatedRecord = await updateInterimaire(userId, profileData);
+    // 👇 TRAITEMENT SÉCURISÉ DE LA LOCALISATION
+    // Si le front envoie un objet { city, radiusKm }, on extrait proprement les valeurs pour Airtable
+    const dataToUpdate: any = { ...profileData };
+
+    if (location) {
+      if (typeof location === 'object' && location !== null) {
+        dataToUpdate.location = location.city || "";
+        dataToUpdate.radius = Number(location.radiusKm || 25);
+      } else {
+        dataToUpdate.location = String(location);
+      }
+    }
+
+    // Mise à jour de l'intérimaire dans Airtable avec les données nettoyées
+    const updatedRecord = await updateInterimaire(userId, dataToUpdate);
 
     // Rechargement du profil mis à jour pour renvoyer les données complètes
     let refreshedProfile: any = null;
     try {
       refreshedProfile = await getInterimaireProfile(updatedRecord?.id || userId);
     } catch (e) {
-      refreshedProfile = updatedRecord?.fields || profileData;
+      refreshedProfile = updatedRecord?.fields || dataToUpdate;
     }
 
     console.log(`✅ [AIRTABLE] Profil intérimaire synchronisé avec succès pour ${userId}`);
