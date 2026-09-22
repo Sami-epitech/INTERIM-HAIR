@@ -158,6 +158,7 @@ export const postJob = async (req: Request, res: Response) => {
       skills: Array.isArray(missionData.skills) ? missionData.skills : [],
       status: missionData.status || "open",
       recruiterId: emailToSave,
+      publishedAt: new Date().toISOString(),
     };
 
     const createdRecord = await base("Offres d'emploi").create(
