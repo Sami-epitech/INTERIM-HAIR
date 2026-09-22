@@ -73,7 +73,7 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
 
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur lors de l'envoi du profil :", err);
-      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+      setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement de votre profil. Veuillez réessayer.");
       // Permet de continuer l'expérience même en cas de problème de réseau temporaire
       onNavigate("onboarding2");
     } finally {

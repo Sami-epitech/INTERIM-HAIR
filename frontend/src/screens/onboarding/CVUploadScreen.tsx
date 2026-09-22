@@ -79,7 +79,7 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
 
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur lors de l'envoi du profil :", err);
-      setErrorMsg(err.message || "Impossible de joindre le serveur.");
+      setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement de votre profil. Veuillez réessayer.");
       // Permet de continuer la démo même si le serveur renvoie un souci temporaire
       onNavigate("onboarding2");
     } finally {

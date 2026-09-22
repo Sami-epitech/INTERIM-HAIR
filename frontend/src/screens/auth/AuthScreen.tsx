@@ -93,7 +93,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
 
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur lors de l'appel API :", err);
-      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+      setErrorMsg(err.message || "Une erreur est survenue lors de l'authentification. Veuillez vérifier vos informations et réessayer.");
     } finally {
       setLoading(false);
     }

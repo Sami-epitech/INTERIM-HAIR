@@ -1,7 +1,10 @@
 import path from "path";
 import dotenv from "dotenv";
 
-// Désactive la vérification stricte TLS/SSL pour éviter les blocages de certificats en dev
+// ════════════════════════════════════════════════════════════
+// IMPORTANT MAC : Cette directive est strictement nécessaire pour permettre
+// aux développeurs sur macOS d'exécuter le projet sans blocage de certificats TLS locaux.
+// ════════════════════════════════════════════════════════════
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 // Charge le .env à la racine du projet puis l'éventuel .env dans backend/
@@ -19,6 +22,7 @@ import { saveProfile, getProfile } from "./controllers/profile.controller";
 import { getJobs, postJob, patchJob } from "./controllers/job.controller";
 import { applyToMission, getApplications } from "./controllers/application.controller";
 import { getFavorites, addFavorite, removeFavorite, toggleFavorite } from "./controllers/favorite.controller";
+import { uploadDocument, downloadDocument, getCandidateDocuments } from "./controllers/document.controller";
 
 // Import de tes routeurs modulaires existants (si tu veux les garder)
 import jobRoutes from "./routes/job.routes";
@@ -28,8 +32,18 @@ import { hashPassword } from "./auth/hashing";
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// 🔒 Sécurité en transit (Headers HTTP stricts : HSTS, anti-sniffing, anti-clickjacking)
+app.use((_req, res, next) => {
+  res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "15mb" })); // Supporte l'upload base64 de documents/CVs
 app.use(passport.initialize());
 
 // 1. Route racine
@@ -68,6 +82,11 @@ app.post("/api/users/me/favorites", addFavorite);
 app.delete("/api/favorites/:jobId", removeFavorite);
 app.delete("/api/favorites", removeFavorite);
 app.post("/api/favorites/toggle", toggleFavorite);
+
+// 7. Routes Documents & CVs sécurisés (Chiffrement au repos AES-256-GCM)
+app.post("/api/documents/upload", uploadDocument);
+app.get("/api/documents/:docId", downloadDocument);
+app.get("/api/documents/candidate/:candidateId", getCandidateDocuments);
 
 // Routes modulaires additionnelles
 app.use("/api/jobs", jobRoutes);

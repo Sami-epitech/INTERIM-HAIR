@@ -24,3 +24,5 @@ build/
 *.local
 npm-debug.log*
 .DS_Store
+uploads/
+backend/uploads/

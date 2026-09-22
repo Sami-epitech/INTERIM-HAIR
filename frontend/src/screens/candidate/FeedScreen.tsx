@@ -35,9 +35,73 @@ export function FeedScreen({
 }: FeedScreenProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [refreshSuccess, setRefreshSuccess] = useState(false);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
+
   const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef<number>(0);
+  const isPulling = useRef<boolean>(false);
+  const wheelAccumulator = useRef<number>(0);
+  const wheelTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const loadJobs = async (isPull = false) => {
+    if (isPull) {
+      setIsRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
+    try {
+      const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
+      const res = await fetch(`http://${apiHost}:8000/api/jobs?source=feed`);
+      if (!res.ok) throw new Error("Erreur réseau API");
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        const formattedJobs: Job[] = data.map((item: any, idx: number) => ({
+          id: item.id || `job-ft-${idx}`,
+          title: item.title || item.intitule || "Mission sans titre",
+          salon: item.salon || (item.entreprise ? item.entreprise.nom : "Salon Partenaire"),
+          location: item.location || (item.lieuTravail ? item.lieuTravail.libelle : "Localisation non précisée"),
+          contract: item.contract || item.typeContratLibelle || "Intérim",
+          rate: Number(item.rate || 15),
+          shift: item.shift || "09:00 - 18:00",
+          tags: item.tags || item.skills || ["Coiffure"],
+          skills: item.skills || item.tags || [],
+          match: item.match || 80,
+          image: getJobImage(item.id || idx, item.image),
+          description: item.description || "Aucune description disponible.",
+          dates: item.dates || "Dates à convenir",
+          diplomas: item.diplomas || ["CAP Coiffure"],
+          benefits: item.benefits || ["Mutuelle"],
+          urlOrigine: item.urlOrigine || (item.origineOffre ? item.origineOffre.urlOrigine : undefined),
+          isInternal: Boolean(String(item.id || "").startsWith("rec") && !item.urlOrigine && !item.origineOffre),
+          recruiterEmail: item.recruiterEmail || item.recruiterId || undefined,
+        }));
+
+        setJobs(formattedJobs);
+      } else {
+        setJobs(JOBS);
+      }
+
+      if (isPull) {
+        setRefreshSuccess(true);
+        setTimeout(() => setRefreshSuccess(false), 2000);
+      }
+    } catch (err) {
+      console.error("❌ Erreur lors du chargement du feed candidat :", err);
+      if (!isPull) setJobs(JOBS);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadJobs(false);
+  }, []);
 
   useEffect(() => {
     if (!loading && scrollRef.current) {
@@ -53,6 +117,57 @@ export function FeedScreen({
     feedScrollPosition = e.currentTarget.scrollTop;
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (scrollRef.current && scrollRef.current.scrollTop <= 0) {
+      touchStartY.current = e.touches[0].clientY;
+      isPulling.current = true;
+    } else {
+      isPulling.current = false;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isPulling.current || !scrollRef.current || isRefreshing) return;
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - touchStartY.current;
+
+    // L'utilisateur tire vers le bas alors qu'on est au sommet (scrollTop <= 0)
+    if (scrollRef.current.scrollTop <= 0 && diff > 0) {
+      const dist = Math.min(diff * 0.45, 80);
+      setPullDistance(dist);
+    } else {
+      setPullDistance(0);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isPulling.current) return;
+    isPulling.current = false;
+    if (pullDistance >= 45 && !isRefreshing) {
+      try {
+        navigator.vibrate?.(30);
+      } catch (e) {}
+      loadJobs(true);
+    }
+    setPullDistance(0);
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!scrollRef.current || isRefreshing) return;
+
+    // Détection de scroll vers le haut quand on est déjà tout en haut (scrollTop <= 0 et deltaY négatif)
+    if (scrollRef.current.scrollTop <= 0 && e.deltaY < 0) {
+      wheelAccumulator.current += Math.abs(e.deltaY);
+      const dist = Math.min(wheelAccumulator.current * 0.35, 75);
+      setPullDistance(dist);
+
+      if (wheelTimeout.current) clearTimeout(wheelTimeout.current);
+      wheelTimeout.current = setTimeout(() => {
+        if (wheelAccumulator.current > 100 && !isRefreshing) {
+          try {
+            navigator.vibrate?.(30);
+          } catch (e) {}
+          loadJobs(true);
   useEffect(() => {
     const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     
@@ -100,13 +215,11 @@ export function FeedScreen({
         } else {
           setJobs(JOBS);
         }
-      })
-      .catch((err) => {
-        console.error("❌ Erreur lors du chargement du feed candidat :", err);
-        setJobs(JOBS);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+        wheelAccumulator.current = 0;
+        setPullDistance(0);
+      }, 250);
+    }
+  };
 
   const filtered = useMemo(
     () =>
@@ -172,10 +285,57 @@ export function FeedScreen({
           </div>
         </div>
 
+        {/* Indicateur Pull-to-Refresh flottant */}
+        {(pullDistance > 0 || isRefreshing || refreshSuccess) && (
+          <div 
+            className="absolute top-20 lg:top-16 left-0 right-0 z-30 flex justify-center pointer-events-none transition-all duration-200"
+            style={{
+              transform: `translateY(${isRefreshing ? 10 : Math.min(pullDistance * 0.45, 20)}px)`,
+              opacity: isRefreshing || refreshSuccess ? 1 : Math.min(pullDistance / 35, 1),
+            }}
+          >
+            <div className="bg-black/85 backdrop-blur-xl border border-white/25 text-white shadow-2xl rounded-full px-4 py-2 flex items-center gap-2.5 text-xs font-semibold">
+              {isRefreshing ? (
+                <>
+                  <svg className="animate-spin w-4 h-4 text-primary" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  <span>Actualisation des offres...</span>
+                </>
+              ) : refreshSuccess ? (
+                <>
+                  <span className="text-emerald-400 font-bold">✓</span>
+                  <span className="text-emerald-300">Offres actualisées !</span>
+                </>
+              ) : (
+                <>
+                  <svg 
+                    className="w-4 h-4 text-white transition-transform duration-200" 
+                    style={{ transform: pullDistance >= 45 ? "rotate(180deg)" : "rotate(0deg)" }}
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  >
+                    <path d="M12 5v14M5 12l7 7 7-7" />
+                  </svg>
+                  <span>{pullDistance >= 45 ? "Relâchez pour actualiser" : "Glissez pour actualiser"}</span>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Snap Scroll Vertical */}
         <div 
           ref={scrollRef}
           onScroll={handleScroll}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
+          style={{
+            transform: pullDistance > 0 ? `translateY(${Math.min(pullDistance * 0.35, 28)}px)` : undefined,
+            transition: pullDistance === 0 ? "transform 0.25s ease-out" : "none",
+          }}
           className="flex-1 overflow-y-auto snap-y snap-mandatory scrollable h-full w-full"
         >
           {loading ? (
