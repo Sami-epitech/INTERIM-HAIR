@@ -94,7 +94,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
 
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur d'envoi des préférences :", err);
-      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+      setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement de vos préférences. Veuillez réessayer.");
       // Navigation de secours pour ne pas bloquer l'expérience utilisateur
       onNavigate("feed");
     } finally {

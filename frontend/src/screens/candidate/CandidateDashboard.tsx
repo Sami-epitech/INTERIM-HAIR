@@ -179,7 +179,7 @@ export function CandidateDashboard({
       });
 
       if (!res.ok) {
-        throw new Error("Erreur de sauvegarde sur le serveur.");
+        throw new Error("Erreur lors de l'enregistrement de votre profil.");
       }
 
       const updated = {
@@ -196,11 +196,11 @@ export function CandidateDashboard({
       setProfile(updated);
       localStorage.setItem("candidate_profile", JSON.stringify(updated));
       setIsEditing(false);
-      setSaveSuccessMsg("Profil synchronisé avec Airtable avec succès !");
+      setSaveSuccessMsg("Profil mis à jour avec succès !");
       setTimeout(() => setSaveSuccessMsg(null), 4000);
     } catch (err: any) {
-      console.error("❌ [CANDIDAT] Erreur sauvegarde profil Airtable :", err);
-      alert("Impossible de synchroniser avec Airtable : " + err.message);
+      console.error("❌ [CANDIDAT] Erreur sauvegarde profil :", err);
+      alert("Impossible d'enregistrer vos modifications : " + err.message);
     } finally {
       setSavingProfile(false);
     }
@@ -270,7 +270,7 @@ export function CandidateDashboard({
               <div className="flex flex-col gap-3 lg:max-w-2xl">
                 {loadingApps ? (
                   <div className="py-12 text-center text-sm text-muted-foreground animate-pulse">
-                    Chargement des candidatures depuis Airtable...
+                    Chargement de vos candidatures...
                   </div>
                 ) : applications.length === 0 ? (
                   <div className="py-16 px-4 text-center bg-card rounded-2xl border border-dashed border-border">
@@ -499,7 +499,7 @@ export function CandidateDashboard({
                       className="px-3.5 py-2 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
                     >
                       <IPencil />
-                      <span>{savingProfile ? "Enregistrement..." : isEditing ? "Enregistrer dans Airtable" : "Modifier mon profil"}</span>
+                      <span>{savingProfile ? "Enregistrement..." : isEditing ? "Enregistrer" : "Modifier mon profil"}</span>
                     </button>
                   </div>
                 </div>

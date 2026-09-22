@@ -194,7 +194,7 @@ export function JobDetailScreen({
                       <line x1="12" y1="16" x2="12" y2="12" />
                       <line x1="12" y1="8" x2="12.01" y2="8" />
                     </svg>
-                    <span>Vos informations et coordonnées ont été transmises au recruteur dans Airtable.</span>
+                    <span>Vos informations et coordonnées ont été transmises au recruteur.</span>
                   </div>
                 </div>
               ) : (
