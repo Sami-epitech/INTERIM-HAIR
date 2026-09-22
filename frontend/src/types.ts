@@ -27,32 +27,35 @@ export type Job = {
   contract: string;
   match: number;
   tags: string[];
+  skills?: string[];
   image: string;
   description: string;
-  diplomas: string[];
-  benefits: string[];
+  dates?: string;
+  sortDate?: Date | string;
+  diplomas?: string[];
+  benefits?: string[];
   urlOrigine?: string;
 };
 
 export type Mission = {
-  id: number;
+  id: number | string;
   title: string;
   dates: string;
-  sortDate: Date | string;
-  startDate: string;
-  endDate: string;
+  sortDate?: Date | string;
+  startDate?: string;
+  endDate?: string;
   location: string;
   rate: number;
   shift: string;
   description: string;
   skills: string[];
-  count: number;
-  status: "open" | "filled" | "completed";
+  count?: number;
+  status: "open" | "filled" | "completed" | "closed" | "paused" | string;
 };
 
 export type Applicant = {
-  id: number;
-  missionId: number;
+  id: number | string;
+  missionId: number | string;
   name: string;
   match: number;
   level: string;
@@ -63,7 +66,7 @@ export type Applicant = {
 };
 
 export type Application = {
-  id: number;
+  id: number | string;
   title: string;
   salon: string;
   date: string;
