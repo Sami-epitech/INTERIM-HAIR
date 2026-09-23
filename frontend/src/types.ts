@@ -14,6 +14,7 @@ export type Screen =
   | "r-dashboard"
   | "r-create"
   | "r-mission-edit";
+  | "legal";
 
 /**
  * Rôles utilisateur dans l'application.
@@ -113,4 +114,4 @@ export type Filters = {
   location: string;
   rateMin: number;
   matchMin: number;
-};
+};

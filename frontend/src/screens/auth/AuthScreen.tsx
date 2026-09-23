@@ -59,7 +59,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       if (data.userId) {
         localStorage.setItem("userId", data.userId);
       }
-      
+
       localStorage.setItem("user_email", email);
       if (data.user?.name) {
         localStorage.setItem("user_name", data.user.name);
@@ -95,7 +95,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
 
       <div className="px-5 pt-6 pb-4">
         <div className="lg:hidden"><AppName size="sm" /></div>
-        <h2 className="font-serif text-3xl text-foreground leading-tight mt-3 lg:mt-0">
+        <h1 className="font-serif text-3xl text-foreground leading-tight mt-3 lg:mt-0">
           {tab === "login" ? (
             <>
               Bon retour
@@ -109,7 +109,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
               mon compte
             </>
           )}
-        </h2>
+        </h1>
       </div>
 
       <div className="flex-1 px-6 flex flex-col gap-6">
@@ -122,9 +122,8 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
                 setTab(t);
                 setErrorMsg(null);
               }}
-              className={`pb-3 text-sm font-semibold border-b-2 -mb-px transition-colors duration-200 ${
-                tab === t ? "text-primary border-primary" : "text-muted-foreground border-transparent"
-              }`}
+              className={`pb-3 text-sm font-semibold border-b-2 -mb-px transition-colors duration-200 ${tab === t ? "text-primary border-primary" : "text-muted-foreground border-transparent"
+                }`}
             >
               {t === "login" ? "Connexion" : "Inscription"}
             </button>
@@ -142,7 +141,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
         <div className="flex flex-col gap-4">
           <Input label="Email" type="email" placeholder="marie@exemple.fr" value={email} onChange={setEmail} />
           <Input label="Mot de passe" type="password" placeholder="••••••••" value={password} onChange={setPassword} />
-          
+
           <div className="flex items-center justify-between -mt-1">
             <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
               <input

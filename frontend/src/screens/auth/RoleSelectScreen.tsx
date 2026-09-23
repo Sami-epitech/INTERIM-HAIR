@@ -68,7 +68,7 @@ export function RoleSelectScreen({
 
       <div className="flex-1 flex flex-col px-6 pt-6 lg:pt-16 pb-6 gap-3">
         <div className="text-center">
-          <h2 className="font-serif text-2xl text-foreground">Bienvenue !</h2>
+          <h1 className="font-serif text-2xl text-foreground">Bienvenue !</h1>
           <p className="text-sm text-muted-foreground mt-2">Qui êtes-vous ? Choisissez votre profil pour continuer.</p>
         </div>
 
@@ -126,7 +126,13 @@ export function RoleSelectScreen({
 
         <p className="text-center text-xs text-muted-foreground">
           En continuant, vous acceptez nos{" "}
-          <span className="text-primary font-medium underline underline-offset-2 cursor-pointer">Conditions d'utilisation</span>
+          <button
+            type="button"
+            onClick={() => onNavigate("legal")}
+            className="text-primary font-medium underline underline-offset-2"
+          >
+            Conditions d'utilisation
+          </button>
         </p>
       </div>
     </div>
