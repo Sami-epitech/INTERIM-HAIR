@@ -34,8 +34,13 @@ export default function App() {
 
   // Centralisation des favoris avec persistance Airtable
   const [favoriteJobIds, setFavoriteJobIds] = useState<(string | number)[]>(() => {
-    const saved = localStorage.getItem("candidate_favorites");
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem("candidate_favorites");
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
   });
   const [apiFavoriteJobs, setApiFavoriteJobs] = useState<Job[]>([]);
 
@@ -133,11 +138,12 @@ export default function App() {
   };
 
   // Combinaison des offres locales et chargées depuis Airtable
+  const safeFavIds = Array.isArray(favoriteJobIds) ? favoriteJobIds : [];
   const favoriteJobs = Array.from(
     new Map(
       [
-        ...jobsList.filter((j) => favoriteJobIds.includes(j.id)),
-        ...apiFavoriteJobs.filter((j: any) => favoriteJobIds.includes(j.id) || (j.airtableId && favoriteJobIds.includes(j.airtableId))),
+        ...(Array.isArray(jobsList) ? jobsList : []).filter((j) => safeFavIds.includes(j.id)),
+        ...(Array.isArray(apiFavoriteJobs) ? apiFavoriteJobs : []).filter((j: any) => safeFavIds.includes(j.id) || (j.airtableId && safeFavIds.includes(j.airtableId))),
       ].map((j) => [j.id, j])
     ).values()
   );
