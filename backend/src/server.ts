@@ -28,6 +28,7 @@ import { uploadDocument, downloadDocument, getCandidateDocuments } from "./contr
 import jobRoutes from "./routes/job.routes";
 import authRoutes from "./routes/auth.routes";
 import { hashPassword } from "./auth/hashing";
+import { runJobIngestionCLI } from "./services/jobSync";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -96,6 +97,18 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/interimhai
 // Démarrage du serveur Express
 app.listen(PORT, () => {
   console.log(`🚀 [OK] Serveur Node/TypeScript démarré sur http://localhost:${PORT}`);
+
+  // 👇 AJOUT : Automatisation du script CLI France Travail 👇
+  console.log("⏳ Initialisation de la synchronisation France Travail en arrière-plan...");
+
+  // 1. Lance le script immédiatement au démarrage du serveur
+  runJobIngestionCLI();
+
+  // 2. Configure le script pour qu'il se relance tout seul (ex: toutes les 12 heures)
+  const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+  setInterval(() => {
+    runJobIngestionCLI();
+  }, TWELVE_HOURS);
 });
 
 // Connexion optionnelle à MongoDB (sans bloquer le serveur si MongoDB n'est pas démarré)
