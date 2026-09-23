@@ -1,23 +1,21 @@
-// ════════════════════════════════════════════════════════════
-// backend/src/test-crypto.ts
-// ────────────────────────────────────────────────────────────
-// Suite de tests automatisés pour valider le chiffrement
-// au repos (AES-256-GCM) et l'intégrité des données / documents.
-// ════════════════════════════════════════════════════════════
+/**
+ * Suite de tests automatisés pour valider le chiffrement
+ * au repos (AES-256-GCM) et l'intégrité des données et documents.
+ */
 
 import { encryptText, decryptText, isEncrypted, encryptBuffer, decryptBuffer } from "./utils/cryptoService";
 
 function runTests() {
-  console.log("🔒 [TEST] Démarrage des tests du module de chiffrement...");
+  console.log("[TEST] Démarrage des tests du module de chiffrement...");
   let passed = 0;
   let failed = 0;
 
   function assert(condition: boolean, name: string) {
     if (condition) {
-      console.log(`  ✅ [PASS] ${name}`);
+      console.log(`  [SUCCES] ${name}`);
       passed++;
     } else {
-      console.error(`  ❌ [FAIL] ${name}`);
+      console.error(`  [ECHEC] ${name}`);
       failed++;
     }
   }
@@ -31,27 +29,24 @@ function runTests() {
   const decryptedPhone = decryptText(encryptedPhone);
   assert(decryptedPhone === phone, "Le déchiffrement restitue exactement le numéro d'origine");
 
-  // 2. Randomisation de l'IV (Deux chiffrements de la même valeur donnent deux ciphertexts différents)
+  // 2. Randomisation de l'IV (Deux chiffrements successifs génèrent des IV distincts)
   const encryptedPhone2 = encryptText(phone);
   assert(encryptedPhone !== encryptedPhone2, "Deux chiffrements successifs génèrent des IV différents (sécurité sémantique)");
   assert(decryptText(encryptedPhone2) === phone, "Le second ciphertext se déchiffre également correctement");
 
-  // 3. Rétro-compatibilité avec les données legacy en clair
+  // 3. Rétro-compatibilité avec les données existantes non chiffrées
   const legacyData = "06 99 88 77 66";
   const decryptedLegacy = decryptText(legacyData);
   assert(decryptedLegacy === legacyData, "Une donnée legacy en clair est retournée intacte sans erreur");
 
-  // 4. Test d'intégrité / Détection d'altération (Auth Tag AES-GCM)
+  // 4. Test d'intégrité et détection d'altération (Auth Tag AES-GCM)
   const parts = encryptedPhone.split(":");
-  // parts: ["enc", "v1", iv, tag, ciphertext]
-  // On altère volontairement le dernier caractère du ciphertext
   const corruptedCipher = parts[4].slice(0, -1) + (parts[4].endsWith("a") ? "b" : "a");
   const corruptedPayload = `${parts[0]}:${parts[1]}:${parts[2]}:${parts[3]}:${corruptedCipher}`;
   const tamperedResult = decryptText(corruptedPayload);
-  // Avec le tag GCM, la détection d'altération empêche le déchiffrement corrompu
   assert(tamperedResult === corruptedPayload, "Une donnée altérée est rejetée car le tag d'authentification ne correspond pas");
 
-  // 5. Test chiffrement binaire / document (Buffer de simulation PDF)
+  // 5. Test de chiffrement binaire pour documents (simulation PDF)
   const fakePdfContent = Buffer.from("%PDF-1.4 ... Contenu simulé du CV de Marie Dupont ... %%EOF");
   const { encryptedData, iv, tag } = encryptBuffer(fakePdfContent);
   assert(encryptedData.length > 0, "Le buffer chiffré n'est pas vide");
@@ -60,7 +55,7 @@ function runTests() {
   const restoredPdf = decryptBuffer(encryptedData, iv, tag);
   assert(restoredPdf.equals(fakePdfContent), "Le déchiffrement du buffer restitue fidèlement le document binaire");
 
-  // 6. Test du contrôleur de documents (Upload chiffré sur disque + Téléchargement déchiffré)
+  // 6. Test du contrôleur de documents (upload chiffré et téléchargement déchiffré)
   const { uploadDocument, downloadDocument } = require("./controllers/document.controller");
   const testDocContent = "CV Professionnel de Test - Coiffeur Visagiste 2026";
   const testBase64 = Buffer.from(testDocContent).toString("base64");
@@ -112,7 +107,7 @@ function runTests() {
   );
   assert(mockResDownload.headers["Content-Type"] === "application/pdf", "Le Content-Type du document est préservé");
 
-  console.log(`\n📊 [RÉSULTAT] ${passed} tests passés, ${failed} échec(s).\n`);
+  console.log(`\n[RESULTAT] ${passed} tests passés, ${failed} échec(s).\n`);
 
   if (failed > 0) {
     process.exit(1);
@@ -120,3 +115,4 @@ function runTests() {
 }
 
 runTests();
+

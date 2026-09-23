@@ -1,6 +1,10 @@
+/**
+ * Tests unitaires du workflow de notification webhook et du mécanisme anti-doublon.
+ */
+
 import { sendMatchNotificationWebhook } from '../src/services/webhookService';
 
-describe('TK-015 : Workflow de Notification Webhook & Anti-Doublon', () => {
+describe('Workflow de notification webhook et anti-doublon', () => {
   const sampleJob = {
     id: 'job-webhook-test-' + Date.now(),
     title: 'Coiffeur Coloriste H/F',

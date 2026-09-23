@@ -4,12 +4,16 @@ import { createUser } from '../services/airtableService';
 import { hashPassword, verifyPassword } from '../auth/hashing';
 import { generateToken } from '../auth/jwt';
 
-// Inscription (Signup)
+/**
+ * Inscription d'un nouvel utilisateur (intérimaire ou recruteur).
+ * Valide les champs obligatoires, hache le mot de passe avec Bcrypt,
+ * persiste l'enregistrement dans Airtable et renvoie un jeton JWT.
+ */
 export const signup = async (req: Request, res: Response) => {
   try {
     const { name, email, password, userMode, rememberMe } = req.body;
 
-    // Validation de base : email, password et userMode uniquement
+    // Validation des champs obligatoires
     if (!email || !password || !userMode) {
       return res.status(400).json({ message: "Veuillez renseigner un email et un mot de passe." });
     }
@@ -23,7 +27,7 @@ export const signup = async (req: Request, res: Response) => {
     const cleanEmail = email.trim().toLowerCase();
     const tableName = userMode === 'candidate' ? 'Intérimaires' : 'Recruteurs';
 
-    // Vérification si un compte existe déjà avec cette adresse email
+    // Vérification de l'unicité de l'adresse email dans la table ciblée
     const existingRecords = await base(tableName)
       .select({
         filterByFormula: `{email} = '${cleanEmail}'`,
@@ -35,10 +39,10 @@ export const signup = async (req: Request, res: Response) => {
       return res.status(409).json({ message: "Un compte est déjà créé avec cette adresse email." });
     }
 
-    // Hachage immédiat du mot de passe avec Bcrypt
+    // Hachage du mot de passe avec Bcrypt
     const passwordHash = await hashPassword(password);
 
-    // Envoi du profil et du hash du mot de passe vers Airtable
+    // Création de l'utilisateur dans Airtable
     const newUser = await createUser({
       name: name || "",
       email: cleanEmail,
@@ -46,7 +50,7 @@ export const signup = async (req: Request, res: Response) => {
       userMode,
     });
 
-    // Durée du token : 24 heures si "Rester connecté" est coché, sinon 30 secondes
+    // Durée de validité du jeton : 24 heures si mémorisation demandée, sinon session courte
     const tokenDuration = rememberMe ? '24h' : '30s';
 
     const token = generateToken(
@@ -59,9 +63,6 @@ export const signup = async (req: Request, res: Response) => {
       tokenDuration
     );
 
-    console.log(`📥 [BACKEND] Inscription réussie sur Airtable pour : ${email} (${userMode})`);
-
-    // Réponse sécurisée : token JWT + infos publiques
     return res.status(201).json({
       message: "Compte créé avec succès",
       token,
@@ -78,7 +79,11 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-// Connexion (Login)
+/**
+ * Connexion d'un utilisateur existant (intérimaire ou recruteur).
+ * Vérifie l'existence du compte dans la table Airtable correspondante,
+ * valide le mot de passe via Bcrypt et délivre un jeton JWT d'authentification.
+ */
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password, userMode, rememberMe } = req.body;
@@ -87,7 +92,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Email, mot de passe et rôle requis." });
     }
 
-    // Détermination de la table selon le rôle
+    // Ciblage de la table selon le rôle
     const cleanEmail = email.trim().toLowerCase();
     const tableName = userMode === 'candidate' ? 'Intérimaires' : 'Recruteurs';
 
@@ -110,14 +115,14 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Email ou mot de passe incorrect." });
     }
 
-    // Vérification du mot de passe input avec le hash stocké dans Airtable via Bcrypt
+    // Vérification du mot de passe avec l'empreinte stockée
     const isPasswordValid = await verifyPassword(storedHash, password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Email ou mot de passe incorrect." });
     }
 
-    // Durée du token : 24 heures si "Rester connecté" est coché, sinon 30 secondes
+    // Durée de validité du jeton : 24 heures si mémorisation demandée, sinon session courte
     const tokenDuration = rememberMe ? '24h' : '30s';
 
     const token = generateToken(
@@ -129,8 +134,6 @@ export const login = async (req: Request, res: Response) => {
       },
       tokenDuration
     );
-
-    console.log(`✅ [BACKEND] Connexion validée via Airtable pour : ${email} (${userMode})`);
 
     return res.status(200).json({
       message: "Connexion réussie",

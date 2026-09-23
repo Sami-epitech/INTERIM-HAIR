@@ -7,9 +7,12 @@ import {
 import { verifyToken, TokenPayload } from '../auth/jwt';
 import { airtableBase } from '../config/airtable';
 
-// Helper pour extraire l'ID du candidat (JWT, query, body ou fallback premier candidat)
+/**
+ * Détermine l'identifiant du candidat connecté en analysant le jeton JWT,
+ * les paramètres de requête, le corps de la requête ou par repli en base.
+ */
 async function resolveCandidateId(req: Request): Promise<string | null> {
-  // 1. Depuis le header Authorization: Bearer <token>
+  // 1. Extraction depuis l'en-tête Authorization
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.substring(7);
@@ -23,17 +26,17 @@ async function resolveCandidateId(req: Request): Promise<string | null> {
     }
   }
 
-  // 2. Depuis la query string
+  // 2. Extraction depuis les paramètres d'URL
   if (req.query.candidateId) {
     return String(req.query.candidateId);
   }
 
-  // 3. Depuis le body
+  // 3. Extraction depuis le corps de la requête
   if (req.body && req.body.candidateId) {
     return String(req.body.candidateId);
   }
 
-  // 4. Fallback vers le premier intérimaire trouvé en base (utile en dev/test)
+  // 4. Repli sur le premier intérimaire disponible (environnement de test / démonstration)
   try {
     const firstCandidate = await airtableBase('Intérimaires').select({ maxRecords: 1 }).firstPage();
     if (firstCandidate.length > 0) {
@@ -46,7 +49,9 @@ async function resolveCandidateId(req: Request): Promise<string | null> {
   return null;
 }
 
-// Récupérer les favoris du candidat connecté
+/**
+ * Récupère la liste des identifiants et des offres favorites du candidat connecté.
+ */
 export const getFavorites = async (req: Request, res: Response) => {
   try {
     const candidateId = await resolveCandidateId(req);
@@ -68,7 +73,9 @@ export const getFavorites = async (req: Request, res: Response) => {
   }
 };
 
-// Ajouter une offre aux favoris dans Airtable (concaténation)
+/**
+ * Ajoute une offre aux favoris de l'intérimaire dans Airtable.
+ */
 export const addFavorite = async (req: Request, res: Response) => {
   try {
     const candidateId = await resolveCandidateId(req);
@@ -84,8 +91,6 @@ export const addFavorite = async (req: Request, res: Response) => {
 
     const result = await addInterimaireFavorite(candidateId, String(jobId), jobData);
 
-    console.log(`⭐ [BACKEND] Favori ${jobId} ajouté dans Airtable pour candidat ${candidateId}. Favoris actuels:`, result.favoriteIds);
-
     return res.status(200).json({
       message: "Favori ajouté avec succès dans Airtable",
       candidateId,
@@ -98,7 +103,9 @@ export const addFavorite = async (req: Request, res: Response) => {
   }
 };
 
-// Retirer une offre des favoris dans Airtable
+/**
+ * Retire une offre de la liste des favoris de l'intérimaire dans Airtable.
+ */
 export const removeFavorite = async (req: Request, res: Response) => {
   try {
     const candidateId = await resolveCandidateId(req);
@@ -114,8 +121,6 @@ export const removeFavorite = async (req: Request, res: Response) => {
 
     const result = await removeInterimaireFavorite(candidateId, String(jobId));
 
-    console.log(`🗑️ [BACKEND] Favori ${jobId} retiré dans Airtable pour candidat ${candidateId}. Favoris restants:`, result.favoriteIds);
-
     return res.status(200).json({
       message: "Favori retiré avec succès dans Airtable",
       candidateId,
@@ -128,7 +133,9 @@ export const removeFavorite = async (req: Request, res: Response) => {
   }
 };
 
-// Basculer l'état d'un favori (ajouter ou retirer)
+/**
+ * Alterne l'état favori d'une offre (ajout si absente, suppression si présente).
+ */
 export const toggleFavorite = async (req: Request, res: Response) => {
   try {
     const candidateId = await resolveCandidateId(req);

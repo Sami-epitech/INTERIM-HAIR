@@ -1,11 +1,17 @@
+/**
+ * Service d'interaction avec l'API Airtable :
+ * - Lecture et écriture des offres d'emploi, intérimaires, recruteurs et candidatures
+ * - Gestion des favoris avec prise en charge des offres locales et France Travail
+ */
 import { airtableBase } from '../config/airtable';
 import { getSalonImage } from '../utils/salonImages';
 import { encryptText, decryptText } from '../utils/cryptoService';
 
-// ════════════════════════════════════════════════════════════
-// 1. FONCTIONS DE LECTURE (Déjà présentes dans ton service)
-// ════════════════════════════════════════════════════════════
+// ── Fonctions de lecture ─────────────────────────────────────
 
+/**
+ * Récupère l'ensemble des offres d'emploi disponibles dans Airtable.
+ */
 export const getOffresEmploi = async () => {
   try {
     const records = await airtableBase("Offres d'emploi").select().firstPage();
@@ -19,6 +25,9 @@ export const getOffresEmploi = async () => {
   }
 };
 
+/**
+ * Récupère la liste des profils intérimaires enregistrés dans Airtable.
+ */
 export const getInterimaires = async () => {
   try {
     const records = await airtableBase('Intérimaires').select().firstPage();
@@ -32,6 +41,9 @@ export const getInterimaires = async () => {
   }
 };
 
+/**
+ * Récupère les candidatures enregistrées dans Airtable.
+ */
 export const getCandidatures = async () => {
   try {
     const records = await airtableBase('Candidatures').select().firstPage();
@@ -45,6 +57,9 @@ export const getCandidatures = async () => {
   }
 };
 
+/**
+ * Récupère la liste des recruteurs enregistrés dans Airtable.
+ */
 export const getRecruteurs = async () => {
   try {
     const records = await airtableBase('Recruteurs').select().firstPage();
@@ -58,11 +73,11 @@ export const getRecruteurs = async () => {
   }
 };
 
-// ════════════════════════════════════════════════════════════
-// 2. FONCTIONS D'ÉCRITURE & MISE À JOUR (Pour les contrôleurs)
-// ════════════════════════════════════════════════════════════
+// ── Fonctions de création et mise à jour ─────────────────────
 
-// Inscription (AuthScreen)
+/**
+ * Crée un nouvel utilisateur dans la table Airtable appropriée (Intérimaires ou Recruteurs).
+ */
 export const createUser = async (userData: any) => {
   const tableName = userData.userMode === 'candidate' ? 'Intérimaires' : 'Recruteurs';
   
@@ -82,7 +97,9 @@ export const createUser = async (userData: any) => {
   return record[0];
 };
 
-// Récupération profil intérimaire depuis Airtable
+/**
+ * Récupère le profil complet d'un intérimaire par son identifiant Airtable ou son adresse email.
+ */
 export const getInterimaireProfile = async (identifier: string) => {
   try {
     let candidateRecord: any = null;
@@ -138,7 +155,9 @@ export const getInterimaireProfile = async (identifier: string) => {
   }
 };
 
-// Récupération profil recruteur depuis Airtable
+/**
+ * Récupère le profil d'un recruteur par son identifiant Airtable ou son adresse email.
+ */
 export const getRecruiterProfile = async (identifier: string) => {
   try {
     let recruiterRecord: any = null;
@@ -176,11 +195,14 @@ export const getRecruiterProfile = async (identifier: string) => {
   }
 };
 
-// Mise à jour profil intérimaire (ManualEntry, CVUpload, Onboarding2, CandidateDashboard)
+/**
+ * Met à jour les informations d'un intérimaire dans Airtable.
+ * Chiffre les données à caractère personnel sensibles (ex. numéro de téléphone).
+ */
 export const updateInterimaire = async (recordId: string, profileData: any) => {
   let targetId = recordId;
 
-  // Si recordId est un email au lieu d'un recID
+  // Résolution de l'identifiant Airtable si l'argument transmis est une adresse email
   if (!targetId.startsWith('rec')) {
     const records = await airtableBase('Intérimaires')
       .select({
@@ -249,7 +271,9 @@ export const updateInterimaire = async (recordId: string, profileData: any) => {
   return record[0];
 };
 
-// Création d'une mission (Recruteur)
+/**
+ * Crée une nouvelle offre de mission dans Airtable associée à un recruteur.
+ */
 export const createMission = async (recruiterRecordId: string, missionData: any) => {
   const record = await airtableBase("Offres d'emploi").create([
     {
@@ -273,7 +297,9 @@ export const createMission = async (recruiterRecordId: string, missionData: any)
   return record[0];
 };
 
-// Mise à jour d'une mission (MissionEditScreen)
+/**
+ * Met à jour les caractéristiques d'une mission existante dans Airtable.
+ */
 export const updateMission = async (missionId: string, updateData: any) => {
   const record = await airtableBase("Offres d'emploi").update(
     [
@@ -299,12 +325,15 @@ export const updateMission = async (missionId: string, updateData: any) => {
   return record[0];
 };
 
-// Création d'une candidature (JobDetailScreen)
+/**
+ * Enregistre une candidature dans la table "Candidatures" d'Airtable,
+ * en reliant l'intérimaire et la mission cible.
+ */
 export const createCandidature = async (candidateRecordId: string, missionRecordId: string) => {
   let candidateData: any = null;
   let missionData: any = null;
 
-  // Récupération des informations de l'intérimaire
+  // Récupération des informations du candidat
   try {
     const candidate = await airtableBase('Intérimaires').find(candidateRecordId);
     candidateData = {
@@ -323,7 +352,7 @@ export const createCandidature = async (candidateRecordId: string, missionRecord
     console.warn(`⚠️ [AIRTABLE] Intérimaire ${candidateRecordId} introuvable :`, e);
   }
 
-  // Récupération des informations de la mission et du recruteur
+  // Récupération des informations de la mission
   try {
     if (missionRecordId.startsWith('rec')) {
       const mission = await airtableBase("Offres d'emploi").find(missionRecordId);
@@ -338,8 +367,7 @@ export const createCandidature = async (candidateRecordId: string, missionRecord
     console.warn(`⚠️ [AIRTABLE] Mission ${missionRecordId} introuvable :`, e);
   }
 
-  // Enregistrement de la candidature dans la table "Candidatures" d'Airtable
-  // On stocke le lien sous la forme `${missionRecordId}|${candidateRecordId}` dans le champ missionId
+  // Persistance du lien de candidature sous format composite
   const storedMissionField = candidateRecordId ? `${missionRecordId}|${candidateRecordId}` : String(missionRecordId);
 
   const record = await airtableBase('Candidatures').create(
@@ -354,10 +382,6 @@ export const createCandidature = async (candidateRecordId: string, missionRecord
     { typecast: true }
   );
 
-  console.log(
-    `📩 [CANDIDATURE AIRTABLE] Candidature créée (ID: ${record[0].id}) pour la mission "${missionData?.title || missionRecordId}" (Recruteur: ${missionData?.recruiterId || 'non spécifié'}) transmise pour l'intérimaire ${candidateData?.firstName || ''} ${candidateData?.lastName || ''} (${candidateData?.email || candidateRecordId})`
-  );
-
   return {
     ...record[0],
     id: record[0].id,
@@ -369,7 +393,10 @@ export const createCandidature = async (candidateRecordId: string, missionRecord
   };
 };
 
-// Récupération des candidatures enrichies (pour candidat et recruteur)
+/**
+ * Récupère les candidatures enrichies des informations détaillées
+ * sur le candidat et sur la mission, selon les filtres fournis.
+ */
 export const getCandidaturesWithDetails = async (filters?: { candidateId?: string; recruiterEmail?: string; missionId?: string }) => {
   try {
     const rawCandidatures = await airtableBase('Candidatures').select().all();
@@ -385,17 +412,17 @@ export const getCandidaturesWithDetails = async (filters?: { candidateId?: strin
         const mId = parts[0];
         const cId = parts[1] || "";
 
-        // Filtrage par missionId si demandé
+        // Filtrage optionnel par missionId
         if (filters?.missionId && filters.missionId !== "all" && mId !== filters.missionId) {
           return null;
         }
 
-        // Filtrage par candidateId si demandé
+        // Filtrage optionnel par candidateId
         if (filters?.candidateId && cId && cId !== filters.candidateId) {
           return null;
         }
 
-        // Chargement mission
+        // Chargement et mise en cache des données de la mission
         let missionData: any = missionCache.get(mId);
         if (!missionData && mId) {
           if (mId.startsWith('rec')) {
@@ -425,14 +452,14 @@ export const getCandidaturesWithDetails = async (filters?: { candidateId?: strin
           }
         }
 
-        // Filtrage par recruiterEmail si demandé
+        // Filtrage optionnel par email recruteur
         if (filters?.recruiterEmail && missionData?.recruiterEmail) {
           if (missionData.recruiterEmail.toLowerCase() !== filters.recruiterEmail.toLowerCase()) {
             return null;
           }
         }
 
-        // Chargement candidat
+        // Chargement et mise en cache des données du candidat
         let candidateData: any = null;
         const targetCandidateId = cId || filters?.candidateId;
         if (targetCandidateId) {
@@ -495,10 +522,16 @@ export const getCandidaturesWithDetails = async (filters?: { candidateId?: strin
   }
 };
 
-// ════════════════════════════════════════════════════════════
-// 3. GESTION DES FAVORIS (Intérimaires <-> Offres d'emploi)
-// ════════════════════════════════════════════════════════════
+/**
+ * Gestion des favoris
+ */
 
+/**
+ * Récupère les offres mises en favoris par un intérimaire.
+ *
+ * @param candidateId - Identifiant ou adresse email du candidat.
+ * @returns Liste des identifiants et détails des offres favorites.
+ */
 export const getInterimaireFavorites = async (candidateId: string) => {
   try {
     let candidateRecord: any = null;
@@ -570,7 +603,7 @@ export const getInterimaireFavorites = async (candidateId: string) => {
             image: getSalonImage(offerRecord.id, offerRecord.fields.image),
           };
         } catch (e) {
-          console.warn(`⚠️ [AIRTABLE] Offre favorite ${offerId} introuvable dans Offres d'emploi.`);
+          console.warn(`[AIRTABLE] Offre favorite ${offerId} introuvable dans Offres d'emploi.`);
           return null;
         }
       })
@@ -582,11 +615,19 @@ export const getInterimaireFavorites = async (candidateId: string) => {
       jobs: validJobs,
     };
   } catch (error) {
-    console.error(`❌ [AIRTABLE] Erreur lors de la récupération des favoris pour ${candidateId} :`, error);
+    console.error(`[AIRTABLE] Erreur lors de la récupération des favoris pour ${candidateId} :`, error);
     throw error;
   }
 };
 
+/**
+ * Ajoute une offre à la liste des favoris d'un intérimaire.
+ *
+ * @param candidateId - Identifiant ou adresse email du candidat.
+ * @param jobId - Identifiant de l'offre (Airtable ou France Travail).
+ * @param jobData - Données complémentaires de l'offre si importée.
+ * @returns Liste mise à jour des identifiants et identifiant ajouté.
+ */
 export const addInterimaireFavorite = async (candidateId: string, jobId: string, jobData?: any) => {
   try {
     let candidateRecord: any = null;
@@ -612,9 +653,8 @@ export const addInterimaireFavorite = async (candidateId: string, jobId: string,
     const currentFavorites: string[] = (candidateRecord.fields.favorites as string[]) || [];
     let targetJobId = jobId;
 
-    // Si ce n'est pas un ID Airtable natif (ex: offre France Travail non encore présente dans la table)
+    // Si l'offre provient de France Travail et n'est pas encore enregistrée dans Airtable
     if (!targetJobId.startsWith('rec')) {
-      // Recherche si l'offre FT existe déjà dans "Offres d'emploi" via son ID dans le titre
       const existing = await airtableBase("Offres d'emploi")
         .select({
           filterByFormula: `FIND('${jobId}', {title}) > 0`,
@@ -661,11 +701,11 @@ export const addInterimaireFavorite = async (candidateId: string, jobId: string,
           },
         ]);
         targetJobId = created[0].id;
-        console.log(`✅ [AIRTABLE] Offre France Travail ${jobId} enregistrée dans "Offres d'emploi" avec l'ID Airtable ${targetJobId}`);
+        console.log(`[AIRTABLE] Offre France Travail ${jobId} enregistrée dans "Offres d'emploi" avec l'ID Airtable ${targetJobId}`);
       }
     }
 
-    // Concaténation : ajout du nouvel ID Airtable aux favoris existants sans doublon
+    // Ajout sans doublon
     if (currentFavorites.includes(targetJobId)) {
       const allIds = Array.from(new Set([...currentFavorites, jobId]));
       return { favoriteIds: allIds, addedId: targetJobId };
@@ -681,11 +721,18 @@ export const addInterimaireFavorite = async (candidateId: string, jobId: string,
     const allIds = Array.from(new Set([...finalFavorites, jobId]));
     return { favoriteIds: allIds, addedId: targetJobId };
   } catch (error) {
-    console.error(`❌ [AIRTABLE] Erreur lors de l'ajout du favori ${jobId} pour ${candidateId} :`, error);
+    console.error(`[AIRTABLE] Erreur lors de l'ajout du favori ${jobId} pour ${candidateId} :`, error);
     throw error;
   }
 };
 
+/**
+ * Supprime une offre de la liste des favoris d'un intérimaire.
+ *
+ * @param candidateId - Identifiant ou adresse email du candidat.
+ * @param jobId - Identifiant de l'offre à retirer.
+ * @returns Liste mise à jour des identifiants et identifiant retiré.
+ */
 export const removeInterimaireFavorite = async (candidateId: string, jobId: string) => {
   try {
     let candidateRecord: any = null;
@@ -723,7 +770,7 @@ export const removeInterimaireFavorite = async (candidateId: string, jobId: stri
       }
     }
 
-    // Retrait : exclusion de l'offre
+    // Exclusion de l'offre
     const newFavorites = currentFavorites.filter((id) => id !== targetJobId && id !== jobId);
 
     const updated = await airtableBase('Intérimaires').update(candidateRecord.id, {
@@ -733,7 +780,7 @@ export const removeInterimaireFavorite = async (candidateId: string, jobId: stri
     const finalFavorites = (updated.fields.favorites as string[]) || [];
     return { favoriteIds: finalFavorites, removedId: targetJobId };
   } catch (error) {
-    console.error(`❌ [AIRTABLE] Erreur lors du retrait du favori ${jobId} pour ${candidateId} :`, error);
+    console.error(`[AIRTABLE] Erreur lors du retrait du favori ${jobId} pour ${candidateId} :`, error);
     throw error;
   }
 };

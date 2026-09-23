@@ -1,3 +1,6 @@
+/**
+ * Structure brute d'une offre d'emploi issue de l'API France Travail.
+ */
 export interface OffreFranceTravail {
   id: string;
   intitule: string;
@@ -9,3 +12,4 @@ export interface OffreFranceTravail {
   competences?: Array<{ libelle: string }>;
   dateCreation?: string;
 }
+

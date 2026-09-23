@@ -1,7 +1,11 @@
+/**
+ * Tests unitaires du module d'authentification (hachage de mot de passe et jetons JWT).
+ */
+
 import { hashPassword, verifyPassword } from '../src/auth/hashing';
 import { generateToken, verifyToken, TokenPayload } from '../src/auth/jwt';
 
-describe('TK-004 : Authentification, Hachage & Tokens JWT', () => {
+describe('Authentification, Hachage et Jetons JWT', () => {
   const rawPassword = 'MonSuperMotDePasse123!';
 
   describe('Hachage & Comparaison de mot de passe (Bcrypt)', () => {

@@ -1,5 +1,10 @@
 import { Schema, model, Document } from 'mongoose';
 
+/**
+ * Modèle de journalisation des calculs de matching.
+ * Conserve l'historique des scores globaux et détaillés par critère
+ * entre un profil intérimaire et une offre d'emploi.
+ */
 export interface IMatchingLog extends Document {
   candidatId: string;
   missionId: string;

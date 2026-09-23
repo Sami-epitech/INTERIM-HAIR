@@ -1,10 +1,13 @@
+/**
+ * Routes d'authentification tierce (OAuth 2.0 Google et Facebook).
+ */
 import { Router, Request, Response, NextFunction } from "express";
 import passport, { OAuthUser } from "../auth/passport";
 import { generateToken } from "../auth/jwt";
 
 const router = Router();
 
-// Middleware utilitaire pour vérifier si un provider est configuré
+// Middleware de vérification de la configuration des fournisseurs OAuth
 const ensureConfigured = (providerName: "google" | "facebook") => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (providerName === "google" && (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET)) {
@@ -21,11 +24,9 @@ const ensureConfigured = (providerName: "google" | "facebook") => {
   };
 };
 
-// -------------------------------------------------------------
-// ROUTES GOOGLE
-// -------------------------------------------------------------
+// ── Authentification Google ─────────────────────────────────
 
-// 1. Redirection vers l'écran de consentement Google
+// Redirection vers l'écran d'autorisation Google
 router.get(
   "/google",
   ensureConfigured("google"),
@@ -35,7 +36,7 @@ router.get(
   })
 );
 
-// 2. Callback de retour après validation Google
+// Callback de retour Google après authentification
 router.get(
   "/google/callback",
   ensureConfigured("google"),
@@ -46,7 +47,7 @@ router.get(
   (req: Request, res: Response) => {
     const user = req.user as OAuthUser;
 
-    // Génération du token JWT de l'application
+    // Émission du jeton d'authentification applicatif
     const token = generateToken(
       {
         userId: user.providerId,
@@ -59,16 +60,13 @@ router.get(
     );
 
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-    // Redirection vers le frontend avec le token
     res.redirect(`${frontendUrl}?token=${encodeURIComponent(token)}`);
   }
 );
 
-// -------------------------------------------------------------
-// ROUTES FACEBOOK
-// -------------------------------------------------------------
+// ── Authentification Facebook ───────────────────────────────
 
-// 1. Redirection vers Facebook Login
+// Redirection vers l'écran d'autorisation Facebook
 router.get(
   "/facebook",
   ensureConfigured("facebook"),
@@ -78,7 +76,7 @@ router.get(
   })
 );
 
-// 2. Callback de retour après validation Facebook
+// Callback de retour Facebook après authentification
 router.get(
   "/facebook/callback",
   ensureConfigured("facebook"),
@@ -89,7 +87,7 @@ router.get(
   (req: Request, res: Response) => {
     const user = req.user as OAuthUser;
 
-    // Génération du token JWT de l'application
+    // Émission du jeton d'authentification applicatif
     const token = generateToken(
       {
         userId: user.providerId,

@@ -2,6 +2,9 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 
+/**
+ * Profil normalisé extrait depuis les fournisseurs d'identité tiers (OAuth).
+ */
 export interface OAuthUser {
   provider: "google" | "facebook";
   providerId: string;
@@ -12,7 +15,7 @@ export interface OAuthUser {
   avatarUrl?: string;
 }
 
-// Configuration Google OAuth
+// Configuration de la stratégie Google OAuth 2.0
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 const googleCallbackUrl =
@@ -46,11 +49,11 @@ if (googleClientId && googleClientSecret) {
   );
 } else {
   console.warn(
-    "[OAuth Warning] GOOGLE_CLIENT_ID ou GOOGLE_CLIENT_SECRET non définis. Google Auth désactivé."
+    "[OAUTH] Identifiants Google manquants (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET). Authentification Google désactivée."
   );
 }
 
-// Configuration Facebook OAuth
+// Configuration de la stratégie Facebook OAuth
 const facebookAppId = process.env.FACEBOOK_APP_ID;
 const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
 const facebookCallbackUrl =
@@ -85,7 +88,7 @@ if (facebookAppId && facebookAppSecret) {
   );
 } else {
   console.warn(
-    "[OAuth Warning] FACEBOOK_APP_ID ou FACEBOOK_APP_SECRET non définis. Facebook Auth désactivé."
+    "[OAUTH] Identifiants Facebook manquants (FACEBOOK_APP_ID / FACEBOOK_APP_SECRET). Authentification Facebook désactivée."
   );
 }
 

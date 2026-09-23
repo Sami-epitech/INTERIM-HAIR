@@ -1,26 +1,29 @@
-// backend/src/services/matchingService.ts
-
 import mongoose from 'mongoose';
 import { MatchingLog } from '../models/MatchingLog';
 import { airtableBase } from '../config/airtable';
 import { sendMatchNotificationWebhook } from './webhookService';
 
-// 1. Les fameuses pondérations (en pourcentages)
+/**
+ * Coefficients de pondération bilatérale des critères de matching.
+ */
 const WEIGHTS = {
   candidate: { salary: 0.30, location: 0.30, schedule: 0.20, duration: 0.10, skills: 0.10 },
   recruiter: { skills: 0.40, schedule: 0.30, duration: 0.15, location: 0.10, salary: 0.05 }
 };
 
-// 2. Fonctions de calcul (Les maths)
+/**
+ * Calcule le score d'adéquation des compétences (sur 100).
+ */
 const calculateSkillsScore = (jobSkills: string[], candidateSkills: string[]): number => {
-  if (!jobSkills.length || !candidateSkills.length) return 50; // Valeur par défaut neutre si manquant
+  if (!jobSkills.length || !candidateSkills.length) return 50;
   const matches = jobSkills.filter(s => candidateSkills.includes(s));
   return (matches.length / jobSkills.length) * 100;
 };
 
-// 👇 Logique de localisation basée sur le choix Local vs National
+/**
+ * Calcule le score géographique selon la mobilité (locale ou nationale).
+ */
 const calculateLocationScore = (jobLocation: string, candidateCity: string, candidateMobility: string): number => {
-  // Si le candidat a choisi d'être mobile sur toute la France -> 100% de match
   if (candidateMobility === "national") {
     return 100;
   }
@@ -30,43 +33,58 @@ const calculateLocationScore = (jobLocation: string, candidateCity: string, cand
   const normJob = jobLocation.toLowerCase().trim();
   const normCandidate = candidateCity.toLowerCase().trim();
 
-  // Comparaison par inclusion de chaîne (ex: "Paris" correspond à "Paris et Île-de-France")
   if (normJob.includes(normCandidate) || normCandidate.includes(normJob)) {
     return 100;
   }
 
-  return 0; // Hors de la ville sélectionnée pour un profil non-mobile
+  return 0;
 };
 
+/**
+ * Calcule le score salarial selon l'écart au tarif horaire souhaité.
+ */
 const calculateSalaryScore = (jobRate: number, candidateExpectedRate: number): number => {
   if (jobRate >= candidateExpectedRate) return 100;
   const diff = candidateExpectedRate - jobRate;
-  return Math.max(0, 100 - (diff * 10)); // Baisse de 10 points par euro manquant
+  return Math.max(0, 100 - (diff * 10));
 };
 
-const calculateScheduleScore = (jobShift: string, candStart: string, candEnd: string) => 90; // À affiner si besoin
-const calculateDurationScore = (jobStart: string, jobEnd: string, candStart: string, candEnd: string) => 95; // À affiner si besoin
+/**
+ * Calcule le score des horaires.
+ */
+const calculateScheduleScore = (jobShift: string, candStart: string, candEnd: string) => 90;
 
-// 3. La fonction principale (Celle appelée par le contrôleur)
+/**
+ * Calcule le score de durée de la mission.
+ */
+const calculateDurationScore = (jobStart: string, jobEnd: string, candStart: string, candEnd: string) => 95;
+
+/**
+ * Calcule le score global de matching entre un candidat et une offre,
+ * enregistre l'historique dans MongoDB et déclenche une notification si le seuil est atteint.
+ *
+ * @param candidate - Données de l'intérimaire (format Airtable).
+ * @param job - Données de la mission.
+ * @returns Score global pondéré sur 100.
+ */
 export const calculateAndLogMatch = async (candidate: any, job: any) => {
   const fields = candidate.fields || {};
 
-  // Extraction propre des données du candidat depuis Airtable
   const candidateSkills = fields.skills || fields.tags || [];
   const candidateCity = fields.location || "";
-  const candidateMobility = fields.mobility || "local"; // "local" ou "national"
+  const candidateMobility = fields.mobility || "local";
   const expectedRate = Number(fields.expectedRate || fields.rate || 10);
 
   const jobFields = job.fields || {};
 
-  // A. Calcul des scores bruts sur 100 pour chaque critère
+  // Calcul des scores élémentaires
   const skillsScore = calculateSkillsScore(jobFields.skills || job.skills || [], candidateSkills);
   const locationScore = calculateLocationScore(jobFields.location || job.location, candidateCity, candidateMobility);
   const salaryScore = calculateSalaryScore(Number(jobFields.rate || job.rate || 0), expectedRate);
   const scheduleScore = calculateScheduleScore(jobFields.shift || job.shift, fields.availabilityStartHour, fields.availabilityEndHour);
   const durationScore = calculateDurationScore(jobFields.startDate || job.startDate, jobFields.endDate || job.endDate, fields.availabilityFrom, fields.availabilityTo);
 
-  // B. Application de l'importance des critères (Pondérations)
+  // Application des pondérations bilatérales
   const candidateScore = 
     (salaryScore * WEIGHTS.candidate.salary) +
     (locationScore * WEIGHTS.candidate.location) +
@@ -81,12 +99,11 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
     (locationScore * WEIGHTS.recruiter.location) +
     (salaryScore * WEIGHTS.recruiter.salary);
 
-  // C. Score final (arrondi à l'entier le plus proche)
   const finalScore = Math.round((candidateScore + recruiterScore) / 2);
 
   const candidateId = candidate.id || candidate._id || candidate.userId || fields.id || 'unknown_candidate';
 
-  // D. Enregistrement silencieux dans MONGODB (si connecté)
+  // Persistance dans MongoDB si la connexion est établie
   if (mongoose.connection.readyState === 1) {
     try {
       const logEntry = new MatchingLog({
@@ -104,13 +121,13 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
         }
       });
       await logEntry.save();
-      console.log(`✅ [MONGODB] Match calculé et sauvegardé pour le candidat ${candidateId} (Offre ${job.id}) : ${finalScore}%`);
+      console.log(`[MONGODB] Match enregistré pour le candidat ${candidateId} (Offre ${job.id}) : ${finalScore}%`);
     } catch (err) {
-      console.error("❌ [MONGODB] Erreur lors de la sauvegarde du log :", err);
+      console.error("[MONGODB] Erreur lors de la sauvegarde du log de matching :", err);
     }
   }
 
-  // E. Déclenchement automatique du webhook Airtable si >= seuil (ex: 60%)
+  // Déclenchement de la notification webhook si le score atteint le seuil configuré
   const threshold = Number(process.env.MATCH_WEBHOOK_THRESHOLD) || 60;
   if (finalScore >= threshold) {
     const candidateEmail = fields.email || fields.Email || candidate.email;
@@ -126,15 +143,18 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
     }
   }
 
-  // F. On renvoie le score au contrôleur
   return finalScore;
 };
 
-// 4. Fonction pour faire matcher une NOUVELLE offre avec tous les intérimaires existants
+/**
+ * Évalue une nouvelle offre auprès de l'ensemble des intérimaires enregistrés.
+ *
+ * @param job - Nouvelle offre à faire correspondre.
+ */
 export const matchNewJobWithCandidates = async (job: any) => {
   try {
     const candidates = await airtableBase('Intérimaires').select().all();
-    console.log(`🔍 [MATCHING] Nouvelle offre reçue (ID: ${job.id}, Titre: "${job.title || job.Title}"). Évaluation contre ${candidates.length} intérimaire(s)...`);
+    console.log(`[MATCHING] Nouvelle offre reçue (ID: ${job.id}, Titre: "${job.title || job.Title}"). Évaluation contre ${candidates.length} intérimaire(s)...`);
 
     const jobForMatching = {
       id: job.id,
@@ -158,8 +178,9 @@ export const matchNewJobWithCandidates = async (job: any) => {
     for (const candidate of candidates) {
       await calculateAndLogMatch(candidate, jobForMatching);
     }
-    console.log(`✅ [MATCHING] Évaluation terminée pour la nouvelle offre ${job.id}.`);
+    console.log(`[MATCHING] Évaluation terminée pour la nouvelle offre ${job.id}.`);
   } catch (error) {
-    console.error("❌ [MATCHING] Erreur lors de l'évaluation de la nouvelle offre avec les candidats :", error);
+    console.error("[MATCHING] Erreur lors de l'évaluation de la nouvelle offre avec les candidats :", error);
   }
-};
+};
+

@@ -1,3 +1,8 @@
+/**
+ * Script de démonstration et validation manuelle des modules d'authentification :
+ * - Hachage et vérification de mots de passe avec Bcrypt
+ * - Émission, vérification et rejet de jetons JWT
+ */
 import { hashPassword, verifyPassword } from './hashing';
 import { generateToken, verifyToken } from './jwt';
 

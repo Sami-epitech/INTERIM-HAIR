@@ -4,9 +4,12 @@ import { MatchNotification } from '../models/MatchNotification';
 const DEFAULT_WEBHOOK_URL = 'https://hooks.airtable.com/workflows/v1/genericWebhook/appUUSmomrRcjXvBE/wflZSeuaFdJWDAixi/wtrN6Z8Ffpcau35SO';
 const DEFAULT_THRESHOLD = 60;
 
-// Cache en mémoire pour garantir l'anti-doublon même si MongoDB est hors-ligne
+// Cache en mémoire pour garantir l'anti-doublon même si MongoDB est indisponible
 const inMemoryNotified = new Set<string>();
 
+/**
+ * Paramètres nécessaires pour l'envoi de la notification webhook d'un match.
+ */
 export interface NotifyCandidateParams {
   candidatId: string;
   candidateEmail: string;
@@ -27,6 +30,12 @@ export interface NotifyCandidateParams {
   };
 }
 
+/**
+ * Envoie une notification via le webhook Airtable pour un candidat dont le score de matching atteint le seuil.
+ *
+ * @param params - Détails du candidat, du score et de la mission.
+ * @returns Statut de la notification et motif le cas échéant.
+ */
 export const sendMatchNotificationWebhook = async ({
   candidatId,
   candidateEmail,
@@ -39,24 +48,24 @@ export const sendMatchNotificationWebhook = async ({
     const webhookUrl = process.env.AIRTABLE_MATCHING_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
     const cacheKey = `${candidatId}:${job.id}`;
 
-    // 1. Vérification du seuil
+    // Vérification du seuil minimal
     if (score < threshold) {
       return { notified: false, reason: 'below_threshold' };
     }
 
-    // 2. Vérification que l'email est valide
+    // Validation du format d'email
     if (!candidateEmail || !candidateEmail.includes('@')) {
-      console.warn(`⚠️ [WEBHOOK] Email candidat manquant ou invalide pour candidatId=${candidatId}`);
+      console.warn(`[WEBHOOK] Email candidat manquant ou invalide pour candidatId=${candidatId}`);
       return { notified: false, reason: 'invalid_email' };
     }
 
-    // 3. Vérification anti-doublon (Cache mémoire d'abord)
+    // Vérification anti-doublon dans le cache mémoire
     if (inMemoryNotified.has(cacheKey)) {
-      console.log(`ℹ️ [WEBHOOK] Offre ${job.id} déjà notifiée pour l'intérimaire ${candidateEmail} (Cache mémoire actif)`);
+      console.log(`[WEBHOOK] Offre ${job.id} déjà notifiée pour l'intérimaire ${candidateEmail} (cache mémoire actif)`);
       return { notified: false, reason: 'already_notified' };
     }
 
-    // Vérification anti-doublon dans MongoDB si connecté
+    // Vérification anti-doublon dans MongoDB si actif
     if (mongoose.connection.readyState === 1) {
       try {
         const alreadyNotified = await MatchNotification.findOne({
@@ -66,18 +75,18 @@ export const sendMatchNotificationWebhook = async ({
 
         if (alreadyNotified) {
           inMemoryNotified.add(cacheKey);
-          console.log(`ℹ️ [WEBHOOK] Offre ${job.id} déjà notifiée pour l'intérimaire ${candidateEmail} (MongoDB actif)`);
+          console.log(`[WEBHOOK] Offre ${job.id} déjà notifiée pour l'intérimaire ${candidateEmail} (MongoDB actif)`);
           return { notified: false, reason: 'already_notified' };
         }
       } catch (err) {
-        console.warn("⚠️ [WEBHOOK] Impossible de vérifier MongoDB, passage sur cache mémoire :", err);
+        console.warn("[WEBHOOK] Impossible de vérifier MongoDB, recours au cache mémoire :", err);
       }
     }
 
     const jobTitle = job.title || job.Title || "Mission sans titre";
     const firstName = candidateFirstName || "Intérimaire";
 
-    // 4. Préparation du payload (champs plats + objet complet)
+    // Préparation de la charge utile pour le webhook
     const payload = {
       email: candidateEmail.trim().toLowerCase(),
       firstName,
@@ -103,9 +112,8 @@ export const sendMatchNotificationWebhook = async ({
       }
     };
 
-    console.log(`🚀 [WEBHOOK] Envoi webhook Airtable pour ${candidateEmail} sur l'offre "${jobTitle}" (Match: ${score}%)`);
+    console.log(`[WEBHOOK] Envoi webhook Airtable pour ${candidateEmail} sur l'offre "${jobTitle}" (Match: ${score}%)`);
 
-    // 5. Envoi HTTP POST vers Airtable
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
@@ -116,11 +124,11 @@ export const sendMatchNotificationWebhook = async ({
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error(`❌ [WEBHOOK] Échec réponse Airtable (${response.status}) :`, errText);
+      console.error(`[WEBHOOK] Échec de réponse Airtable (${response.status}) :`, errText);
       return { notified: false, reason: `http_error_${response.status}` };
     }
 
-    // 6. Enregistrement anti-doublon (Cache mémoire + MongoDB si connecté)
+    // Mémorisation anti-doublon en cache et dans MongoDB
     inMemoryNotified.add(cacheKey);
 
     if (mongoose.connection.readyState === 1) {
@@ -133,22 +141,22 @@ export const sendMatchNotificationWebhook = async ({
           score,
           sentAt: new Date()
         });
-        console.log(`✅ [WEBHOOK] Notification enregistrée avec succès dans MongoDB pour ${candidateEmail} (Mission ${job.id})`);
+        console.log(`[WEBHOOK] Notification enregistrée avec succès dans MongoDB pour ${candidateEmail} (Mission ${job.id})`);
       } catch (dbErr: any) {
-        // Ignorer l'erreur de duplicata si déclenché en parallèle
         if (dbErr.code === 11000) {
-          console.warn(`ℹ️ [WEBHOOK] Doublon MongoDB intercepté pour ${candidateEmail} / ${job.id}`);
+          console.warn(`[WEBHOOK] Doublon MongoDB intercepté pour ${candidateEmail} / ${job.id}`);
         } else {
-          console.error(`❌ [WEBHOOK] Erreur enregistrement MongoDB :`, dbErr);
+          console.error(`[WEBHOOK] Erreur lors de l'enregistrement dans MongoDB :`, dbErr);
         }
       }
     } else {
-      console.log(`ℹ️ [WEBHOOK] Notification mémorisée dans le cache mémoire anti-doublon pour ${candidateEmail} (Mission ${job.id})`);
+      console.log(`[WEBHOOK] Notification mémorisée dans le cache mémoire anti-doublon pour ${candidateEmail} (Mission ${job.id})`);
     }
 
     return { notified: true };
   } catch (err: any) {
-    console.error(`❌ [WEBHOOK] Erreur inattendue lors de l'envoi du webhook :`, err);
+    console.error(`[WEBHOOK] Erreur inattendue lors de l'envoi du webhook :`, err);
     return { notified: false, reason: err.message || 'unknown_error' };
   }
 };
+

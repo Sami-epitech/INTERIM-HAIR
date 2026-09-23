@@ -37,10 +37,17 @@ const MOCK_OFFRES_FT: OffreFranceTravail[] = [
   },
 ];
 
+/**
+ * Service fournissant les offres d'emploi mockées transformées.
+ */
 export class JobService {
+  /**
+   * Retourne l'ensemble des offres d'emploi mockées au format unifié de l'application.
+   */
   public getAllJobs() {
     return MOCK_OFFRES_FT.map(transformerOffreFranceTravail);
   }
 }
 
 export const jobService = new JobService();
+
