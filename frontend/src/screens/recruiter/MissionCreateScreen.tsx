@@ -96,7 +96,7 @@ export function MissionCreateScreen({
       onNavigate("r-dashboard");
     } catch (err: any) {
       console.error("❌ [FRONTEND] Erreur lors du POST mission :", err);
-      setErrorMsg(err.message || "Impossible de contacter le serveur.");
+      setErrorMsg(err.message || "Une erreur est survenue lors de la création de la mission. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }

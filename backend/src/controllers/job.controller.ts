@@ -5,6 +5,8 @@ import { verifyToken, TokenPayload } from '../auth/jwt';
 import fs from 'fs';
 import path from 'path';
 
+import { SALON_IMAGES, getSalonImage } from '../utils/salonImages';
+
 // Récupérer les offres (Filtrées par e-mail recruteur OU Fil Candidat avec France Travail)
 export const getJobs = async (req: Request, res: Response) => {
   try {
@@ -57,8 +59,8 @@ export const getJobs = async (req: Request, res: Response) => {
           contract: "Intérim",
           diplomas: ["CAP Coiffure"],
           benefits: ["Mutuelle"],
-          match: 85,
-          image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=600"
+          match: 50,
+          image: getSalonImage(record.id, f.image || f.photo)
         };
       })
       .filter((job): job is NonNullable<typeof job> => job !== null);
@@ -158,6 +160,7 @@ export const postJob = async (req: Request, res: Response) => {
       skills: Array.isArray(missionData.skills) ? missionData.skills : [],
       status: missionData.status || "open",
       recruiterId: emailToSave,
+      publishedAt: new Date().toISOString(),
     };
 
     const createdRecord = await base("Offres d'emploi").create(
@@ -172,6 +175,7 @@ export const postJob = async (req: Request, res: Response) => {
     const createdMission = {
       id: createdRecord[0].id,
       ...createdRecord[0].fields,
+      image: getSalonImage(createdRecord[0].id, fieldsToCreate.image),
     };
 
     console.log("✅ [AIRTABLE] Enregistrement réussi ! ID :", createdRecord[0].id);
