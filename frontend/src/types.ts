@@ -13,7 +13,7 @@ export type Screen =
   | "c-dashboard"
   | "r-dashboard"
   | "r-create"
-  | "r-mission-edit";
+  | "r-mission-edit"
   | "legal";
 
 /**
