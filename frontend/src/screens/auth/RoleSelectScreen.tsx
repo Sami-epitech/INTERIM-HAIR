@@ -141,7 +141,13 @@ export function RoleSelectScreen({
 
         <p className="text-center text-xs text-muted-foreground">
           En continuant, vous acceptez nos{" "}
-          <span className="text-primary font-medium underline underline-offset-2 cursor-pointer">Conditions d'utilisation</span>
+          <button
+            type="button"
+            onClick={() => onNavigate("legal")}
+            className="text-primary font-medium underline underline-offset-2"
+          >
+            Conditions d'utilisation
+          </button>
         </p>
       </div>
     </div>

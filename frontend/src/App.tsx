@@ -19,6 +19,7 @@ import { CandidateDashboard } from "./screens/candidate/CandidateDashboard";
 import { RecruiterDashboard } from "./screens/recruiter/RecruiterDashboard";
 import { MissionCreateScreen } from "./screens/recruiter/MissionCreateScreen";
 import { MissionEditScreen } from "./screens/recruiter/MissionEditScreen";
+import { LegalScreen } from "./screens/LegalScreen";
 
 const FORM_FLOW_SCREENS: Screen[] = ["role-select", "auth", "onboarding1", "cv-upload", "manual-entry", "onboarding2"];
 
@@ -27,7 +28,7 @@ export default function App() {
   const [userMode, setUserMode] = useState<UserMode>("candidate");
   const [selectedJob, setSelectedJob] = useState<Job>(JOBS[0]);
   const [editingMission, setEditingMission] = useState<Mission>(MISSIONS_INIT[0]);
-  
+
   const [jobsList, setJobsList] = useState<Job[]>(JOBS);
   const [dashTab, setDashTab] = useState<DashTab>("applications");
 
@@ -205,13 +206,14 @@ export default function App() {
     <div key={screen} className="screen-enter">
       {screen === "role-select" && <RoleSelectScreen onNavigate={go} setUserMode={setUserMode} />}
       {screen === "auth" && <AuthScreen onNavigate={go} userMode={userMode} />}
+      {screen === "legal" && <LegalScreen onNavigate={go} />}
 
       {/* Parcours candidat */}
       {screen === "onboarding1" && <Onboarding1Screen onNavigate={go} />}
       {screen === "cv-upload" && <CVUploadScreen onNavigate={go} />}
       {screen === "manual-entry" && <ManualEntryScreen onNavigate={go} />}
       {screen === "onboarding2" && <Onboarding2Screen onNavigate={go} />}
-      
+
       {screen === "feed" && (
         <FeedScreen
           onNavigate={go}
@@ -220,7 +222,7 @@ export default function App() {
           onToggleFavorite={handleToggleFavorite}
         />
       )}
-      
+
       {screen === "job-detail" && (
         <JobDetailScreen
           job={selectedJob}
@@ -229,7 +231,7 @@ export default function App() {
           onToggleFavorite={handleToggleFavorite}
         />
       )}
-      
+
       {screen === "c-dashboard" && (
         <CandidateDashboard
           onNavigate={go}
@@ -288,6 +290,7 @@ export default function App() {
           }
         />
       )}
+
     </div>
   );
 

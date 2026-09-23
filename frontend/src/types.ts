@@ -10,7 +10,8 @@ export type Screen =
   | "c-dashboard"
   | "r-dashboard"
   | "r-create"
-  | "r-mission-edit";
+  | "r-mission-edit"
+  | "legal";
 
 export type UserMode = "candidate" | "recruiter";
 export type AuthTab = "login" | "signup";
