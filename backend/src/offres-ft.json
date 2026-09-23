@@ -1,5 +1,194 @@
 [
   {
+    "id": "214HHSC",
+    "intitule": "Coiffeur / Coiffeuse (H/F)",
+    "description": "Nous recherchons un(e) coiffeur(euse) polyvalent(e) pour rejoindre notre équipe dynamique. Le(la) candidat(e) idéal(e) sera responsable de diverses tâches de coiffure et devra également participer à la vente de produits en salon.\n\nMissions principales :\n- Réaliser des coupes pour hommes et femmes\n- Effectuer des colorations et des balayages\n- Appliquer des mèches\n- Effectuer des shampoings et des soins capillaires\n- Conseiller et vendre des produits de coiffure et de soin capillaires\n- Assurer un service client de haute qualité\n- Maintenir un environnement de travail propre et organisé\n\nQualifications requises :\n- Diplôme en coiffure (CAP Coiffure minimum)\n- Expérience professionnelle en salon de coiffure\n- Connaissance des techniques de coloration, de balayage et de mise en plis\n- Compétences en vente et en service client\n- Capacité à travailler en équipe et de manière autonome\n- Bonne communication et sens de l'écoute\n\nProfil recherché :\n- Dynamique et motivé(e)\n- Polyvalent(e) et capable de gérer plusieurs tâches simultanément\n- Souci du détail et sens de l'esthétique\n- Capacité à conseiller et à fidéliser la clientèle\n\nSalaire au SMIC évolutif \nOuvert du mardi au samedi de 9h à 19h. ",
+    "dateCreation": "2026-09-23T13:32:52.761Z",
+    "dateActualisation": "2026-09-23T13:32:52.761Z",
+    "lieuTravail": {
+      "libelle": "59 - LILLE",
+      "latitude": 50.634424,
+      "longitude": 3.062042,
+      "codePostal": "59000",
+      "commune": "59350"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse",
+    "entreprise": {
+      "nom": "POZ COIFFURE",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDD",
+    "typeContratLibelle": "CDD - 6 Mois",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "E",
+    "experienceLibelle": "1 An(s)",
+    "formations": [
+      {
+        "codeFormation": "42050",
+        "domaineLibelle": "Coiffure",
+        "niveauLibelle": "CAP, BEP et équivalents",
+        "exigence": "E"
+      }
+    ],
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "S"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "S"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "S"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "S"
+      }
+    ],
+    "salaire": {
+      "libelle": "Horaire de 12.31 Euros - Evolutif ",
+      "commentaire": "Evolutif "
+    },
+    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
+    "dureeTravailLibelleConverti": "Temps plein",
+    "alternance": false,
+    "contact": {},
+    "agence": {},
+    "nombrePostes": 1,
+    "accessibleTH": false,
+    "deplacementCode": "1",
+    "deplacementLibelle": "Jamais",
+    "qualificationCode": "6",
+    "qualificationLibelle": "Employé qualifié",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "trancheEffectifEtab": "3 à 5 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214HHSC"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "35H/semaine\nTravail en journée"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
+    "id": "214HDBY",
+    "intitule": "Coiffeur/Coiffeuse (H/F)",
+    "description": "Je recherche dés à présent et jusqu'à fin Novembre (CDD de 2 mois) une personne pour intégrer mon équipe de 3 coiffeuses et 3 apprenties afin de remplacer une de mes employées en arrêt maladie.\nLe salon existe depuis 2005, la clientèle est familiale et l'ambiance chaleureuse.\nNous travaillons sur 4 jours, pour ce poste les jours sont Mardi, Jeudi, Vendredi et Samedi.\nLe poste est disponible dés maintenant.\nDébutant accepté.",
+    "dateCreation": "2026-09-23T11:37:27.184Z",
+    "dateActualisation": "2026-09-23T12:02:17.291Z",
+    "lieuTravail": {
+      "libelle": "95 - BEAUMONT SUR OISE",
+      "latitude": 49.141591,
+      "longitude": 2.284455,
+      "codePostal": "95260",
+      "commune": "95052"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
+    "entreprise": {
+      "nom": "COIFFURE ALINE CLARE",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDD",
+    "typeContratLibelle": "CDD - 2 Mois",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "D",
+    "experienceLibelle": "Débutant accepté",
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "S"
+      },
+      {
+        "code": "101911",
+        "libelle": "Techniques de séchage",
+        "exigence": "E"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "E"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "E"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "S"
+      },
+      {
+        "code": "114126",
+        "libelle": "Préparer et appliquer des produits colorants, décolorants (mèches, ...)",
+        "exigence": "E"
+      }
+    ],
+    "salaire": {
+      "libelle": "Mensuel de 1867.02 Euros"
+    },
+    "dureeTravailLibelle": "35H/semaine\nTravail en journée...",
+    "dureeTravailLibelleConverti": "Temps plein",
+    "alternance": false,
+    "contact": {
+      "nom": "COIFFURE ALINE CLARE - Mme Aline Clare",
+      "coordonnees1": "Tél : 0687371335",
+      "telephone": "0687371335"
+    },
+    "agence": {},
+    "nombrePostes": 1,
+    "deplacementCode": "1",
+    "deplacementLibelle": "Jamais",
+    "qualificationCode": "6",
+    "qualificationLibelle": "Employé qualifié",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "qualitesProfessionnelles": [
+      {
+        "libelle": "Avoir l'esprit d'équipe",
+        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
+      },
+      {
+        "libelle": "Faire preuve d'autonomie",
+        "description": "Capacité à prendre en charge son activité sans devoir être encadré de façon continue (le cas échéant, à solliciter les autres acteurs de l'entreprise)."
+      }
+    ],
+    "trancheEffectifEtab": "1 ou 2 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214HDBY"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "35H/semaine\nTravail en journée",
+        " Travail le samedi"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
     "id": "214GXZW",
     "intitule": "Coiffeur / Coiffeuse (H/F)",
     "description": "Nous sommes à la recherche d'un/une COIFFEUR/COIFFEUSE (H/F), polyvalent(e), motivé(e) et autonome.\n\nNous vous proposerons un CDD 4 mois 35 heures hebdomadaires réparties sur 4 jours (à voir avec l'employeur) \nPAS DE TRAVAIL LE SAMEDI\n\nStationnement aisé et gratuit autour du salon.\n\nVos missions : \n- Pouvoir prendre en charge le client de A à Z sur toutes les techniques\n- Faire les shampooings et les coupes\n- Faire les coiffures\n- Nettoyer le plan de travail\n- Respecter les mesures de sécurité en vigueur\n- Maîtrisez les techniques de couleurs et de mèches\n\nPrise de poste immédiate",
@@ -740,7 +929,7 @@
     "intitule": "Apprenti(e) Coiffeur(se) (H/F)",
     "description": "Vous êtes créatif/ve, curieux(se) et vous avez un réel intérêt pour la coiffure mixte ? \n\nLa Chambre de métiers et de l'Artisanat recrute des apprenti(e)s du CAP au BP pour des salons de coiffure situés à Nice et Menton.\n\nVenez vous former auprès d'artisans passionnés.\n\nContrat en alternance entre le centre de formation et l'entreprise\nRémunération en fonction de l'âge et de l'expérience du candidat",
     "dateCreation": "2026-09-22T15:50:15.806Z",
-    "dateActualisation": "2026-09-22T15:56:17.006Z",
+    "dateActualisation": "2026-09-23T13:11:59.719Z",
     "lieuTravail": {
       "libelle": "06 - Alpes Maritimes"
     },
@@ -749,13 +938,37 @@
     "appellationlibelle": "Coiffeur / Coiffeuse",
     "entreprise": {
       "nom": "Chambre de Métiers et de l'Artisanat",
-      "description": "L'Artisanat regroupe 1 700 000 entreprises sur un total de 250 métiers et plus de 500 spécialisations. Du secteur du Bâtiment au Services, retrouvez nos offres d'emploi et d'apprentissage dans le 06 sur notre pages. Rejoignez-nous !"
+      "description": "L'Artisanat regroupe 1 700 000 entreprises sur un total de 250 métiers et plus de 500 spécialisations. Du secteur du Bâtiment au Services, retrouvez nos offres d'emploi et d'apprentissage dans le 06 sur notre pages. Rejoignez-nous !",
+      "url": "https://apprentissage06.mycv.tech/",
+      "entrepriseAdaptee": false
     },
     "typeContrat": "CDD",
     "typeContratLibelle": "CDD - 24 Mois",
     "natureContrat": "Contrat apprentissage",
     "experienceExige": "D",
     "experienceLibelle": "Débutant accepté",
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "S"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "S"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "S"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "S"
+      }
+    ],
     "salaire": {
       "commentaire": "Salaire apprentissage"
     },
@@ -793,6 +1006,7 @@
       "origine": "1",
       "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214GGQC"
     },
+    "offresManqueCandidats": false,
     "contexteTravail": {
       "horaires": [
         "35H/semaine\nTravail en journée"
@@ -1384,13 +1598,13 @@
   {
     "id": "214FJXD",
     "intitule": "Conseiller de vente coiffure/esthétique H/F - CDD - (34) (H/F)",
-    "description": "Chez Gouiran Beauté, la beauté commence par l'humain !\n\nTon job chez nous ?\n\nÊtre le(la) pro du conseil client : guider chaque client pour qu'il trouve LE produit parfait.\nBooster les ventes : proposer des produits complémentaires, fidéliser nos clients et atteindre les objectifs.\nGérer la caisse avec le sourire : fluidifier les achats et encaisser avec efficacité.\nFaire vivre le magasin : gérer les stocks, mettre en avant les nouveautés et créer un espace agréable.\nRester à l'affût des tendances : comprendre les besoins des clients et faire remonter les tendances.\nPas d'inquiétude, tu seras accompagné(e) et formé(e) !\n\nTon Manager et ton Responsable de Région seront là pour t'aider à performer et évoluer.\nPrêt(e) à relever le défi ? \n\nLe profil qu'on recherche ?\nPassionné(e) par la beauté (coiffure, esthétique, produits tendances).\nÀ l'aise avec les clients et toujours prêt(e) à partager des conseils.\nMotivé(e), dynamique et avec un bon esprit d'équipe.\nAlors, tente ta chance !\n\nPourquoi rejoindre la #TeamGouiran ?\nUn job dans une entreprise dynamique et familiale !\nFormation et accompagnement pour devenir expert(e) en produits de beauté.\nMutuelle ALAN et ses nombreux services + (80% pris en charge).\nPrimes attractives sur objectifs.\nTarifs VIP sur nos produits + dotations produits.\nCarte Ticket Restaurant SWILE.\nAvantages CSE (chèques cadeaux, vacances.).\nDispositif d'épargne salariale.\nUne équipe fun, passionnée et prête à t'accueillir !\n\nInfos utiles\nLieu : Montpellier Centre-ville (34)\nContrat : CDD 30h00\nDate de début : dès que possible pour une durée de 4 semaines\nSalaire : 1634.58€  brut mensuel\n\nComment postuler ?\n1. Envoie-nous ton CV + lettre de motivation\n2. Nous analysons ta candidature avec beaucoup d'attention (promis !)\n3. Entretien téléphonique si ton profil correspond\n4. Présentation au Responsable concerné\n5. Si on a un coup de cœur. on t'envoie une offre\nDans tous les cas, on te répondra, que ce soit positif (on l'espère) ou négatif.\nMême si tu n'as pas d'expérience, OSE ! Chez nous, c'est la motivation qui compte le plus.\n\nTon intégration dans la Team Gouiran\nDès ton arrivée, ton manager et tes collègues seront là pour t'accueillir et t'accompagner !\nTu seras formé(e) sur nos procédures internes, techniques de vente et produits pour être au top rapidement.\nTu auras également un accès illimité à notre intranet My Gouiran, où tu trouveras :\nLes dernières actualités de l'entreprise\nDes infos produits et techniques de vente\nDes supports pratiques et théoriques\n\nUn recrutement inclusif et engagé\nChez Gouiran Beauté, nous sommes convaincus que la diversité est une richesse.\nNous nous engageons à garantir l'égalité des chances et à lutter contre toute forme de discrimination, y compris en faveur de l'insertion des personnes en situation de handicap.\n\nAlors. prêt(e) à rejoindre une team de passionnés ? Postule maintenant !",
+    "description": "Chez Gouiran Beauté, la beauté commence par l'humain !\n\nLe poste en un coup d'œil\nLieu : Montpellier Centre-Ville (34)\nContrat : CDD 30H \nDate de début : dès que possible pour une durée de 4 semaines\nSalaire :  1634.58 € brut mensuel\n\nTon quotidien chez nous\nTa mission ? Faire vivre à chaque client une expérience agréable et lui apporter le conseil qui fera la différence.\nAu quotidien, tu vas :\nConseiller et fidéliser nos clients : identifier leurs besoins, apporter ton expertise et les guider vers les produits les plus adaptés.\nDévelopper les ventes : faire découvrir nos nouveautés, proposer des produits complémentaires et contribuer à l'atteinte des objectifs.\nSuivre le cycle de vente : accompagner le client tout au long de son parcours, du conseil jusqu'à l'encaissement et au suivi de ses besoins.\nFaire vivre le magasin : participer au réassort, à la gestion des stocks, à la mise en rayon et au merchandising.\nCollaborer avec nos équipes internes : échanger avec les différents services et partager les informations utiles pour garantir une expérience client fluide et efficace.\nParticiper à la gestion administrative : assurer les tâches administratives liées à l'activité du magasin et veiller au bon suivi des procédures internes.\nRester à l'affût des tendances : être attentif(ve) aux attentes des clients, aux produits recherchés et aux nouvelles tendances du secteur.\n\nEt si tu ne connais pas encore tous nos produits et nos méthodes, pas d'inquiétude ! Ton manager et tes collègues seront là pour t'accompagner et te former dès ton arrivée.\nLe profil qu'on recherche \nPlus qu'un CV parfait, nous recherchons avant tout une personnalité et une vraie envie de conseiller nos clients.\nTu pourrais te plaire chez nous si :\nL'univers de la beauté, de la coiffure et de l'esthétique te passionne.\nTu aimes le contact client, écouter, conseiller et partager tes connaissances.\nTu es dynamique, curieux(se) et à l'écoute.\nTu apprécies le travail en équipe et contribuer à une bonne ambiance.\nTu as envie d'apprendre et de développer tes connaissances produits.\nTu possèdes un CAP, BP ou BTS en coiffure ou en esthétique ? C'est un vrai plus !\n\nTu n'as pas encore beaucoup d'expérience ? Ose postuler ! Chez Gouiran Beauté, nous accordons autant d'importance à ta motivation et à ton savoir-être qu'à ton parcours. \n\nPourquoi rejoindre la #TeamGouiran ?\nRejoindre Gouiran Beauté, c'est profiter :\nUn job dans une entreprise dynamique et familiale !\nFormation et accompagnement pour devenir expert(e) en produits de beauté.\nMutuelle ALAN au top (80% pris en charge).\nPrimes attractives sur objectifs.\nTarifs VIP sur nos produits + dotations produits.\nCarte Ticket Restaurant SWILE.\nAvantages CSE (chèques cadeaux, vacances.).\nPrime d'ancienneté \nDispositif d'épargne salariale.\nEt surtout d'une équipe passionnée, fun et prête à t'accueillir !\n\nComment se passe le recrutement ?\n\nNous avons voulu faire simple :\nTu postules en nous envoyant ton CV.\nNous étudions ta candidature avec attention.\nTon profil correspond ? Nous échangeons une première fois par téléphone.\nTu rencontres ensuite le responsable concerné pour faire connaissance et échanger sur le poste.\nL'envie de travailler ensemble est partagée ? Bienvenue dans la #TeamGouiran !\nEt parce qu'une candidature mérite toujours une réponse, nous nous engageons à revenir vers toi, quelle que soit notre décision.\n\nUn recrutement inclusif et engagé\n\nChez Gouiran Beauté, nous sommes convaincus que la diversité des parcours, des expériences et des personnalités est une richesse. Nous veillons à garantir l'égalité des chances à chaque étape du recrutement et à lutter contre toute forme de discrimination.\nToutes nos opportunités sont ouvertes aux personnes en situation de handicap.\n\nAlors, envie de partager ta passion de la beauté avec nos clients ? Rejoins la #TeamGouiran et postule dès main",
     "dateCreation": "2026-09-22T09:13:31.328Z",
-    "dateActualisation": "2026-09-22T09:13:31.894Z",
+    "dateActualisation": "2026-09-23T11:06:55.329Z",
     "lieuTravail": {
       "libelle": "34 - Montpellier",
-      "latitude": 43.597194,
-      "longitude": 3.870186,
+      "latitude": 43.626378,
+      "longitude": 3.882533,
       "codePostal": "34000",
       "commune": "34172"
     },
@@ -1399,8 +1613,7 @@
     "appellationlibelle": "Coiffeur / Coiffeuse",
     "entreprise": {
       "nom": "SAS GOUIRAN",
-      "description": "Gouiran Beauté , distributeur en produits de coiffure et esthétique à destination des professionnels et particuliers est reconnue aujourd'hui pour son expertise dans le domaine de la beauté et forte de son expérience depuis près de 60 ans auprès des professionnels du secteur.\nAujourd'hui, cette PME française, familiale et dynamique compte plus de 20 magasins en France, des sites e-commerce et près de 180 collaborateurs qui participent à la réussite et à l'évolution de l'entreprise.\n",
-      "entrepriseAdaptee": false
+      "description": "Gouiran Beauté , distributeur en produits de coiffure et esthétique à destination des professionnels et particuliers est reconnue aujourd'hui pour son expertise dans le domaine de la beauté et forte de son expérience depuis près de 60 ans auprès des professionnels du secteur.\nAujourd'hui, cette PME française, familiale et dynamique compte plus de 20 magasins en France, des sites e-commerce et près de 180 collaborateurs qui participent à la réussite et à l'évolution de l'entreprise.\n"
     },
     "typeContrat": "CDD",
     "typeContratLibelle": "CDD - 1 Mois",
@@ -1491,7 +1704,6 @@
       "origine": "1",
       "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214FJXD"
     },
-    "offresManqueCandidats": false,
     "contexteTravail": {
       "horaires": [
         "Temps partiel - 30H/semaine\nTravail en journée",
@@ -2934,7 +3146,7 @@
     "intitule": "Apprenti cap coiffure h/f (H/F)",
     "description": "Dans notre salon de coiffure situé au coeur de PARIS , vous découvrirez le métier de coiffeur/coiffeuse et y évoluerez au rythme de vos compétences, de vos résultats et de votre ambition.\n\nNous recherchons des futurs coiffeurs/coiffeuses passionnés qui souhaitent passer un CAP COIFFURE en alternance, à travers un contrat d'apprentissage ou de professionnalisation.",
     "dateCreation": "2026-09-17T16:55:10.374Z",
-    "dateActualisation": "2026-09-17T16:55:10.374Z",
+    "dateActualisation": "2026-09-23T12:51:14.188Z",
     "lieuTravail": {
       "libelle": "75 - Paris",
       "commune": "75056"
@@ -2979,8 +3191,15 @@
     "dureeTravailLibelle": "35H/semaine\nTravail en journée...",
     "dureeTravailLibelleConverti": "Temps plein",
     "alternance": true,
-    "contact": {},
-    "agence": {},
+    "contact": {
+      "nom": "Agence France Travail Paris 1 2 3 4ème Paul Lelong",
+      "coordonnees1": "4 RUE Paul Lelong",
+      "coordonnees2": "75002 Paris",
+      "coordonnees3": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214BCTX"
+    },
+    "agence": {
+      "courriel": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214BCTX"
+    },
     "nombrePostes": 1,
     "qualificationCode": "1",
     "qualificationLibelle": "Manœuvre",
@@ -7667,9 +7886,9 @@
   {
     "id": "213TQHB",
     "intitule": "Conseiller de vente coiffure/esthétique H/F - CDD - (34) (H/F)",
-    "description": "Chez Gouiran Beauté, la beauté commence par l'humain !\n\nTon job chez nous ?\n\nÊtre le(la) pro du conseil client : guider chaque client pour qu'il trouve LE produit parfait.\nBooster les ventes : proposer des produits complémentaires, fidéliser nos clients et atteindre les objectifs.\nGérer la caisse avec le sourire : fluidifier les achats et encaisser avec efficacité.\nFaire vivre le magasin : gérer les stocks, mettre en avant les nouveautés et créer un espace agréable.\nRester à l'affût des tendances : comprendre les besoins des clients et faire remonter les tendances.\nPas d'inquiétude, tu seras accompagné(e) et formé(e) !\n\nTon Manager et ton Responsable de Région seront là pour t'aider à performer et évoluer.\nPrêt(e) à relever le défi ? \n\nLe profil qu'on recherche ?\nPassionné(e) par la beauté (coiffure, esthétique, produits tendances).\nÀ l'aise avec les clients et toujours prêt(e) à partager des conseils.\nMotivé(e), dynamique et avec un bon esprit d'équipe.\nAlors, tente ta chance !\n\nPourquoi rejoindre la #TeamGouiran ?\nUn job dans une entreprise dynamique et familiale !\nFormation et accompagnement pour devenir expert(e) en produits de beauté.\nMutuelle ALAN et ses nombreux services + (80% pris en charge).\nPrimes attractives sur objectifs.\nTarifs VIP sur nos produits + dotations produits.\nCarte Ticket Restaurant SWILE.\nAvantages CSE (chèques cadeaux, vacances.).\nDispositif d'épargne salariale.\nUne équipe fun, passionnée et prête à t'accueillir !\n\nInfos utiles\nLieu : Balaruc (34)\nContrat : CDD 28h00\nDate de début : à partir du 16/09/2026\nSalaire : 1525.57€  brut mensuel\n\nComment postuler ?\n1. Envoie-nous ton CV + lettre de motivation\n2. Nous analysons ta candidature avec beaucoup d'attention (promis !)\n3. Entretien téléphonique si ton profil correspond\n4. Présentation au Responsable concerné\n5. Si on a un coup de cœur. on t'envoie une offre\nDans tous les cas, on te répondra, que ce soit positif (on l'espère) ou négatif.\nMême si tu n'as pas d'expérience, OSE ! Chez nous, c'est la motivation qui compte le plus.\n\nTon intégration dans la Team Gouiran\nDès ton arrivée, ton manager et tes collègues seront là pour t'accueillir et t'accompagner !\nTu seras formé(e) sur nos procédures internes, techniques de vente et produits pour être au top rapidement.\nTu auras également un accès illimité à notre intranet My Gouiran, où tu trouveras :\nLes dernières actualités de l'entreprise\nDes infos produits et techniques de vente\nDes supports pratiques et théoriques\n\nUn recrutement inclusif et engagé\nChez Gouiran Beauté, nous sommes convaincus que la diversité est une richesse.\nNous nous engageons à garantir l'égalité des chances et à lutter contre toute forme de discrimination, y compris en faveur de l'insertion des personnes en situation de handicap.\n\nAlors. prêt(e) à rejoindre une team de passionnés ? Postule maintenant !",
+    "description": "Chez Gouiran Beauté, la beauté commence par l'humain !\n\nLe poste en un coup d'œil\nLieu : Balaruc (34)\nContrat : CDD 28H \nDate de début : dès que possible\nSalaire :  1525.57 € brut mensuel\n\nTon quotidien chez nous\nTa mission ? Faire vivre à chaque client une expérience agréable et lui apporter le conseil qui fera la différence.\nAu quotidien, tu vas :\n\nConseiller et fidéliser nos clients : identifier leurs besoins, apporter ton expertise et les guider vers les produits les plus adaptés.\nDévelopper les ventes : faire découvrir nos nouveautés, proposer des produits complémentaires et contribuer à l'atteinte des objectifs.\nSuivre le cycle de vente : accompagner le client tout au long de son parcours, du conseil jusqu'à l'encaissement et au suivi de ses besoins.\nFaire vivre le magasin : participer au réassort, à la gestion des stocks, à la mise en rayon et au merchandising.\nCollaborer avec nos équipes internes : échanger avec les différents services et partager les informations utiles pour garantir une expérience client fluide et efficace.\nParticiper à la gestion administrative : assurer les tâches administratives liées à l'activité du magasin et veiller au bon suivi des procédures internes.\nRester à l'affût des tendances : être attentif(ve) aux attentes des clients, aux produits recherchés et aux nouvelles tendances du secteur.\n\nEt si tu ne connais pas encore tous nos produits et nos méthodes, pas d'inquiétude ! Ton manager et tes collègues seront là pour t'accompagner et te former dès ton arrivée.\n\nLe profil qu'on recherche \n\nPlus qu'un CV parfait, nous recherchons avant tout une personnalité et une vraie envie de conseiller nos clients.\nTu pourrais te plaire chez nous si :\nL'univers de la beauté, de la coiffure et de l'esthétique te passionne.\nTu aimes le contact client, écouter, conseiller et partager tes connaissances.\nTu es dynamique, curieux(se) et à l'écoute.\nTu apprécies le travail en équipe et contribuer à une bonne ambiance.\nTu as envie d'apprendre et de développer tes connaissances produits.\nTu possèdes un CAP, BP ou BTS en coiffure ou en esthétique ? C'est un vrai plus !\n\nTu n'as pas encore beaucoup d'expérience ? Ose postuler ! Chez Gouiran Beauté, nous accordons autant d'importance à ta motivation et à ton savoir-être qu'à ton parcours. \n\nPourquoi rejoindre la #TeamGouiran ?\nRejoindre Gouiran Beauté, c'est profiter :\nUn job dans une entreprise dynamique et familiale !\nFormation et accompagnement pour devenir expert(e) en produits de beauté.\nMutuelle ALAN au top (80% pris en charge).\nPrimes attractives sur objectifs.\nTarifs VIP sur nos produits + dotations produits.\nCarte Ticket Restaurant SWILE.\nAvantages CSE (chèques cadeaux, vacances.).\nPrime d'ancienneté \nDispositif d'épargne salariale.\nEt surtout d'une équipe passionnée, fun et prête à t'accueillir !\n\nComment se passe le recrutement ?\n\nNous avons voulu faire simple :\nTu postules en nous envoyant ton CV.\nNous étudions ta candidature avec attention.\nTon profil correspond ? Nous échangeons une première fois par téléphone.\nTu rencontres ensuite le responsable concerné pour faire connaissance et échanger sur le poste.\nL'envie de travailler ensemble est partagée ? Bienvenue dans la #TeamGouiran ! \nEt parce qu'une candidature mérite toujours une réponse, nous nous engageons à revenir vers toi, quelle que soit notre décision.\n\nUn recrutement inclusif et engagé\n\nChez Gouiran Beauté, nous sommes convaincus que la diversité des parcours, des expériences et des personnalités est une richesse. Nous veillons à garantir l'égalité des chances à chaque étape du recrutement et à lutter contre toute forme de discrimination.\nToutes nos opportunités sont ouvertes aux personnes en situation de handicap.\n\nAlors, envie de partager ta passion de la beauté avec nos clients ? Rejoins la #TeamGouiran et postule dès maintenant !",
     "dateCreation": "2026-09-11T18:06:39.012Z",
-    "dateActualisation": "2026-09-11T18:06:39.516Z",
+    "dateActualisation": "2026-09-23T11:09:56.578Z",
     "lieuTravail": {
       "libelle": "34 - Balaruc-le-Vieux",
       "latitude": 43.459695,
@@ -7682,8 +7901,7 @@
     "appellationlibelle": "Coiffeur / Coiffeuse",
     "entreprise": {
       "nom": "SAS GOUIRAN",
-      "description": "Gouiran Beauté , distributeur en produits de coiffure et esthétique à destination des professionnels et particuliers est reconnue aujourd'hui pour son expertise dans le domaine de la beauté et forte de son expérience depuis près de 60 ans auprès des professionnels du secteur.\nAujourd'hui, cette PME française, familiale et dynamique compte plus de 20 magasins en France, des sites e-commerce et près de 180 collaborateurs qui participent à la réussite et à l'évolution de l'entreprise.\n",
-      "entrepriseAdaptee": false
+      "description": "Gouiran Beauté , distributeur en produits de coiffure et esthétique à destination des professionnels et particuliers est reconnue aujourd'hui pour son expertise dans le domaine de la beauté et forte de son expérience depuis près de 60 ans auprès des professionnels du secteur.\nAujourd'hui, cette PME française, familiale et dynamique compte plus de 20 magasins en France, des sites e-commerce et près de 180 collaborateurs qui participent à la réussite et à l'évolution de l'entreprise.\n"
     },
     "typeContrat": "CDD",
     "typeContratLibelle": "CDD - 15 Jour(s)",
@@ -7774,7 +7992,6 @@
       "origine": "1",
       "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213TQHB"
     },
-    "offresManqueCandidats": false,
     "contexteTravail": {
       "horaires": [
         "Temps partiel - 28H/semaine\nTravail en journée",
@@ -15725,218 +15942,6 @@
     "origineOffre": {
       "origine": "1",
       "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QSCK"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "35H/semaine\nTravail en journée"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213QRYS",
-    "intitule": "Apprenti coiffeur (H/F)",
-    "description": "La marque Franck Provost, c'est près de 45 ans de passion et d'innovation au service de la beauté des femmes. Un symbole du luxe accessible, est étroitement lié à son fondateur et à son savoir-faire reconnu dans le monde comme un symbole du chic à la française. Les salons élégants à l'image haut de gamme proposent des collections faciles à vivre et des techniques de coloration raffinées et exclusives. \n\nL'enseigne Franck Provost fait partie du Groupe Provalliance, leader mondial de la coiffure avec plus de 3 500 salons et boutiques répartis dans 35 pays, et composé de 18 enseignes (Jean Louis David, Saint Algue, Coiff & Co, The Barber Company .).\nFranck Provost positionne les collaborateurs au cœur de sa réussite, stimule leur évolution et les aide à développer leur sens artistique.  \n\nVous êtes à la recherche de nouvelles opportunités ?  Rejoignez nous !\n\nDescription du poste\nNous recherchons un(e) apprenti(e) prêt(e) à s'investir dans une formation à la fois à l'école et en salon (diplôme CAP)\n\nAccompagné par un tuteur vos missions seront les suivantes :\n\nAccueillir et accompagner la clientèle\nRéaliser des prestations shampoings et soins capillaires\nRéaliser des brushings, des colorations et des coupes basiques\nAssister les coiffeurs lors de la consultation de la cliente\nDévelopper les ventes de produit\nDevenez un coiffeur au sein de notre groupe, notamment grâce à : \n\nUne journée d'intégration dédiée à nos alternants \nUn parcours de formation sur mesure dédié à nos alternants avec le programme « Avenir Juniors » composé de journées de formation spécifiques rien que pour vous.\nUn tuteur formé dans nos académies pour vous accompagner\nDes possibilités futures de carrière et de développement au sein de notre Groupe.\nEn nous rejoignant, nous vous promettons :\n\nDes titres restaurant\nL'accès à une plateforme d'avantages (tarifs préférentiels pour des places de cinémas, des parcs d'attraction.)\nDes offres attractives chez nos partenaires\nDes valeurs d'entreprise fortes : Passion, Confiance, Créativité et Engagement\nNotre entreprise est engagée dans le développement d'un environnement inclusif et encourage les candidatures des personnes en situation de handicap.\n\nQualifications\nNous recherchons des apprenti(e)s coiffeur(se)s motivé(e)s: \n\nPassionné(e) par la coiffure, vous souhaitez vous former dans un salon à l'écoute de vos besoins\nDoté(e) d'un bon relationnel, vous avez le sens du service client (écoute, disponibilité et bienveillance)\nInformations complémentaires\nAdresse : Ccial Géant Aix Ouest local 20 - 13100 Aix en Provence\n\nStatut : Alternant\n\nType d'emploi : Contrat d'apprentissage",
-    "dateCreation": "2026-09-09T15:47:55.572Z",
-    "dateActualisation": "2026-09-10T09:16:34.395Z",
-    "lieuTravail": {
-      "libelle": "13 - Aix-en-Provence",
-      "latitude": 43.541201,
-      "longitude": 5.452782,
-      "codePostal": "13100",
-      "commune": "13001"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
-    "entreprise": {
-      "nom": "FRANCK PROVOST",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 24 Mois",
-    "natureContrat": "Contrat apprentissage",
-    "experienceExige": "D",
-    "experienceLibelle": "Débutant accepté",
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "commentaire": "salaire selon barême alternance",
-      "complement1": "Primes",
-      "complement2": "Titres restaurant / Prime de panier",
-      "listeComplements": [
-        {
-          "code": "1",
-          "libelle": "Primes"
-        },
-        {
-          "code": "6",
-          "libelle": "Titres restaurant / Prime de panier"
-        },
-        {
-          "code": "14",
-          "libelle": "Indemnité transports"
-        }
-      ]
-    },
-    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": true,
-    "contact": {
-      "coordonnees1": "https://smrtr.io/xxhWC",
-      "urlPostulation": "https://smrtr.io/xxhWC"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "5",
-    "qualificationLibelle": "Employé non qualifié",
-    "codeNAF": "70.10Z",
-    "secteurActivite": "70",
-    "secteurActiviteLibelle": "Activités des sièges sociaux",
-    "qualitesProfessionnelles": [
-      {
-        "libelle": "Avoir l'esprit d'équipe",
-        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
-      },
-      {
-        "libelle": "Avoir le sens du service",
-        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
-      },
-      {
-        "libelle": "Faire preuve de curiosité, d'ouverture d'esprit",
-        "description": "Capacité à aller chercher au-delà de ce qui est donné à voir, à s'ouvrir sur la nouveauté et à investiguer pour comprendre et agir de façon appropriée."
-      }
-    ],
-    "trancheEffectifEtab": "6 à 9 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QRYS"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "35H/semaine\nTravail en journée"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213QQMP",
-    "intitule": "COIFFEUR / COIFFEUSE (H/F)",
-    "description": "Description de l'entreprise\nRejoignez Franck Provost, symbole du luxe accessible depuis 50 ans. Intégrer nos salons, c'est rejoindre le Groupe Provalliance - n°1 mondial de la coiffure et évoluer dans un univers haut de gamme où le savoir-faire et l'artistique résonnent à tous les niveaux. Nous mettons votre talent au cœur de notre réussite.\n\nDescription du poste\nVos missions\n\nRévéler la beauté de vos clientes grâce à un diagnostic personnalisé exclusif ;\nProvoquer la confiance en soi par la maîtrise des coupes et colorations iconiques Franck Provost ;\nAccompagner vos clientes avec une écoute attentive pour un résultat sur-mesure ;\nPromouvoir les services et produits exclusifs de l'enseigne.\nQualifications\nDiplôme : CAP Coiffure ou expériences\nExpérience : Profil débutant ou profil confirmé passionné.\nQualités : Sens du conseil, esprit d'équipe et engagement. Votre créativité fera la différence !\nInformations complémentaires\nPourquoi nous rejoindre ?\n\nFlexibilité : Travail possible sur 4 jours pour un meilleur équilibre vie pro/perso.\nRémunération : Salaire évolutif + bonus\nFormations : Formations techniques et développement personnel\nÉvolution :  mobilité interne au sein du Groupe Provalliance.\nAvantages : Titres Restaurant, Plateforme avantages collaborateurs (tarifs préférentiels cinéma, parcs, réductions partenaires, etc.), réduction sur les produits et matériels professionnels de coiffure, mutuelle entreprise etc..",
-    "dateCreation": "2026-09-09T15:13:08.303Z",
-    "dateActualisation": "2026-09-10T10:02:06.359Z",
-    "lieuTravail": {
-      "libelle": "91 - Boussy-Saint-Antoine",
-      "latitude": 48.688557,
-      "longitude": 2.529858,
-      "codePostal": "91800",
-      "commune": "91097"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse",
-    "entreprise": {
-      "nom": "FRANCK PROVOST",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 6 Mois",
-    "natureContrat": "Contrat travail",
-    "experienceExige": "E",
-    "experienceLibelle": "1 An(s)",
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "libelle": "Mensuel de 1950.0 Euros",
-      "complement1": "Primes",
-      "complement2": "Titres restaurant / Prime de panier",
-      "listeComplements": [
-        {
-          "code": "1",
-          "libelle": "Primes"
-        },
-        {
-          "code": "6",
-          "libelle": "Titres restaurant / Prime de panier"
-        }
-      ]
-    },
-    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": false,
-    "contact": {
-      "coordonnees1": "https://smrtr.io/B5Ps3",
-      "urlPostulation": "https://smrtr.io/B5Ps3"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "6",
-    "qualificationLibelle": "Employé qualifié",
-    "codeNAF": "70.10Z",
-    "secteurActivite": "70",
-    "secteurActiviteLibelle": "Activités des sièges sociaux",
-    "qualitesProfessionnelles": [
-      {
-        "libelle": "Avoir l'esprit d'équipe",
-        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
-      },
-      {
-        "libelle": "Faire preuve d'autonomie",
-        "description": "Capacité à prendre en charge son activité sans devoir être encadré de façon continue (le cas échéant, à solliciter les autres acteurs de l'entreprise)."
-      },
-      {
-        "libelle": "Avoir le sens du service",
-        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
-      }
-    ],
-    "trancheEffectifEtab": "6 à 9 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QQMP"
     },
     "offresManqueCandidats": false,
     "contexteTravail": {

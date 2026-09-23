@@ -6,9 +6,11 @@ import { IArrow, ICalendar, ILogout, IPencil, IPlus } from "../../components/ico
 export function RecruiterDashboard({
   onNavigate,
   onEditMission,
+  missions: initialMissions,
 }: {
   onNavigate: (s: Screen) => void;
   onEditMission?: (m: Mission) => void;
+  missions?: Mission[];
 }) {
   const [tab, setTab] = useState<RecTab>("missions");
   const [selectedMissionId, setSelectedMissionId] = useState<string | number | "all">("all");
@@ -19,7 +21,7 @@ export function RecruiterDashboard({
   });
 
   // États pour stocker les VRAIES données depuis l'API
-  const [missions, setMissions] = useState<Mission[]>([]);
+  const [missions, setMissions] = useState<Mission[]>(() => initialMissions || []);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   
   const [loadingApplicants, setLoadingApplicants] = useState(false);

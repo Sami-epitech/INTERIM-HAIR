@@ -21,6 +21,8 @@ node_modules/.package-lock.json
 node_modules/
 dist/
 build/
+coverage/
+backend/coverage/
 *.local
 npm-debug.log*
 .DS_Store
