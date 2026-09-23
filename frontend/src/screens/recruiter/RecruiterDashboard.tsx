@@ -1,16 +1,13 @@
 import { useState, useEffect } from "react";
 import type { Applicant, Mission, RecTab, Screen } from "../../types";
-import { MISSIONS_INIT, ALL_APPLICANTS } from "../../data/mockData";
 import { BackBtn, MatchRing, StatusBadge, Tag } from "../../components/ui";
 import { IArrow, ICalendar, ILogout, IPencil, IPlus } from "../../components/icons";
 
 export function RecruiterDashboard({
   onNavigate,
-  missions = MISSIONS_INIT,
   onEditMission,
 }: {
   onNavigate: (s: Screen) => void;
-  missions?: Mission[];
   onEditMission?: (m: Mission) => void;
 }) {
   const [tab, setTab] = useState<RecTab>("missions");
@@ -18,19 +15,23 @@ export function RecruiterDashboard({
 
   const userEmail = localStorage.getItem("user_email") || "";
   const [salonName, setSalonName] = useState(() => {
-    return localStorage.getItem("user_name") || "Salon Paris Éclat";
+    return localStorage.getItem("user_name") || "Chargement...";
   });
 
-  const [applicants, setApplicants] = useState<Applicant[]>(ALL_APPLICANTS);
+  // États pour stocker les VRAIES données depuis l'API
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
+  
   const [loadingApplicants, setLoadingApplicants] = useState(false);
+  const [loadingMissions, setLoadingMissions] = useState(false);
 
   useEffect(() => {
     const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
-    const token = localStorage.getItem("auth_token");
+    const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     const email = localStorage.getItem("user_email");
 
-    // 1. Récupération dynamique du nom du recruteur / salon depuis Airtable
+    // 1. Récupération dynamique du nom du recruteur / salon
     const profileUrl = userId
       ? `http://${apiHost}:8000/api/profile?userMode=recruiter&userId=${encodeURIComponent(userId)}`
       : email
@@ -48,9 +49,23 @@ export function RecruiterDashboard({
           localStorage.setItem("user_name", recName);
         }
       })
-      .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur profil Airtable :", err));
+      .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur profil :", err));
 
-    // 2. Récupération des candidatures réelles depuis Airtable
+    // 2. Récupération UNIQUEMENT des missions de CE recruteur
+    if (email) {
+      setLoadingMissions(true);
+      fetch(`http://${apiHost}:8000/api/jobs?recruiterEmail=${encodeURIComponent(email)}`)
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setMissions(data);
+          }
+        })
+        .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur missions :", err))
+        .finally(() => setLoadingMissions(false));
+    }
+
+    // 3. Récupération des candidatures liées à ce recruteur
     setLoadingApplicants(true);
     const appsUrl = email
       ? `http://${apiHost}:8000/api/applications?recruiterEmail=${encodeURIComponent(email)}`
@@ -63,30 +78,34 @@ export function RecruiterDashboard({
           const formatted: Applicant[] = data.map((app: any, idx: number) => ({
             id: app.id || idx,
             missionId: app.missionId,
-            name: app.name || app.candidateName || "Candidat",
-            match: app.match || 88,
+            name: app.name || app.candidateName || "Candidat Anonyme",
+            
+            // 👇 On utilise le vrai score renvoyé par le backend (avec fallback strict à 0)
+            match: app.match !== undefined ? app.match : 0, 
+            
             level: app.level || "Confirmé",
             status: app.status === "accepted" ? "Accepté" : app.status === "rejected" ? "Refusé" : "En attente",
-            initials: app.initials || "CI",
+            initials: app.initials || (app.name ? app.name.substring(0, 2).toUpperCase() : "CI"),
             availFrom: app.date || "2026-10-01",
             availTo: "2026-12-31",
           }));
           setApplicants(formatted);
         }
       })
-      .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur candidatures Airtable :", err))
+      .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur candidatures :", err))
       .finally(() => setLoadingApplicants(false));
   }, [userEmail]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("user_email");
     localStorage.removeItem("user_name");
     onNavigate("role-select");
   };
 
-  // Filtrage typé des candidats
+  // Filtrage typé des candidats en fonction de l'offre sélectionnée
   const filteredApplicants: Applicant[] =
     selectedMissionId === "all"
       ? applicants
@@ -149,84 +168,105 @@ export function RecruiterDashboard({
       <div className="flex-1 p-5 lg:p-8 max-w-6xl mx-auto w-full">
         {tab === "missions" && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {missions.map((m: Mission) => {
-              const missionApplicantCount = applicants.filter((a) => String(a.missionId) === String(m.id)).length;
+            {loadingMissions ? (
+              <div className="col-span-full py-12 text-center text-sm text-muted-foreground animate-pulse">
+                Chargement de vos missions...
+              </div>
+            ) : missions.length === 0 ? (
+              <div className="col-span-full py-16 px-4 text-center bg-card rounded-2xl border border-dashed border-border max-w-md mx-auto">
+                <p className="font-semibold text-base text-foreground mb-1">Aucune mission publiée</p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Vous n'avez pas encore publié d'offres.
+                </p>
+                <button
+                  onClick={() => onNavigate("r-create")}
+                  className="px-4 py-2 bg-primary text-primary-foreground text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
+                >
+                  Créer ma première offre
+                </button>
+              </div>
+            ) : (
+              missions.map((m: Mission) => {
+                const missionApplicantCount = applicants.filter((a) => String(a.missionId) === String(m.id)).length;
 
-              return (
-                <div key={m.id} className="bg-card rounded-2xl border border-border p-5 flex flex-col justify-between shadow-xs">
-                  <div>
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="font-semibold text-base text-foreground line-clamp-1">{m.title}</h3>
+                return (
+                  <div key={m.id} className="bg-card rounded-2xl border border-border p-5 flex flex-col justify-between shadow-xs">
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="font-semibold text-base text-foreground line-clamp-1">{m.title}</h3>
+                        <button
+                          onClick={() => onEditMission && onEditMission(m)}
+                          className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                          title="Modifier la mission"
+                        >
+                          <IPencil />
+                        </button>
+                      </div>
+
+                      <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1.5">
+                        <ICalendar /> {m.dates}
+                      </p>
+
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {(m.skills || []).map((s: string) => (
+                          <Tag key={s}>{s}</Tag>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-border mt-2">
+                      <span className="font-serif text-lg font-bold text-foreground">{m.rate}€/h</span>
                       <button
-                        onClick={() => onEditMission && onEditMission(m)}
-                        className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-                        title="Modifier la mission"
+                        onClick={() => {
+                          setSelectedMissionId(m.id);
+                          setTab("applicants");
+                        }}
+                        className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer"
                       >
-                        <IPencil />
+                        Voir les candidats ({missionApplicantCount}) <IArrow />
                       </button>
                     </div>
-
-                    <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1.5">
-                      <ICalendar /> {m.dates}
-                    </p>
-
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {(m.skills || []).map((s: string) => (
-                        <Tag key={s}>{s}</Tag>
-                      ))}
-                    </div>
                   </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-border mt-2">
-                    <span className="font-serif text-lg font-bold text-foreground">{m.rate}€/h</span>
-                    <button
-                      onClick={() => {
-                        setSelectedMissionId(m.id);
-                        setTab("applicants");
-                      }}
-                      className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer"
-                    >
-                      Voir les candidats ({missionApplicantCount}) <IArrow />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         )}
 
         {tab === "applicants" && (
           <div className="flex flex-col gap-4">
             {/* Filtre mission */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
-              <span className="text-xs font-medium text-muted-foreground shrink-0">Filtrer par mission :</span>
-              <button
-                onClick={() => setSelectedMissionId("all")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer ${
-                  selectedMissionId === "all"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card border border-border text-foreground"
-                }`}
-              >
-                Toutes les missions ({applicants.length})
-              </button>
-              {missions.map((m: Mission) => {
-                const count = applicants.filter((a) => String(a.missionId) === String(m.id)).length;
-                return (
-                  <button
-                    key={m.id}
-                    onClick={() => setSelectedMissionId(m.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer ${
-                      String(selectedMissionId) === String(m.id)
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-card border border-border text-foreground"
-                    }`}
-                  >
-                    {m.title} ({count})
-                  </button>
-                );
-              })}
-            </div>
+            {missions.length > 0 && (
+              <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                <span className="text-xs font-medium text-muted-foreground shrink-0">Filtrer par mission :</span>
+                <button
+                  onClick={() => setSelectedMissionId("all")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer ${
+                    selectedMissionId === "all"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card border border-border text-foreground"
+                  }`}
+                >
+                  Toutes ({applicants.length})
+                </button>
+                {missions.map((m: Mission) => {
+                  const count = applicants.filter((a) => String(a.missionId) === String(m.id)).length;
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => setSelectedMissionId(m.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer ${
+                        String(selectedMissionId) === String(m.id)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-card border border-border text-foreground"
+                      }`}
+                    >
+                      {m.title} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {loadingApplicants ? (
               <div className="py-12 text-center text-sm text-muted-foreground animate-pulse">
@@ -234,9 +274,9 @@ export function RecruiterDashboard({
               </div>
             ) : filteredApplicants.length === 0 ? (
               <div className="py-16 px-4 text-center bg-card rounded-2xl border border-dashed border-border max-w-md mx-auto">
-                <p className="font-semibold text-base text-foreground mb-1">Aucune candidature reçue</p>
+                <p className="font-semibold text-base text-foreground mb-1">Aucune candidature</p>
                 <p className="text-xs text-muted-foreground">
-                  Les candidatures envoyées par les intérimaires apparaîtront ici en temps réel.
+                  Les candidatures envoyées par les intérimaires apparaîtront ici.
                 </p>
               </div>
             ) : (
