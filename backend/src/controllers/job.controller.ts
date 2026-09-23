@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { airtableBase as base } from '../config/airtable';
-import { calculateAndLogMatch } from '../services/matchingService';
+import { calculateAndLogMatch, matchNewJobWithCandidates } from '../services/matchingService';
 import { verifyToken, TokenPayload } from '../auth/jwt';
 import fs from 'fs';
 import path from 'path';
@@ -108,6 +108,13 @@ export const getJobs = async (req: Request, res: Response) => {
         allJobs = await Promise.all(allJobs.map(async (job: any) => {
           const jobForMatching = {
             id: job.id,
+            title: job.title,
+            salon: job.salon,
+            location: job.location,
+            rate: job.rate,
+            shift: job.shift,
+            dates: job.dates,
+            skills: job.skills,
             fields: {
               skills: job.skills,
               location: job.location,
@@ -179,6 +186,11 @@ export const postJob = async (req: Request, res: Response) => {
     };
 
     console.log("✅ [AIRTABLE] Enregistrement réussi ! ID :", createdRecord[0].id);
+
+    // Déclenchement asynchrone du matching avec les intérimaires (tâche de fond)
+    matchNewJobWithCandidates(createdMission).catch((err: any) => {
+      console.error("❌ [BACKEND] Erreur tâche de fond matching nouvelle offre :", err);
+    });
 
     return res.status(201).json({
       message: "Mission créée avec succès",
