@@ -1,24 +1,16 @@
-// ════════════════════════════════════════════════════════════
-// screens/onboarding/Onboarding1Screen.tsx
-// ────────────────────────────────────────────────────────────
-// Étape 1/3 du parcours candidat : choisir comment créer son
-// profil — import automatique du CV, ou saisie manuelle.
-// Le choix détermine seulement vers quel écran on navigue
-// (cv-upload vs manual-entry) ; aucune donnée n'est créée ici.
-// ════════════════════════════════════════════════════════════
+/**
+ * Première étape du parcours d'inscription candidat : sélection de la méthode de saisie du profil.
+ */
 import { useState } from "react";
 import type { Screen } from "../../types";
 import { BackBtn, PrimaryButton } from "../../components/ui";
 import { IUpload, IEdit } from "../../components/icons";
 
 export function Onboarding1Screen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
-  // null tant que rien n'est sélectionné → bouton "Continuer" désactivé
   const [selected, setSelected] = useState<"upload" | "manual" | null>(null);
 
   return (
     <div className="min-h-screen bg-background flex flex-col px-6 pt-12 lg:pt-4 pb-10">
-      {/* Barre de progression à 3 segments : celui-ci (étape 1) est rempli,
-          les deux suivants sont encore "muted" (gris). */}
       <div className="flex items-center gap-3 mb-8">
         <BackBtn onClick={() => onNavigate("auth")} />
         <div className="flex-1 flex gap-2">
@@ -27,6 +19,7 @@ export function Onboarding1Screen({ onNavigate }: { onNavigate: (s: Screen) => v
           <div className="h-1 flex-1 rounded-full bg-muted" />
         </div>
       </div>
+
 
       <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-2">Étape 1 sur 3</p>
       <h2 className="font-serif text-3xl text-foreground mb-2 leading-tight">

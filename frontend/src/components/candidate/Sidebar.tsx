@@ -1,17 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// components/candidate/Sidebar.tsx
-// ────────────────────────────────────────────────────────────
-// Navigation latérale affichée UNIQUEMENT sur grand écran (lg+,
-// 1024px et plus) — remplace la BottomNav, qui elle reste
-// réservée au mobile (voir BottomNav.tsx, classe lg:hidden).
-//
-// Un composant séparé plutôt qu'un seul "NavUniverselle" avec
-// plein de classes conditionnelles : la disposition (colonne à
-// gauche vs barre en bas) est trop différente pour partager le
-// même JSX proprement, mais la LOGIQUE (les 3 mêmes destinations)
-// reste identique entre les deux — à garder synchronisée si un
-// jour un 4e onglet est ajouté.
-// ════════════════════════════════════════════════════════════
+/**
+ * Barre de navigation latérale pour écrans larges (desktop).
+ */
 import type { DashTab, Screen } from "../../types";
 import { AppName } from "../ui";
 import { IBriefcase, ILogout, IStar, IUser } from "../icons";
@@ -45,9 +34,6 @@ export function Sidebar({
   };
 
   return (
-    // "hidden" par défaut (mobile/tablette) → redevient visible en colonne
-    // à partir de lg. "sticky top-0" : reste visible même quand le contenu
-    // principal défile, comme une vraie barre latérale d'application.
     <div className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:h-screen lg:sticky lg:top-0 lg:border-r lg:border-border lg:py-8 lg:px-5 lg:gap-8">
       <div className="px-2"><AppName size="sm" /></div>
       <nav className="flex flex-col gap-1">

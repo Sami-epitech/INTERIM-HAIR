@@ -1,16 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// components/candidate/BottomNav.tsx
-// ────────────────────────────────────────────────────────────
-// Barre de navigation basse de l'espace candidat (3 onglets).
-// "Favoris" et "Profil" renvoient tous deux vers "c-dashboard" :
-// c'est CandidateDashboard qui gère ensuite l'onglet interne
-// actif (voir son prop `tab` / `DashTab`). Seul "Offres" a son
-// propre écran plein (le feed).
-//
-// Réservée au MOBILE (classe "lg:hidden") : à partir de lg (1024px),
-// c'est Sidebar.tsx qui prend le relais avec la même logique de
-// navigation, affichée sur le côté plutôt qu'en bas.
-// ════════════════════════════════════════════════════════════
+/**
+ * Barre de navigation mobile inférieure pour l'espace candidat.
+ */
 import type { DashTab, Screen } from "../../types";
 import { IBriefcase, IStar, IUser } from "../icons";
 

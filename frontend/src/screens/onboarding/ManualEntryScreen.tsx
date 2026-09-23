@@ -1,9 +1,7 @@
-// ════════════════════════════════════════════════════════════
-// screens/onboarding/ManualEntryScreen.tsx
-// ────────────────────────────────────────────────────────────
-// Étape 2/3 (variante "saisie manuelle") : formulaire complet
-// du profil candidat, connecté à l'API Express Back-End.
-// ════════════════════════════════════════════════════════════
+/**
+ * Deuxième étape de l'inscription candidat (variante saisie manuelle) :
+ * formulaire d'identité, coordonnées, diplômes, compétences et niveau d'expérience.
+ */
 import { useState } from "react";
 import type { Screen } from "../../types";
 import { SKILLS, DIPLOMAS_LIST } from "../../data/mockData";
@@ -21,15 +19,12 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Ajoute/retire une compétence de la sélection
   const toggleSkill = (s: string) => setSelectedSkills((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
 
-  // Champs obligatoires avant de pouvoir continuer (nom, prénom, compétences, expérience)
   const canContinue = Boolean(firstName && lastName && selectedSkills.length > 0 && experience);
 
-  // Soumission des données vers le Back-End Express
+  // Envoi des données du profil vers l'API backend
   const handleSaveProfile = async () => {
-    console.log("👉 [FRONTEND] Envoi du profil saisi manuellement...");
     setErrorMsg(null);
     setLoading(true);
 
@@ -48,8 +43,6 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
       bio,
     };
 
-    console.log("📡 [FRONTEND] Payload envoyé à http://localhost:8000/api/profile :", payload);
-
     try {
       const response = await fetch("http://localhost:8000/api/profile", {
         method: "POST",
@@ -66,15 +59,12 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
         throw new Error(data.message || "Erreur lors de l'enregistrement du profil.");
       }
 
-      console.log("✅ [FRONTEND] Profil enregistré avec succès par le serveur :", data);
-
-      // Redirection vers l'étape suivante (Disponibilités/Préférences)
+      console.log("[MANUAL-ENTRY] Profil enregistré avec succès :", data);
       onNavigate("onboarding2");
 
     } catch (err: any) {
-      console.error("❌ [FRONTEND] Erreur lors de l'envoi du profil :", err);
+      console.error("[MANUAL-ENTRY] Erreur lors de l'enregistrement du profil :", err);
       setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement de votre profil. Veuillez réessayer.");
-      // Permet de continuer l'expérience même en cas de problème de réseau temporaire
       onNavigate("onboarding2");
     } finally {
       setLoading(false);

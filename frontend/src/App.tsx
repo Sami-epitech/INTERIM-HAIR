@@ -1,6 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// App.tsx — état global + routeur
-// ════════════════════════════════════════════════════════════
+/**
+ * Composant racine de l'application : gestion du routage par hachage et de l'état global.
+ */
 import { useState, useEffect } from "react";
 import type { DashTab, Job, Mission, Screen, UserMode } from "./types";
 import { JOBS, MISSIONS_INIT } from "./data/mockData";
@@ -63,8 +63,9 @@ export default function App() {
           setApiFavoriteJobs(data.jobs);
         }
       })
-      .catch((err) => console.warn("⚠️ [FAVORIS] Erreur chargement Airtable :", err));
+      .catch((err) => console.warn("[FAVORIS] Erreur chargement Airtable :", err));
   }, [userEmail, screen]);
+
 
   useEffect(() => {
     // Synchronise l'URL initiale au chargement
@@ -128,7 +129,7 @@ export default function App() {
         }
       }
     } catch (e) {
-      console.warn("⚠️ [FAVORIS] Erreur synchronisation Airtable :", e);
+      console.warn("[FAVORIS] Erreur synchronisation Airtable :", e);
     }
   };
 
@@ -179,7 +180,7 @@ export default function App() {
           setJobsList(formattedJobs);
         }
       })
-      .catch((err) => console.warn("⚠️ [FRONTEND] Erreur API :", err.message));
+      .catch((err) => console.warn("[FRONTEND] Erreur API :", err.message));
   }, [userMode, userEmail, screen]);
 
   // Conversion propre Job[] -> Mission[]

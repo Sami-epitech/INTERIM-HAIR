@@ -1,11 +1,7 @@
-// ════════════════════════════════════════════════════════════
-// screens/onboarding/Onboarding2Screen.tsx
-// ────────────────────────────────────────────────────────────
-// Étape 3/3 (commune aux deux parcours upload/manuel) : préférences
-// qui affinent les recommandations — compétences recherchées, zone
-// géographique, disponibilités (dates + jours + horaires).
-// Connecté à l'API Express Back-End.
-// ════════════════════════════════════════════════════════════
+/**
+ * Troisième étape de l'inscription candidat :
+ * configuration des disponibilités, mobilité géographique et rémunération souhaitée.
+ */
 import { useState } from "react";
 import type { Screen } from "../../types";
 import { DAYS, HOURS } from "../../data/mockData";
@@ -15,7 +11,7 @@ import { formatDate } from "../../utils/format";
 
 export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [city, setCity] = useState("Paris");
-  const [mobility, setMobility] = useState<"local" | "national">("local"); // 👈 État mobilité : "local" ou "national"
+  const [mobility, setMobility] = useState<"local" | "national">("local");
   const [selectedDays, setSelectedDays] = useState<string[]>(["Lun", "Mar", "Mer", "Jeu", "Ven"]);
   const [startHour, setStartHour] = useState("9h");
   const [endHour, setEndHour] = useState("18h");
@@ -37,9 +33,8 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
     paddingRight: "36px",
   };
 
-  // Soumission des préférences et disponibilités vers l'API Back-End Express
+  // Envoi des préférences et disponibilités vers l'API backend
   const handleSavePreferences = async () => {
-    console.log("👉 [FRONTEND] Envoi des préférences & disponibilités...");
     setErrorMsg(null);
     setLoading(true);
 
@@ -48,7 +43,7 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
       expectedRate: Number(expectedRate),
       location: {
         city,
-        mobility, // 👈 On envoie le choix "local" ou "national"
+        mobility,
       },
       availability: {
         from: availFrom,
@@ -69,8 +64,6 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
       userId,
     };
 
-    console.log("📡 [FRONTEND] Payload envoyé à http://localhost:8000/api/profile :", payloadWithUser);
-
     try {
       const response = await fetch("http://localhost:8000/api/profile", {
         method: "POST",
@@ -87,15 +80,12 @@ export function Onboarding2Screen({ onNavigate }: { onNavigate: (s: Screen) => v
         throw new Error(data.message || "Erreur lors de l'enregistrement des préférences.");
       }
 
-      console.log("✅ [FRONTEND] Préférences enregistrées avec succès :", data);
-
-      // Navigation vers le fil d'offres (feed)
+      console.log("[ONBOARDING] Préférences enregistrées avec succès :", data);
       onNavigate("feed");
 
     } catch (err: any) {
-      console.error("❌ [FRONTEND] Erreur d'envoi des préférences :", err);
+      console.error("[ONBOARDING] Erreur lors de l'enregistrement des préférences :", err);
       setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement de vos préférences. Veuillez réessayer.");
-      // Navigation de secours pour ne pas bloquer l'expérience utilisateur
       onNavigate("feed");
     } finally {
       setLoading(false);

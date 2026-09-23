@@ -1,3 +1,6 @@
+/**
+ * Fil d'actualité vidéo/plein écran des offres d'emploi pour les candidats (style TikTok/Reels).
+ */
 import { useEffect, useMemo, useState, useRef } from "react";
 import type { DashTab, Filters, Job, Screen } from "../../types";
 import { JOBS } from "../../data/mockData";
@@ -47,13 +50,14 @@ export function FeedScreen({
   const wheelAccumulator = useRef<number>(0);
   const wheelTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // 👇 LA FONCTION UNIQUE ET SÉCURISÉE POUR CHARGER LES OFFRES
+  // Chargement des offres depuis l'API backend
   const loadJobs = async (isPull = false) => {
     if (isPull) {
       setIsRefreshing(true);
     } else {
       setLoading(true);
     }
+
 
     try {
       const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
@@ -107,7 +111,7 @@ export function FeedScreen({
         setTimeout(() => setRefreshSuccess(false), 2000);
       }
     } catch (err) {
-      console.error("❌ Erreur lors du chargement du feed candidat :", err);
+      console.error("[FEED] Erreur lors du chargement des offres :", err);
       if (!isPull) setJobs(JOBS);
     } finally {
       setLoading(false);

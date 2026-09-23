@@ -1,3 +1,6 @@
+/**
+ * Tableau de bord du candidat intérimaire : suivi des candidatures, favoris et édition de profil.
+ */
 import { useState, useEffect, type ReactNode } from "react";
 import type { DashTab, Job, Screen } from "../../types";
 import { APPLICATIONS as MOCK_APPLICATIONS, DAYS, SKILLS } from "../../data/mockData";
@@ -105,7 +108,7 @@ export function CandidateDashboard({
           localStorage.setItem("candidate_profile", JSON.stringify(loaded));
         }
       })
-      .catch((err) => console.warn("⚠️ [CANDIDAT] Erreur chargement profil Airtable :", err));
+      .catch((err) => console.warn("[CANDIDAT] Erreur chargement profil Airtable :", err));
 
     // 2. Récupération des candidatures depuis Airtable
     setLoadingApps(true);
@@ -129,7 +132,7 @@ export function CandidateDashboard({
           setApplications(formatted);
         }
       })
-      .catch((err) => console.warn("⚠️ [CANDIDAT] Erreur chargement candidatures :", err))
+      .catch((err) => console.warn("[CANDIDAT] Erreur chargement candidatures :", err))
       .finally(() => setLoadingApps(false));
   }, []);
 

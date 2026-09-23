@@ -1,13 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// screens/candidate/JobDetailScreen.tsx
-// ────────────────────────────────────────────────────────────
-// Détail complet d'une offre + candidature :
-// - Offre interne (Airtable / créée par un recruteur) :
-//   Bouton "Candidater" qui passe au vert et enregistre la
-//   candidature de l'intérimaire auprès du recruteur dans Airtable.
-// - Offre externe (France Travail) :
-//   Bouton "Postuler" avec redirection vers l'annonce France Travail.
-// ════════════════════════════════════════════════════════════
+/**
+ * Écran de détail d'une offre d'emploi et de soumission de candidature.
+ */
 import { useState } from "react";
 import type { Job, Screen } from "../../types";
 import { BackBtn, Divider, MatchRing, PrimaryButton, Tag } from "../../components/ui";
@@ -28,8 +21,7 @@ export function JobDetailScreen({
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Détection si l'offre est interne (créée sur la plateforme par un recruteur dans Airtable)
-  // vs offre externe du flux France Travail
+  // Détection d'une offre interne (hébergée dans Airtable) ou externe (flux France Travail)
   const isInternal = Boolean(
     job.isInternal ||
     (job.id &&
@@ -37,7 +29,7 @@ export function JobDetailScreen({
       (!job.urlOrigine || !job.urlOrigine.includes("francetravail.fr")))
   );
 
-  // Candidature externe : redirection vers la page France Travail
+  // Redirection vers le portail France Travail pour les offres externes
   const handleExternalApply = () => {
     setApplied(true);
     const targetUrl =
@@ -47,7 +39,7 @@ export function JobDetailScreen({
     window.open(targetUrl, "_blank", "noopener,noreferrer");
   };
 
-  // Candidature interne : envoi des informations de l'intérimaire au recruteur dans Airtable
+  // Envoi direct de la candidature au recruteur via l'API Airtable
   const handleInternalApply = async () => {
     if (applied || submitting) return;
     setSubmitting(true);
@@ -75,10 +67,10 @@ export function JobDetailScreen({
         throw new Error(errData.message || "Erreur lors de l'envoi de la candidature.");
       }
 
-      console.log(`✅ [FRONTEND] Candidature interne validée pour l'offre ${job.id}`);
+      console.log(`[CANDIDATURE] Candidature interne validée pour l'offre ${job.id}`);
       setApplied(true);
     } catch (err: any) {
-      console.error("❌ Erreur lors de la candidature interne :", err);
+      console.error("[CANDIDATURE] Erreur lors de la candidature interne :", err);
       setErrorMessage(err.message || "Impossible de transmettre votre candidature.");
     } finally {
       setSubmitting(false);

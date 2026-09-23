@@ -1,15 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// components/icons/index.tsx
-// ────────────────────────────────────────────────────────────
-// Toutes les icônes de l'app, en SVG inline (pas de librairie
-// externe type lucide-react — ça évite une dépendance de plus
-// pour un si petit nombre d'icônes, et ça permet de garder
-// exactement le tracé dessiné dans la maquette Figma).
-//
-// Convention : chaque icône est un composant sans props (ou avec
-// juste `size`/`filled` quand nécessaire), à utiliser comme
-// <IHeart filled /> directement dans le JSX des écrans.
-// ════════════════════════════════════════════════════════════
+/**
+ * Bibliothèque d'icônes SVG vectorielles de l'application.
+ */
 
 /** Cœur (favoris) — rempli en rose quand `filled` est vrai */
 export const IHeart = ({ filled }: { filled?: boolean }) => (

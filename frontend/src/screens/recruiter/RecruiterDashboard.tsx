@@ -1,3 +1,6 @@
+/**
+ * Tableau de bord du recruteur : suivi des indicateurs clés, gestion des missions et des candidatures reçues.
+ */
 import { useState, useEffect } from "react";
 import type { Applicant, Mission, RecTab, Screen } from "../../types";
 import { BackBtn, MatchRing, StatusBadge, Tag } from "../../components/ui";
@@ -20,7 +23,7 @@ export function RecruiterDashboard({
     return localStorage.getItem("user_name") || "Chargement...";
   });
 
-  // États pour stocker les VRAIES données depuis l'API
+  // Missions et candidatures récupérées depuis l'API backend
   const [missions, setMissions] = useState<Mission[]>(() => initialMissions || []);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   
@@ -33,7 +36,7 @@ export function RecruiterDashboard({
     const userId = localStorage.getItem("userId");
     const email = localStorage.getItem("user_email");
 
-    // 1. Récupération dynamique du nom du recruteur / salon
+    // 1. Récupération du profil du salon
     const profileUrl = userId
       ? `http://${apiHost}:8000/api/profile?userMode=recruiter&userId=${encodeURIComponent(userId)}`
       : email
@@ -51,9 +54,9 @@ export function RecruiterDashboard({
           localStorage.setItem("user_name", recName);
         }
       })
-      .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur profil :", err));
+      .catch((err) => console.warn("[RECRUTEUR] Erreur chargement profil :", err));
 
-    // 2. Récupération UNIQUEMENT des missions de CE recruteur
+    // 2. Récupération des missions publiées par le recruteur
     if (email) {
       setLoadingMissions(true);
       fetch(`http://${apiHost}:8000/api/jobs?recruiterEmail=${encodeURIComponent(email)}`)
@@ -63,11 +66,11 @@ export function RecruiterDashboard({
             setMissions(data);
           }
         })
-        .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur missions :", err))
+        .catch((err) => console.warn("[RECRUTEUR] Erreur chargement missions :", err))
         .finally(() => setLoadingMissions(false));
     }
 
-    // 3. Récupération des candidatures liées à ce recruteur
+    // 3. Récupération des candidatures associées
     setLoadingApplicants(true);
     const appsUrl = email
       ? `http://${apiHost}:8000/api/applications?recruiterEmail=${encodeURIComponent(email)}`
@@ -81,10 +84,7 @@ export function RecruiterDashboard({
             id: app.id || idx,
             missionId: app.missionId,
             name: app.name || app.candidateName || "Candidat Anonyme",
-            
-            // 👇 On utilise le vrai score renvoyé par le backend (avec fallback strict à 0)
-            match: app.match !== undefined ? app.match : 0, 
-            
+            match: app.match !== undefined ? app.match : 0,
             level: app.level || "Confirmé",
             status: app.status === "accepted" ? "Accepté" : app.status === "rejected" ? "Refusé" : "En attente",
             initials: app.initials || (app.name ? app.name.substring(0, 2).toUpperCase() : "CI"),
@@ -94,7 +94,7 @@ export function RecruiterDashboard({
           setApplicants(formatted);
         }
       })
-      .catch((err) => console.warn("⚠️ [RECRUTEUR] Erreur candidatures :", err))
+      .catch((err) => console.warn("[RECRUTEUR] Erreur chargement candidatures :", err))
       .finally(() => setLoadingApplicants(false));
   }, [userEmail]);
 

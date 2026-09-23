@@ -1,8 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// screens/recruiter/MissionEditScreen.tsx
-// ────────────────────────────────────────────────────────────
-// Édition d'une mission existante, connectée à l'API Back-End via PATCH.
-// ════════════════════════════════════════════════════════════
+/**
+ * Écran d'édition et de mise à jour des paramètres d'une mission existante côté recruteur.
+ */
 import { useState } from "react";
 import type { Mission, Screen } from "../../types";
 import { SKILLS } from "../../data/mockData";
@@ -34,7 +32,6 @@ export function MissionEditScreen({
   const toggleSkill = (s: string) => setSelectedSkills((p) => (p.includes(s) ? p.filter((x) => x !== s) : [...p, s]));
 
   const handleSave = async (overrideStatus?: Mission["status"]) => {
-    console.log("👉 [FRONTEND] Envoi de la mise à jour de la mission...");
     setErrorMsg(null);
     setLoading(true);
 
@@ -54,8 +51,6 @@ export function MissionEditScreen({
       dates: endDate ? `${startDate || ""} – ${endDate}` : (startDate || ""),
     };
 
-    console.log(`📡 [FRONTEND] PATCH vers http://localhost:8000/api/jobs/${mission.id} :`, updatedMission);
-
     try {
       const response = await fetch(`http://localhost:8000/api/jobs/${mission.id}`, {
         method: "PATCH",
@@ -71,16 +66,13 @@ export function MissionEditScreen({
         throw new Error(data.message || "Erreur lors de la mise à jour de la mission.");
       }
 
-      console.log("✅ [FRONTEND] Mission mise à jour avec succès :", data);
-
-      // Met à jour le state global React
+      console.log("[RECRUTEUR] Mission mise à jour avec succès :", data);
       onSave(updatedMission);
       onNavigate("r-dashboard");
 
     } catch (err: any) {
-      console.error("❌ [FRONTEND] Erreur lors du PATCH mission :", err);
+      console.error("[RECRUTEUR] Erreur lors de la mise à jour de la mission :", err);
       setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement. Veuillez réessayer.");
-      // Maintient la fluidité en effectuant quand même la sauvegarde locale en démo
       onSave(updatedMission);
       onNavigate("r-dashboard");
     } finally {

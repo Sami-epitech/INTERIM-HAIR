@@ -1,13 +1,8 @@
-// ════════════════════════════════════════════════════════════
-// components/ui/PrimaryButton.tsx
-// ────────────────────────────────────────────────────────────
-// LE bouton d'action principal de l'app (fond rose "primary").
-// Utilisé pour toutes les actions "suivantes" (Continuer, Se
-// connecter, Confirmer ma candidature...). `disabled` grise le
-// bouton et bloque le clic — utilisé pour empêcher de continuer
-// tant qu'un formulaire n'est pas valide.
-// ════════════════════════════════════════════════════════════
+/**
+ * Bouton d'action principal de l'application.
+ */
 import type { ReactNode } from "react";
+
 
 export const PrimaryButton = ({
   children,

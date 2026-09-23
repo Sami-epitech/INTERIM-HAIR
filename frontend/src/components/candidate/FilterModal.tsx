@@ -1,13 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// components/candidate/FilterModal.tsx
-// ────────────────────────────────────────────────────────────
-// Panneau de filtres du fil d'offres, en "bottom sheet" (glisse
-// depuis le bas de l'écran). Fonctionne avec un état local `local`
-// distinct des filtres réellement appliqués (`filters` reçu en
-// prop) : ça permet à l'utilisateur d'ajuster les curseurs sans
-// que le fil se filtre en direct, et de tout annuler en fermant
-// la modale sans cliquer sur "Appliquer".
-// ════════════════════════════════════════════════════════════
+/**
+ * Modale de configuration des filtres de recherche d'offres d'emploi.
+ */
 import { useState } from "react";
 import type { Filters } from "../../types";
 import { Divider, Input } from "../ui";
@@ -22,12 +15,9 @@ export function FilterModal({
   onApply: (f: Filters) => void;
   onClose: () => void;
 }) {
-  // Copie locale éditable, initialisée avec les filtres actuellement actifs
   const [local, setLocal] = useState<Filters>({ ...filters });
 
   return (
-    // Fond semi-transparent cliquable : cliquer en dehors du panneau ferme la modale
-    // (stopPropagation sur le panneau lui-même empêche la fermeture si on clique DANS le panneau)
     <div className="fixed inset-0 z-50 flex flex-col justify-end" style={{ background: "rgba(45,31,26,0.45)" }} onClick={onClose}>
       <div
         className="bg-background rounded-t-3xl border-t border-border px-6 pt-6 pb-10 flex flex-col gap-5 max-h-[80vh] overflow-y-auto scrollable"
@@ -91,7 +81,6 @@ export function FilterModal({
           >
             Réinitialiser
           </button>
-          {/* Seul ce bouton répercute réellement `local` vers le parent (via onApply) */}
           <button
             onClick={() => { onApply(local); onClose(); }}
             className="flex-1 py-3.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"

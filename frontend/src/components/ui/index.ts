@@ -1,11 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// components/ui/index.ts — point d'entrée unique du design system
-// ────────────────────────────────────────────────────────────
-// Permet d'importer plusieurs composants UI en une seule ligne
-// dans les écrans, ex. :
-//   import { PrimaryButton, Input, Divider } from "../components/ui";
-// au lieu d'un import par fichier.
-// ════════════════════════════════════════════════════════════
+/**
+ * Point d'entrée des composants d'interface réutilisables.
+ */
 export { MatchRing } from "./MatchRing";
 export { StatusBadge } from "./StatusBadge";
 export { Tag } from "./Tag";

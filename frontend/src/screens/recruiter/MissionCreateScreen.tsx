@@ -1,6 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// screens/recruiter/MissionCreateScreen.tsx
-// ════════════════════════════════════════════════════════════
+/**
+ * Écran de création d'une nouvelle mission par un recruteur.
+ */
 import { useState } from "react";
 import type { Mission, Screen } from "../../types";
 import { SKILLS } from "../../data/mockData";
@@ -71,7 +71,7 @@ export function MissionCreateScreen({
         throw new Error(data.message || "Erreur lors de la création de la mission.");
       }
 
-      console.log("✅ [FRONTEND] Mission créée avec succès :", data);
+      console.log("[RECRUTEUR] Mission créée avec succès :", data);
 
       const createdMission: Mission = {
         id: data.job?.id || data.mission?.id || Date.now().toString(),
@@ -95,7 +95,7 @@ export function MissionCreateScreen({
 
       onNavigate("r-dashboard");
     } catch (err: any) {
-      console.error("❌ [FRONTEND] Erreur lors du POST mission :", err);
+      console.error("[RECRUTEUR] Erreur lors de la création de mission :", err);
       setErrorMsg(err.message || "Une erreur est survenue lors de la création de la mission. Veuillez réessayer.");
     } finally {
       setLoading(false);

@@ -1,8 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// screens/auth/AuthScreen.tsx
-// ────────────────────────────────────────────────────────────
-// Écran de connexion / inscription connecté à l'API Express.
-// ════════════════════════════════════════════════════════════
+/**
+ * Écran d'authentification (connexion et inscription) avec support OAuth Google.
+ */
 import { useState } from "react";
 import type { AuthTab, Screen, UserMode } from "../../types";
 import { AppName, BackBtn, Input, PrimaryButton } from "../../components/ui";
@@ -16,13 +14,11 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = async () => {
-    console.log("👉 [FRONTEND] Clic sur le bouton de soumission détecté !");
     setErrorMsg(null);
 
-    // Validation minimale côté front
+    // Validation des champs requis
     if (!email || !password) {
       const msg = "Veuillez remplir tous les champs requis.";
-      console.warn("⚠️ [FRONTEND]", msg);
       setErrorMsg(msg);
       return;
     }
@@ -30,7 +26,6 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
       const msg = "Format d'adresse email invalide.";
-      console.warn("⚠️ [FRONTEND]", msg);
       setErrorMsg(msg);
       return;
     }
@@ -39,12 +34,6 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
 
     const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/signup";
     const payload = { email: email.trim(), password, userMode, rememberMe };
-
-    console.log(`📡 [FRONTEND] Envoi de la requête à http://localhost:8000${endpoint}`, {
-      email: email.trim(),
-      userMode,
-      rememberMe,
-    });
 
     try {
       const response = await fetch(`http://localhost:8000${endpoint}`, {
@@ -61,9 +50,9 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
         throw new Error(data.message || "Une erreur est survenue lors de l'authentification.");
       }
 
-      console.log("✅ [FRONTEND] Réponse positive du serveur :", data);
+      console.log("[AUTH] Authentification réussie :", data);
 
-      // Stockage sécurisé du token, de l'ID utilisateur et de l'e-mail
+      // Stockage sécurisé des identifiants et jeton JWT
       if (data.token) {
         localStorage.setItem("auth_token", data.token);
       }
@@ -76,23 +65,20 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
         localStorage.setItem("user_name", data.user.name);
       }
 
-      // REDIRECTION INTELLIGENTE :
+      // Redirection selon le profil et l'avancement
       if (userMode === "candidate") {
         if (tab === "signup") {
-          // Inscription -> passage obligatoire par l'onboarding
           onNavigate("onboarding1");
         } else {
-          // Connexion -> si le profil est complété (selon l'API) ou par défaut sur un login -> feed
           const isProfileComplete = data.isOnboarded ?? data.hasProfile ?? true;
           onNavigate(isProfileComplete ? "feed" : "onboarding1");
         }
       } else {
-        // Parcours recruteur
         onNavigate("r-dashboard");
       }
 
     } catch (err: any) {
-      console.error("❌ [FRONTEND] Erreur lors de l'appel API :", err);
+      console.error("[AUTH] Erreur d'authentification :", err);
       setErrorMsg(err.message || "Une erreur est survenue lors de l'authentification. Veuillez vérifier vos informations et réessayer.");
     } finally {
       setLoading(false);

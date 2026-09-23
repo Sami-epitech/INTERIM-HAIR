@@ -1,15 +1,9 @@
-// ════════════════════════════════════════════════════════════
-// data/mockData.ts
-// ────────────────────────────────────────────────────────────
-// Données statiques utilisées tant que le backend n'est pas
-// branché (voir backend/README.md → étape 6 "brancher le front").
-// Quand l'API sera prête, ces constantes seront remplacées par
-// des appels fetch()/hooks (ex. useEffect + fetch("/api/missions")),
-// mais la FORME des données (les types de types.ts) doit rester
-// la même pour limiter les changements dans les écrans.
-// ════════════════════════════════════════════════════════════
+/**
+ * Données de test statiques et jeux de données initiaux pour l'interface client.
+ */
 
 import type { Job, Mission, Applicant, Application } from "../types";
+
 
 
 /** Offres affichées dans le fil candidat (écran FeedScreen) */

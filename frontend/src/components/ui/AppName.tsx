@@ -1,11 +1,8 @@
-// ════════════════════════════════════════════════════════════
-// components/ui/AppName.tsx — logo "Interim'hair"
-// ────────────────────────────────────────────────────────────
-// TK-017 : remplace le logo texte par le vrai logo (image) créé
-// pour la marque. `size="lg"` pour l'écran d'accueil, `size="sm"`
-// en en-tête des autres écrans.
-// ════════════════════════════════════════════════════════════
+/**
+ * Composant d'affichage du logo officiel Interim'hair.
+ */
 import logo from "../../assets/logo_site.svg";
+
 
 export const AppName = ({ size = "lg" }: { size?: "sm" | "lg" }) => (
   <img
