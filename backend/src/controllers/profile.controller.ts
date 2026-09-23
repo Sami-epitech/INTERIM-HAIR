@@ -3,7 +3,10 @@ import { updateInterimaire, getInterimaireProfile, getRecruiterProfile } from '.
 import { verifyToken, TokenPayload } from '../auth/jwt';
 import { airtableBase } from '../config/airtable';
 
-// Helper pour extraire l'ID ou email utilisateur
+/**
+ * Extrait l'identifiant et le rôle de l'utilisateur depuis le jeton Bearer JWT,
+ * les paramètres de requête ou le corps de la requête.
+ */
 function resolveUserId(req: Request): { userId: string | null; role: string | null } {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -31,12 +34,14 @@ function resolveUserId(req: Request): { userId: string | null; role: string | nu
   return { userId: null, role: null };
 }
 
-// Récupérer le profil connecté depuis Airtable (Intérimaire ou Recruteur)
+/**
+ * Récupère le profil de l'utilisateur connecté depuis Airtable (intérimaire ou recruteur).
+ */
 export const getProfile = async (req: Request, res: Response) => {
   try {
     let { userId, role } = resolveUserId(req);
 
-    // Si aucun ID fourni, repli sur le premier intérimaire (mode dev / démo)
+    // Repli sur le premier intérimaire disponible en mode démonstration
     if (!userId) {
       try {
         const firstCandidate = await airtableBase('Intérimaires').select({ maxRecords: 1 }).firstPage();
@@ -65,7 +70,9 @@ export const getProfile = async (req: Request, res: Response) => {
   }
 };
 
-// Enregistrer / Mettre à jour le profil dans Airtable
+/**
+ * Enregistre ou met à jour les informations du profil intérimaire dans Airtable.
+ */
 export const saveProfile = async (req: Request, res: Response) => {
   try {
     const { userId: bodyUserId, location, ...profileData } = req.body;
@@ -79,31 +86,29 @@ export const saveProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Identifiant utilisateur manquant pour la mise à jour du profil." });
     }
 
-    // 👇 TRAITEMENT SÉCURISÉ DE LA LOCALISATION ET DE LA MOBILITÉ
+    // Normalisation de la localisation et de l'étendue de mobilité (local ou national)
     const dataToUpdate: any = { ...profileData };
 
     if (location) {
       if (typeof location === 'object' && location !== null) {
         dataToUpdate.location = location.city || "";
-        dataToUpdate.mobility = location.mobility || "local"; // Enregistre "local" ou "national"
+        dataToUpdate.mobility = location.mobility || "local";
       } else {
         dataToUpdate.location = String(location);
         dataToUpdate.mobility = "local";
       }
     }
 
-    // Mise à jour de l'intérimaire dans Airtable avec les données nettoyées
+    // Mise à jour de l'enregistrement dans Airtable
     const updatedRecord = await updateInterimaire(userId, dataToUpdate);
 
-    // Rechargement du profil mis à jour pour renvoyer les données complètes
+    // Rechargement du profil mis à jour pour renvoyer la structure complète
     let refreshedProfile: any = null;
     try {
       refreshedProfile = await getInterimaireProfile(updatedRecord?.id || userId);
     } catch (e) {
       refreshedProfile = updatedRecord?.fields || dataToUpdate;
     }
-
-    console.log(`✅ [AIRTABLE] Profil intérimaire synchronisé avec succès pour ${userId}`);
 
     return res.status(200).json({
       message: "Profil enregistré avec succès",

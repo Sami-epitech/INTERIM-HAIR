@@ -1,5 +1,12 @@
 import { OffreFranceTravail } from "./types/job.types";
 
+/**
+ * Transforme une offre brute issue de l'API France Travail
+ * au format standardisé consommé par le frontend Interim'hair.
+ *
+ * @param offre Objet offre brut de France Travail
+ * @returns Offre formatée conforme au modèle de l'application
+ */
 export function transformerOffreFranceTravail(offre: OffreFranceTravail) {
   return {
     id: offre.id,

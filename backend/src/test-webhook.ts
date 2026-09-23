@@ -1,24 +1,29 @@
+/**
+ * Script de test autonome pour la validation du webhook Airtable
+ * et du mécanisme anti-doublon des notifications de matching.
+ */
+
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Charge les variables d'environnement depuis le .env racine
+// Chargement des variables d'environnement depuis le fichier .env racine
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 import { sendMatchNotificationWebhook } from './services/webhookService';
 import { MatchNotification } from './models/MatchNotification';
 
 async function runTests() {
-  console.log("🚀 Démarrage des tests du webhook et de l'anti-doublon...");
+  console.log("[TEST] Démarrage des tests du webhook et de l'anti-doublon...");
 
   let isMongoConnected = false;
   try {
-    console.log("🔗 Tentative de connexion à MongoDB...");
+    console.log("[TEST] Tentative de connexion à MongoDB...");
     await mongoose.connect(process.env.MONGO_URI || '', { serverSelectionTimeoutMS: 2000 });
     isMongoConnected = true;
-    console.log("✅ Connecté à MongoDB.");
+    console.log("[TEST] Connecté à MongoDB.");
   } catch (err: any) {
-    console.warn("⚠️ MongoDB non disponible localement (mode cache mémoire actif) :", err.message);
+    console.warn("[TEST] MongoDB non disponible localement (mode cache mémoire actif) :", err.message);
   }
 
   const testJob = {
@@ -44,7 +49,7 @@ async function runTests() {
     });
   }
 
-  console.log("\n🧪 --- TEST 1 : Score inférieur au seuil (50% < 60%) ---");
+  console.log("\n--- TEST 1 : Score inférieur au seuil (50% < 60%) ---");
   const resLow = await sendMatchNotificationWebhook({
     candidatId: testCandidate.candidatId,
     candidateEmail: testCandidate.candidateEmail,
@@ -56,7 +61,7 @@ async function runTests() {
     throw new Error("Échec TEST 1");
   }
 
-  console.log("\n🧪 --- TEST 2 : Premier envoi avec score >= 60% (78% >= 60%) ---");
+  console.log("\n--- TEST 2 : Premier envoi avec score >= 60% (78% >= 60%) ---");
   const resHigh = await sendMatchNotificationWebhook({
     candidatId: testCandidate.candidatId,
     candidateEmail: testCandidate.candidateEmail,
@@ -73,13 +78,13 @@ async function runTests() {
       candidatId: testCandidate.candidatId,
       missionId: testJob.id
     });
-    console.log("Enregistrement en BDD (anti-doublon) :", notificationInDb ? `Trouvé (score: ${notificationInDb.score}%, sentAt: ${notificationInDb.sentAt})` : "NON TROUVÉ ❌");
+    console.log("Enregistrement en base de données (anti-doublon) :", notificationInDb ? `Trouvé (score: ${notificationInDb.score}%, sentAt: ${notificationInDb.sentAt})` : "Non trouvé");
     if (!notificationInDb) {
       throw new Error("Échec TEST 2 : l'entrée n'a pas été enregistrée dans MatchNotification");
     }
   }
 
-  console.log("\n🧪 --- TEST 3 : Deuxième appel pour la même offre (Anti-Doublon / Anti-Spam) ---");
+  console.log("\n--- TEST 3 : Deuxième appel pour la même offre (anti-doublon) ---");
   const resDuplicate = await sendMatchNotificationWebhook({
     candidatId: testCandidate.candidatId,
     candidateEmail: testCandidate.candidateEmail,
@@ -99,10 +104,11 @@ async function runTests() {
     await mongoose.disconnect();
   }
 
-  console.log("\n🎉 TOUS LES TESTS SONT VALIDÉS AVEC SUCCÈS !");
+  console.log("\nTous les tests sont validés avec succès.");
 }
 
 runTests().catch(err => {
-  console.error("❌ Erreur pendant l'exécution des tests :", err);
+  console.error("Erreur pendant l'exécution des tests :", err);
   process.exit(1);
 });
+

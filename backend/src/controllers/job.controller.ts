@@ -5,9 +5,14 @@ import { verifyToken, TokenPayload } from '../auth/jwt';
 import fs from 'fs';
 import path from 'path';
 
-import { SALON_IMAGES, getSalonImage } from '../utils/salonImages';
+import { getSalonImage } from '../utils/salonImages';
 
-// Récupérer les offres (Filtrées par e-mail recruteur OU Fil Candidat avec France Travail)
+/**
+ * Récupère les offres d'emploi.
+ * - Mode recruteur : filtrage par email du recruteur
+ * - Mode candidat : agrégation des offres Airtable et des offres France Travail,
+ *   avec calcul dynamique des scores de matching si le candidat est identifié.
+ */
 export const getJobs = async (req: Request, res: Response) => {
   try {
     let candidateId = req.query.candidateId as string;
@@ -27,7 +32,7 @@ export const getJobs = async (req: Request, res: Response) => {
       }
     }
 
-    // 1. Récupération des offres depuis Airtable
+    // Récupération des offres publiées dans Airtable
     const airtableRecords = await base("Offres d'emploi").select().firstPage();
     
     let allJobs = airtableRecords
@@ -65,18 +70,18 @@ export const getJobs = async (req: Request, res: Response) => {
       })
       .filter((job): job is NonNullable<typeof job> => job !== null);
 
-    // 2. Si filtre par e-mail recruteur (Dashboard Recruteur)
+    // Filtrage par recruteur si demandé (tableau de bord recruteur)
     if (recruiterEmail) {
       allJobs = allJobs.filter((job) => 
         job.recruiterEmail && job.recruiterEmail.toLowerCase() === recruiterEmail.toLowerCase()
       );
     }
 
-    // 3. Si vue candidat (source === 'feed' ou candidateId présent), ajout des offres France Travail
+    // Inclusion des offres France Travail pour le flux candidat
     const isCandidateFeed = source === 'feed' || Boolean(candidateId) || (!recruiterEmail && source !== 'recruiter');
     
     if (isCandidateFeed) {
-      // Détection dynamique du fichier offres-ft.json selon l'arborescence (dist ou src)
+      // Résolution du chemin vers les offres France Travail sauvegardées localement
       const possiblePaths = [
         path.join(__dirname, '../offres-ft.json'),
         path.join(__dirname, '../../src/offres-ft.json'),
@@ -91,7 +96,6 @@ export const getJobs = async (req: Request, res: Response) => {
           const fileData = fs.readFileSync(jsonPath, 'utf-8');
           const ftJobs = JSON.parse(fileData);
           allJobs = [...allJobs, ...ftJobs];
-          console.log(`✅ [BACKEND] ${ftJobs.length} offres France Travail ajoutées au feed candidat.`);
         } catch (err) {
           console.warn("⚠️ [BACKEND] Erreur lors de la lecture du fichier France Travail :", err);
         }
@@ -100,7 +104,7 @@ export const getJobs = async (req: Request, res: Response) => {
       }
     }
 
-    // 4. Algorithme de matching si candidat identifié
+    // Évaluation algorithmique du matching lorsque le candidat est identifié
     if (candidateId) {
       try {
         const candidateRecord = await base('Intérimaires').find(candidateId);
@@ -129,6 +133,7 @@ export const getJobs = async (req: Request, res: Response) => {
           return { ...job, match: score };
         }));
 
+        // Tri décroissant selon le score de compatibilité
         allJobs.sort((a: any, b: any) => b.match - a.match);
       } catch (err) {
         console.error("❌ Erreur lors du calcul du matching :", err);
@@ -142,7 +147,10 @@ export const getJobs = async (req: Request, res: Response) => {
   }
 };
 
-// Créer une nouvelle mission (Recruteur)
+/**
+ * Crée une nouvelle offre de mission (espace recruteur) dans Airtable,
+ * puis déclenche l'évaluation de compatibilité avec les profils intérimaires existants.
+ */
 export const postJob = async (req: Request, res: Response) => {
   try {
     const { recruiterEmail, recruiterId, ...missionData } = req.body;
@@ -152,8 +160,6 @@ export const postJob = async (req: Request, res: Response) => {
     }
 
     const emailToSave = recruiterEmail || recruiterId || "recruteur@example.com";
-
-    console.log("📥 [BACKEND] Enregistrement de la mission sur Airtable avec recruiterId =", emailToSave);
 
     const fieldsToCreate: any = {
       title: missionData.title,
@@ -185,9 +191,7 @@ export const postJob = async (req: Request, res: Response) => {
       image: getSalonImage(createdRecord[0].id, fieldsToCreate.image),
     };
 
-    console.log("✅ [AIRTABLE] Enregistrement réussi ! ID :", createdRecord[0].id);
-
-    // Déclenchement asynchrone du matching avec les intérimaires (tâche de fond)
+    // Déclenchement asynchrone du matching avec la base des intérimaires
     matchNewJobWithCandidates(createdMission).catch((err: any) => {
       console.error("❌ [BACKEND] Erreur tâche de fond matching nouvelle offre :", err);
     });
@@ -203,16 +207,18 @@ export const postJob = async (req: Request, res: Response) => {
   }
 };
 
-// Mettre à jour une mission
+/**
+ * Met à jour les informations d'une mission existante dans Airtable.
+ */
 export const patchJob = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
 
+    // Prise en charge des identifiants locaux simulés
     if (!id || typeof id !== 'string' || !id.startsWith('rec')) {
-      console.warn(`⚠️ [BACKEND] Tentative de mise à jour d'un enregistrement local/mock (ID: ${id})`);
       return res.status(200).json({
-        message: "Mise à jour simulée (enregistrement local/mock)",
+        message: "Mise à jour simulée (enregistrement local)",
         mission: { id, ...updateData },
       });
     }

@@ -1,12 +1,10 @@
-// ════════════════════════════════════════════════════════════
-// backend/src/utils/cryptoService.ts
-// ────────────────────────────────────────────────────────────
-// Module de chiffrement au repos conforme RGPD / ANSSI
-// - Algorithme : AES-256-GCM (Chiffrement symétrique authentifié)
-// - Vecteur d'initialisation (IV) : 16 octets aléatoires par opération
-// - Tag d'authentification : 16 octets garantissant l'intégrité
-// - Format sérialisé : enc:v1:<ivHex>:<tagHex>:<cipherHex>
-// ════════════════════════════════════════════════════════════
+/**
+ * Module de chiffrement au repos conforme RGPD et recommandations ANSSI.
+ * - Algorithme : AES-256-GCM (chiffrement symétrique authentifié)
+ * - Vecteur d'initialisation (IV) : 16 octets aléatoires par opération
+ * - Tag d'authentification : 16 octets garantissant l'intégrité des données
+ * - Format sérialisé : enc:v1:<ivHex>:<tagHex>:<cipherHex>
+ */
 
 import crypto from "crypto";
 
@@ -16,7 +14,7 @@ const PREFIX = "enc:v1";
 
 /**
  * Dérive une clé de 32 octets (256 bits) à partir de la variable d'environnement,
- * ou d'une clé dérivée par SHA-256 en fallback de développement local.
+ * ou d'une clé dérivée par SHA-256 en secours de développement local.
  */
 function getEncryptionKey(): Buffer {
   const envKey = process.env.ENCRYPTION_KEY || process.env.ENCRYPTION_KEY_HEX;
@@ -95,7 +93,7 @@ export function decryptText(cipherText: string): string {
 
     return decrypted;
   } catch (error) {
-    console.warn("⚠️ [CRYPTO] Échec du déchiffrement (tag invalide ou clé différente), retour de la chaîne brute.");
+    console.warn("[CRYPTO] Échec du déchiffrement (tag invalide ou clé différente), retour de la chaîne brute.");
     return cipherText;
   }
 }

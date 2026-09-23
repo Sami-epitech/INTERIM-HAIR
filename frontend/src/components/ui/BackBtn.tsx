@@ -1,9 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// components/ui/BackBtn.tsx — bouton rond "retour" (flèche gauche)
-// ────────────────────────────────────────────────────────────
-// Ne connaît pas la navigation elle-même : reçoit juste un callback
-// onClick, appelé par chaque écran avec `() => onNavigate("écran-précédent")`.
-// ════════════════════════════════════════════════════════════
+/**
+ * Bouton d'action retour avec icône de flèche vers la gauche.
+ */
 export const BackBtn = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}

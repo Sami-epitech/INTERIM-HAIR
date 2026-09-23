@@ -1,16 +1,19 @@
+/**
+ * Routes de consultation locale des offres synchronisées.
+ */
 import { Router } from "express";
 import fs from "fs";
 import path from "path";
 
 const router = Router();
 
-// GET /api/jobs
+// Consultation des offres enregistrées dans le cache JSON local
 router.get("/", (_req, res) => {
   try {
     const filePath = path.join(__dirname, "../offres-ft.json");
 
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "Aucune offre trouvée. Lance le CLI d'ingestion." });
+      return res.status(404).json({ message: "Aucune offre disponible dans le cache local." });
     }
 
     const rawData = fs.readFileSync(filePath, "utf-8");

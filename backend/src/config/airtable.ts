@@ -7,10 +7,10 @@ if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
   console.error('❌ Configuration Airtable manquante dans le .env');
 }
 
-// Initialisation de la base Airtable
+// Initialisation du client Airtable principal
 export const airtableBase = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
   process.env.AIRTABLE_BASE_ID || ''
 );
 
-// Alias pour compatibilité
+// Alias de compatibilité
 export const base = airtableBase;

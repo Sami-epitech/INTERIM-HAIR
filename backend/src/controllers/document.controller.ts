@@ -1,10 +1,8 @@
-// ════════════════════════════════════════════════════════════
-// backend/src/controllers/document.controller.ts
-// ────────────────────────────────────────────────────────────
-// Gestion sécurisée des documents (CV, diplômes, contrats) :
-// - Chiffrement au repos obligatoire (AES-256-GCM)
-// - Déchiffrement à la volée pour les utilisateurs autorisés
-// ════════════════════════════════════════════════════════════
+/**
+ * Contrôleur de gestion sécurisée des documents (CV, diplômes, justificatifs).
+ * Assure le chiffrement symétrique authentifié au repos (AES-256-GCM)
+ * et le déchiffrement à la volée avec contrôle d'intégrité.
+ */
 
 import { Request, Response } from "express";
 import fs from "fs";
@@ -15,7 +13,7 @@ import { encryptBuffer, decryptBuffer } from "../utils/cryptoService";
 // Répertoire de stockage sécurisé des documents chiffrés
 const UPLOADS_DIR = path.resolve(__dirname, "../../uploads/encrypted");
 
-// Assure la création du dossier de stockage chiffré
+// Création du répertoire de stockage chiffré s'il n'existe pas
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
@@ -50,8 +48,8 @@ function saveMetadataStore(store: Record<string, StoredDocumentMetadata>) {
 }
 
 /**
- * Upload et chiffrement d'un document (CV, diplôme, justificatif)
- * Payload attendu : { fileName, fileType, dataBase64, candidateId }
+ * Téléverse et chiffre un document au repos avec l'algorithme AES-256-GCM.
+ * Charge utile attendue : { fileName, fileType, dataBase64, candidateId }
  */
 export const uploadDocument = async (req: Request, res: Response) => {
   try {
@@ -61,20 +59,20 @@ export const uploadDocument = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Données du document manquantes (fileName et dataBase64 requis)." });
     }
 
-    // Extraction du buffer depuis le format base64
+    // Décodage du buffer binaire depuis la chaîne Base64
     const cleanBase64 = dataBase64.includes(";base64,") ? dataBase64.split(";base64,")[1] : dataBase64;
     const rawBuffer = Buffer.from(cleanBase64, "base64");
 
-    // 🔒 Chiffrement immédiat au repos avec AES-256-GCM
+    // Chiffrement au repos avec AES-256-GCM
     const { encryptedData, iv, tag } = encryptBuffer(rawBuffer);
 
     const docId = crypto.randomUUID();
     const encryptedFilePath = path.join(UPLOADS_DIR, `${docId}.enc`);
 
-    // Écriture du fichier chiffré sur disque
+    // Écriture du fichier chiffré sur le disque
     fs.writeFileSync(encryptedFilePath, encryptedData);
 
-    // Enregistrement des métadonnées sécurisées
+    // Enregistrement des métadonnées associées
     const metadata: StoredDocumentMetadata = {
       docId,
       candidateId: candidateId || "anonymous",
@@ -90,8 +88,6 @@ export const uploadDocument = async (req: Request, res: Response) => {
     const store = getMetadataStore();
     store[docId] = metadata;
     saveMetadataStore(store);
-
-    console.log(`🔒 [DOCUMENT] Document "${fileName}" chiffré au repos avec succès (ID: ${docId}, taille chiffrée: ${encryptedData.length} octets).`);
 
     return res.status(201).json({
       message: "Document téléversé et chiffré au repos avec succès.",
@@ -111,7 +107,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
 };
 
 /**
- * Téléchargement et déchiffrement à la volée d'un document
+ * Télécharge et déchiffre à la volée un document après vérification d'intégrité.
  */
 export const downloadDocument = async (req: Request, res: Response) => {
   try {
@@ -130,7 +126,7 @@ export const downloadDocument = async (req: Request, res: Response) => {
 
     const encryptedBuffer = fs.readFileSync(encryptedFilePath);
 
-    // 🔓 Déchiffrement et vérification d'intégrité par tag AES-GCM
+    // Déchiffrement et validation d'intégrité par le tag d'authentification GCM
     const decryptedBuffer = decryptBuffer(encryptedBuffer, meta.iv, meta.tag);
 
     res.setHeader("Content-Type", meta.fileType);
@@ -146,7 +142,7 @@ export const downloadDocument = async (req: Request, res: Response) => {
 };
 
 /**
- * Liste des documents chiffrés d'un candidat
+ * Retourne la liste des métadonnées publiques des documents associés à un candidat.
  */
 export const getCandidateDocuments = async (req: Request, res: Response) => {
   try {

@@ -1,6 +1,10 @@
+/**
+ * Tests unitaires de l'algorithme de matching et de pondération bilatérale.
+ */
+
 import { calculateAndLogMatch } from '../src/services/matchingService';
 
-describe('TK-011 & TK-012 : Algorithme de Matching & Scoring', () => {
+describe('Algorithme de matching et calcul de score', () => {
   const baseJob = {
     id: 'job-test-01',
     title: 'Coiffeur Visagiste H/F',

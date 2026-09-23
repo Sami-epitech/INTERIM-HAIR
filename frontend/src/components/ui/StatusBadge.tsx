@@ -1,19 +1,9 @@
-// ════════════════════════════════════════════════════════════
-// components/ui/StatusBadge.tsx
-// ────────────────────────────────────────────────────────────
-// Petite pastille colorée affichant un statut (candidature,
-// mission...). Une seule source de vérité (`statusMap`) pour que
-// la couleur d'un statut donné soit toujours la même, partout
-// dans l'app.
-// ════════════════════════════════════════════════════════════
+/**
+ * Badge visuel indiquant l'état d'avancement d'une candidature ou d'une mission.
+ */
 
 /**
- * Associe chaque statut technique (clé, ex. "interview") à :
- *  - label : le texte affiché en français
- *  - bg/text/dot : les classes Tailwind de couleur (fond, texte, puce)
- *
- * Pour ajouter un nouveau statut : ajouter une entrée ici, rien
- * d'autre à modifier ailleurs dans le code.
+ * Correspondance entre statuts techniques et propriétés visuelles (libellé, couleurs).
  */
 const statusMap: Record<string, { label: string; bg: string; text: string; dot: string }> = {
   submitted: { label: "Soumise", bg: "bg-sky-50", text: "text-sky-600", dot: "bg-sky-400" },
@@ -28,9 +18,7 @@ const statusMap: Record<string, { label: string; bg: string; text: string; dot: 
 };
 
 export const StatusBadge = ({ status }: { status: string }) => {
-  // Si le statut reçu n'est pas dans la table (donnée corrompue, nouveau
-  // statut pas encore géré ici...), on retombe sur "pending" plutôt que
-  // de planter l'affichage.
+  // Statut par défaut si non répertorié
   const cfg = statusMap[status] ?? statusMap.pending;
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${cfg.bg} ${cfg.text}`}>

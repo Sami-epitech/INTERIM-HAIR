@@ -1,6 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// App.tsx — état global + routeur
-// ════════════════════════════════════════════════════════════
+/**
+ * Composant racine de l'application : gestion du routage par hachage et de l'état global.
+ */
 import { useState, useEffect } from "react";
 import type { DashTab, Job, Mission, Screen, UserMode } from "./types";
 import { JOBS, MISSIONS_INIT } from "./data/mockData";
@@ -43,13 +43,12 @@ export default function App() {
 
   // Chargement et synchronisation des favoris depuis Airtable
   useEffect(() => {
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const token = localStorage.getItem("auth_token");
     const userId = localStorage.getItem("userId") || localStorage.getItem("user_email");
 
     const favUrl = userId
-      ? `http://${apiHost}:8000/api/favorites?candidateId=${encodeURIComponent(userId)}`
-      : `http://${apiHost}:8000/api/favorites`;
+      ? `/api/favorites?candidateId=${encodeURIComponent(userId)}`
+      : `/api/favorites`;
 
     fetch(favUrl, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -64,8 +63,9 @@ export default function App() {
           setApiFavoriteJobs(data.jobs);
         }
       })
-      .catch((err) => console.warn("⚠️ [FAVORIS] Erreur chargement Airtable :", err));
+      .catch((err) => console.warn("[FAVORIS] Erreur chargement Airtable :", err));
   }, [userEmail, screen]);
+
 
   useEffect(() => {
     // Synchronise l'URL initiale au chargement
@@ -103,12 +103,11 @@ export default function App() {
     setFavoriteJobIds(updated);
     localStorage.setItem("candidate_favorites", JSON.stringify(updated));
 
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const token = localStorage.getItem("auth_token");
     const userId = localStorage.getItem("userId") || localStorage.getItem("user_email");
 
     try {
-      const res = await fetch(`http://${apiHost}:8000/api/favorites/toggle`, {
+      const res = await fetch(`/api/favorites/toggle`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,7 +128,7 @@ export default function App() {
         }
       }
     } catch (e) {
-      console.warn("⚠️ [FAVORIS] Erreur synchronisation Airtable :", e);
+      console.warn("[FAVORIS] Erreur synchronisation Airtable :", e);
     }
   };
 
@@ -144,10 +143,9 @@ export default function App() {
   );
 
   useEffect(() => {
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const url = userMode === "recruiter" && userEmail
-      ? `http://${apiHost}:8000/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
-      : `http://${apiHost}:8000/api/jobs?source=feed`;
+      ? `/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
+      : `/api/jobs?source=feed`;
 
     fetch(url)
       .then((res) => {
@@ -180,7 +178,7 @@ export default function App() {
           setJobsList(formattedJobs);
         }
       })
-      .catch((err) => console.warn("⚠️ [FRONTEND] Erreur API :", err.message));
+      .catch((err) => console.warn("[FRONTEND] Erreur API :", err.message));
   }, [userMode, userEmail, screen]);
 
   // Conversion propre Job[] -> Mission[]

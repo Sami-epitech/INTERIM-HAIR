@@ -1,13 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// components/ui/Input.tsx
-// ────────────────────────────────────────────────────────────
-// Champ de formulaire réutilisable (label + input + texte d'aide
-// optionnel). Composant "contrôlé" : la valeur vit dans le state
-// de l'écran parent (`value` + `onChange`), Input ne stocke rien
-// lui-même — c'est ce qui permet, par exemple, à ManualEntryScreen
-// de savoir si le formulaire est complet (canContinue) sans que
-// Input ait besoin d'en avoir conscience.
-// ════════════════════════════════════════════════════════════
+/**
+ * Champ de saisie contrôlé réutilisable avec libellé et indication optionnelle.
+ */
 export const Input = ({
   label,
   type = "text",

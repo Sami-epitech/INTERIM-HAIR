@@ -2,9 +2,12 @@ import { Request, Response } from 'express';
 import { createCandidature, getCandidaturesWithDetails } from '../services/airtableService';
 import { verifyToken, TokenPayload } from '../auth/jwt';
 import { airtableBase as base } from '../config/airtable';
-import { MatchingLog } from '../models/MatchingLog'; // 👈 On importe ton modèle MongoDB !
+import { MatchingLog } from '../models/MatchingLog';
 
-// Helper pour extraire l'ID du candidat
+/**
+ * Extrait l'identifiant du candidat depuis le jeton d'authentification Bearer,
+ * ou en repli depuis les paramètres de la requête.
+ */
 function resolveCandidateId(req: Request): string | null {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -20,35 +23,37 @@ function resolveCandidateId(req: Request): string | null {
   return (req.query.candidateId as string) || (req.body?.candidateId as string) || null;
 }
 
-// Récupérer la liste des candidatures enrichies (pour candidat ou recruteur)
+/**
+ * Récupère les candidatures enrichies pour un candidat ou un recruteur.
+ * Croise les données Airtable avec les scores de compatibilité enregistrés dans MongoDB.
+ */
 export const getApplications = async (req: Request, res: Response) => {
   try {
     const candidateId = (req.query.candidateId as string) || resolveCandidateId(req);
     const recruiterEmail = req.query.recruiterEmail as string;
     const missionId = (req.query.missionId as string) || (req.params.missionId as string);
 
-    // 1. Récupération brute depuis Airtable
+    // Récupération des enregistrements depuis Airtable
     const applications = await getCandidaturesWithDetails({
       candidateId: candidateId || undefined,
       recruiterEmail: recruiterEmail || undefined,
       missionId: missionId || undefined,
     });
 
-    // 2. 👇 Enrichissement avec le SCORE RECRUTEUR depuis MongoDB
+    // Enrichissement des candidatures avec les scores récents issus de MongoDB
     const enrichedApplications = await Promise.all(applications.map(async (app: any) => {
-      // Airtable renvoie parfois les relations sous forme de tableaux ["recXXX"]
+      // Normalisation des relations Airtable (parfois encapsulées dans des tableaux)
       const candId = Array.isArray(app.candidateId) ? app.candidateId[0] : (app.candidateId || app.candidatId);
       const missId = Array.isArray(app.missionId) ? app.missionId[0] : app.missionId;
 
-      let recruiterMatch = 0; // Valeur par défaut si aucun log n'est trouvé
+      let recruiterMatch = 0;
 
       if (candId && missId) {
         try {
-          // On cherche le dernier log calculé pour ce duo (Candidat / Offre)
+          // Recherche du dernier log calculé pour ce binôme candidat/mission
           const log = await MatchingLog.findOne({ candidatId: candId, missionId: missId }).sort({ createdAt: -1 });
           
           if (log) {
-            // C'est ICI qu'on sélectionne le point de vue du recruteur !
             recruiterMatch = log.score; 
           }
         } catch (err) {
@@ -69,13 +74,15 @@ export const getApplications = async (req: Request, res: Response) => {
   }
 };
 
-// Postuler à une mission
+/**
+ * Enregistre la candidature d'un intérimaire pour une mission donnée.
+ */
 export const applyToMission = async (req: Request, res: Response) => {
   try {
     const { missionId } = req.params;
     let candidateId = req.body.candidateId || resolveCandidateId(req);
 
-    // Si non connecté / mode démo : fallback sur le premier candidat Airtable
+    // Repli sur le premier candidat en base si aucun identifiant n'est fourni
     if (!candidateId) {
       try {
         const defaultCandidates = await base('Intérimaires').select({ maxRecords: 1 }).firstPage();
@@ -91,7 +98,7 @@ export const applyToMission = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Identifiant candidat et ID de mission requis." });
     }
 
-    // Création de la candidature dans la table "Candidatures" d'Airtable
+    // Persistance de la candidature dans Airtable
     const newApplication = await createCandidature(candidateId, missionId);
 
     return res.status(201).json({

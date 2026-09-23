@@ -1,6 +1,10 @@
+/**
+ * Tests unitaires du chiffrement symétrique authentifié AES-256-GCM.
+ */
+
 import { encryptText, decryptText, isEncrypted, encryptBuffer, decryptBuffer } from '../src/utils/cryptoService';
 
-describe('TK-006 : Chiffrement des Données Sensibles (AES-256-GCM)', () => {
+describe('Chiffrement des données sensibles (AES-256-GCM)', () => {
   const sensitivePhone = '06 12 34 56 78';
 
   it('devrait chiffrer les données sensibles avec le préfixe enc:v1', () => {

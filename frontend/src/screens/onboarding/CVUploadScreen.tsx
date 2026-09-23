@@ -1,13 +1,7 @@
-// ════════════════════════════════════════════════════════════
-// screens/onboarding/CVUploadScreen.tsx
-// ────────────────────────────────────────────────────────────
-// Étape 2/3 (variante "import CV"). Trois sous-états gérés par
-// `stage` :
-//   1. "drop"    → zone de dépôt du fichier
-//   2. "parsing" → simulation de l'analyse IA (setTimeout)
-//   3. "review"  → relecture/correction des données extraites +
-//                  envoi au Back-End Express lors de la validation.
-// ════════════════════════════════════════════════════════════
+/**
+ * Deuxième étape de l'inscription candidat (variante import de CV) :
+ * téléchargement, analyse automatique et vérification des informations extraites.
+ */
 import { useState } from "react";
 import type { Screen } from "../../types";
 import { DIPLOMAS_LIST } from "../../data/mockData";
@@ -36,9 +30,8 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
     }
   };
 
-  // Soumission des données rebalayées/modifiées vers le Back-End Express
+  // Envoi des données du profil analysé vers l'API backend
   const handleSaveProfile = async () => {
-    console.log("👉 [FRONTEND] Envoi du profil extrait du CV...");
     setErrorMsg(null);
     setLoading(true);
 
@@ -54,10 +47,8 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
       experienceLevel: exLevel,
     };
 
-    console.log("📡 [FRONTEND] Payload envoyé à http://localhost:8000/api/profile :", payload);
-
     try {
-      const response = await fetch("http://localhost:8000/api/profile", {
+      const response = await fetch("/api/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,15 +63,12 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
         throw new Error(data.message || "Erreur lors de l'enregistrement du profil.");
       }
 
-      console.log("✅ [FRONTEND] Profil CV enregistré avec succès par le serveur :", data);
-
-      // Redirection vers l'étape suivante (Disponibilités/Préférences)
+      console.log("[CV-UPLOAD] Profil extrait enregistré avec succès :", data);
       onNavigate("onboarding2");
 
     } catch (err: any) {
-      console.error("❌ [FRONTEND] Erreur lors de l'envoi du profil :", err);
+      console.error("[CV-UPLOAD] Erreur lors de l'enregistrement du profil :", err);
       setErrorMsg(err.message || "Une erreur est survenue lors de l'enregistrement de votre profil. Veuillez réessayer.");
-      // Permet de continuer la démo même si le serveur renvoie un souci temporaire
       onNavigate("onboarding2");
     } finally {
       setLoading(false);

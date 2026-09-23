@@ -1,5 +1,9 @@
 import { Schema, model, Document } from 'mongoose';
 
+/**
+ * Modèle de persistance des notifications de matching envoyées par webhook.
+ * L'index composé unique garantit l'idempotence et l'anti-spam.
+ */
 export interface IMatchNotification extends Document {
   candidatId: string;
   candidateEmail: string;

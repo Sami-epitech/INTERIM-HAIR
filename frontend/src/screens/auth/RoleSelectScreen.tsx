@@ -1,11 +1,6 @@
-// ════════════════════════════════════════════════════════════
-// screens/auth/RoleSelectScreen.tsx
-// ────────────────────────────────────────────────────────────
-// Tout premier écran de l'app : l'utilisateur choisit s'il est
-// intérimaire (candidat) ou recruteur. Ce choix est stocké dans
-// `userMode` (état global, voir App.tsx) car il conditionne tout
-// le reste du parcours (auth, onboarding, dashboard...).
-// ════════════════════════════════════════════════════════════
+/**
+ * Écran d'accueil et de sélection du profil d'utilisation (intérimaire ou recruteur).
+ */
 import { useEffect, useState } from "react";
 import type { Screen, UserMode } from "../../types";
 import { AppName } from "../../components/ui";
@@ -54,21 +49,15 @@ export function RoleSelectScreen({
   onNavigate: (s: Screen) => void;
   setUserMode: (m: UserMode) => void;
 }) {
-  // Enregistre le rôle choisi PUIS navigue vers l'authentification.
-  // Regrouper les deux actions ici évite de dupliquer cette logique
-  // dans les deux boutons ci-dessous.
   const choose = (m: UserMode) => {
     setUserMode(m);
     onNavigate("auth");
   };
 
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Bandeau du haut : logo + baseline, sur fond dégradé décoratif.
-          lg:hidden : sur grand écran, App.tsx affiche la même marque dans
-          son panneau de gauche fixe — l'afficher ici aussi ferait doublon. */}
       <div className="lg:hidden relative overflow-hidden bg-gradient-to-br from-secondary via-accent/20 to-muted h-36 flex flex-col items-center justify-center">
-        {/* Deux cercles flous purement décoratifs, positionnés hors du cadre visible */}
         <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-primary/8" />
         <div className="absolute -bottom-16 -left-8 w-40 h-40 rounded-full bg-accent/25" />
         <div className="relative flex flex-col items-center gap-3">
@@ -77,9 +66,6 @@ export function RoleSelectScreen({
         </div>
       </div>
 
-      {/* Corps de l'écran : titre + les deux cartes de choix de rôle.
-          lg:pt-16 : compense l'absence du bandeau ci-dessus sur grand écran
-          (masqué par lg:hidden), pour garder un peu d'air en haut. */}
       <div className="flex-1 flex flex-col px-6 pt-6 lg:pt-16 pb-6 gap-3">
         <div className="text-center">
           <h1 className="font-serif text-2xl text-foreground">Bienvenue !</h1>
@@ -125,7 +111,6 @@ export function RoleSelectScreen({
                 <p className="font-semibold text-lg text-foreground">{opt.title}</p>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{opt.desc}</p>
               </div>
-              {/* La flèche change de fond au survol de toute la carte, grâce à "group" */}
               <div className="w-8 h-8 flex items-center justify-center rounded-full bg-muted group-hover:bg-primary/10 transition-colors shrink-0">
                 <IArrow />
               </div>
