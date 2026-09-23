@@ -42,13 +42,12 @@ export default function App() {
 
   // Chargement et synchronisation des favoris depuis Airtable
   useEffect(() => {
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const token = localStorage.getItem("auth_token");
     const userId = localStorage.getItem("userId") || localStorage.getItem("user_email");
 
     const favUrl = userId
-      ? `http://${apiHost}:8000/api/favorites?candidateId=${encodeURIComponent(userId)}`
-      : `http://${apiHost}:8000/api/favorites`;
+      ? `/api/favorites?candidateId=${encodeURIComponent(userId)}`
+      : `/api/favorites`;
 
     fetch(favUrl, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -103,12 +102,11 @@ export default function App() {
     setFavoriteJobIds(updated);
     localStorage.setItem("candidate_favorites", JSON.stringify(updated));
 
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const token = localStorage.getItem("auth_token");
     const userId = localStorage.getItem("userId") || localStorage.getItem("user_email");
 
     try {
-      const res = await fetch(`http://${apiHost}:8000/api/favorites/toggle`, {
+      const res = await fetch(`/api/favorites/toggle`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -144,10 +142,9 @@ export default function App() {
   );
 
   useEffect(() => {
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const url = userMode === "recruiter" && userEmail
-      ? `http://${apiHost}:8000/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
-      : `http://${apiHost}:8000/api/jobs?source=feed`;
+      ? `/api/jobs?recruiterEmail=${encodeURIComponent(userEmail)}`
+      : `/api/jobs?source=feed`;
 
     fetch(url)
       .then((res) => {

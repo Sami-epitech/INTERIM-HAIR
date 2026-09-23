@@ -56,7 +56,7 @@ export function JobDetailScreen({
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const res = await fetch(`http://localhost:8000/api/missions/${job.id}/applications`, {
+      const res = await fetch(`/api/missions/${job.id}/applications`, {
         method: "POST",
         headers,
         body: JSON.stringify({ candidateId }),

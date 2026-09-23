@@ -52,7 +52,7 @@ export function MissionEditScreen({
     };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/jobs/${mission.id}`, {
+      const response = await fetch(`/api/jobs/${mission.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

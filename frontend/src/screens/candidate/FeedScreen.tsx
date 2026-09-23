@@ -60,12 +60,10 @@ export function FeedScreen({
 
 
     try {
-      const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
-      
       // On récupère le token à chaque requête (chargement ET scroll)
       const token = localStorage.getItem("token") || localStorage.getItem("auth_token") || localStorage.getItem("jwt");
 
-      const res = await fetch(`http://${apiHost}:8000/api/jobs?source=feed`, {
+      const res = await fetch(`/api/jobs?source=feed`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

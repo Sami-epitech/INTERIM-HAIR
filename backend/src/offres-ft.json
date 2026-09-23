@@ -1,5 +1,306 @@
 [
   {
+    "id": "214HPYH",
+    "intitule": "Coiffeur/Coiffeuse mixte (H/F)",
+    "description": "Artisan Coiffeur recherche un.e Coiffeur/Coiffeuse mixte.\n\nMission du poste:\n- Autonomie en technique : coupes et technique Femme / Homme + Barber / enfants\n\nProfil recherché : \n- CAP ou BP coiffure exigé, idéalement avec une première expérience en coiffure\n- Personne motivée et passionnée\n- Maîtrise des techniques de coupe, coloration et coiffage\n- Sens du service client, dynamisme et esprit d'équipe\n\nJours de travail : Mardi, Mercredi, Vendredi, Samedi mais cela est modulable en fonction des disponibilités des candidats.\nPoste à pourvoir dès que possible.\nAutres possibilités : Complément de retraite ou en Freelance suivant un tableau de service établi.\n\nVeuillez accompagner votre CV d'une lettre de motivation personnalisée.",
+    "dateCreation": "2026-09-23T16:00:01.346Z",
+    "dateActualisation": "2026-09-23T16:00:01.346Z",
+    "lieuTravail": {
+      "libelle": "78 - VERNOUILLET",
+      "latitude": 48.972621,
+      "longitude": 1.983412,
+      "codePostal": "78540",
+      "commune": "78643"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse",
+    "entreprise": {
+      "nom": "ARTISAN COIFFEUR",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDD",
+    "typeContratLibelle": "CDD - 6 Mois",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "D",
+    "experienceLibelle": "Débutant accepté",
+    "formations": [
+      {
+        "codeFormation": "42050",
+        "domaineLibelle": "Coiffure",
+        "niveauLibelle": "CAP, BEP et équivalents",
+        "exigence": "E"
+      }
+    ],
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "S"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "S"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "S"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "S"
+      },
+      {
+        "libelle": "#TDFE2026 ",
+        "exigence": "S"
+      },
+      {
+        "libelle": "Barbes",
+        "exigence": "E"
+      }
+    ],
+    "salaire": {
+      "libelle": "Mensuel de 2200.0 Euros"
+    },
+    "dureeTravailLibelle": "39H/semaine\nTravail en journée...",
+    "dureeTravailLibelleConverti": "Temps plein",
+    "alternance": false,
+    "contact": {
+      "nom": "Agence France Travail Poissy",
+      "coordonnees1": "1er étage 2 PLACE Georges Pompidou",
+      "coordonnees2": "78300 Poissy",
+      "coordonnees3": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214HPYH"
+    },
+    "agence": {
+      "courriel": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214HPYH"
+    },
+    "nombrePostes": 1,
+    "deplacementCode": "1",
+    "deplacementLibelle": "Jamais",
+    "qualificationCode": "6",
+    "qualificationLibelle": "Employé qualifié",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "qualitesProfessionnelles": [
+      {
+        "libelle": "Avoir l'esprit d'équipe",
+        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
+      },
+      {
+        "libelle": "Faire preuve d'autonomie",
+        "description": "Capacité à prendre en charge son activité sans devoir être encadré de façon continue (le cas échéant, à solliciter les autres acteurs de l'entreprise)."
+      },
+      {
+        "libelle": "Faire preuve de contrôle de soi",
+        "description": "Capacité à garder le contrôle de soi pour agir efficacement face à des situations irritantes, imprévues, stressantes."
+      }
+    ],
+    "trancheEffectifEtab": "1 ou 2 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214HPYH"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "39H/semaine\nTravail en journée",
+        " Travail le samedi"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
+    "id": "214HPBT",
+    "intitule": "APPRENTISSAGE - COIFFEUR/COIFFEUSE (H/F)",
+    "description": "Description du salon :\nSitué à quelques minutes en voiture de Villeneuve d'Ascq et accessible en transports en commun, le salon de coiffure est un espace chaleureux et cosy. Toute l'équipe a à cœur de recevoir nos clients/es dans une ambiance conviviale et d'écoute. Grâce à notre expertise et notre approche personnalisée, nous avons une clientèle confiante et fidèle.\nJe recherche aujourd'hui un(e) apprenti(e) coiffeur(se) pour rejoindre l'équipe dynamique et contribuer à apporter à notre clientèle un moment de bien-être et de satisfaction et qui souhaite préparer un CAP coiffure de préférence mais ouvert au BP coiffure.\n\nVos missions :\n- Accueillir les clients avec le sourire\n- Préparer les postes de travail et le matériel\n- Réaliser les shampoings et soins capillaires\n- Participer aux différentes prestations de coiffure sous la supervision de la responsable\n- Apprendre et développer les techniques de coupe, coiffage, brushing et coloration\n- Assurer l'entretien et la propreté du salon et du matériel\n- Participer à la bonne organisation du salon\n\nJe recherche : \nUne personne motivée, sérieuse, ponctuelle et ayant envie d'apprendre le métier de coiffeur/coiffeuse. Une bonne présentation, le sens de l'accueil et l'esprit d'équipe sont appréciés.\n\nCe que nous offrons :\nTravailler avec une équipe passionnée et soudée, soucieuse d'offrir à nos clients des moments de bien-être et de beauté tout cela dans un cadre de travail agréable avec une clientèle variée et fidèle.\nDes horaires qui permettent un bon équilibre vie professionnelle/vie personnelle.\nEn effet le salon est fermé le mercredi, le dimanche et jours fériés.\nHoraires semaine :\nLe lundi ; mardi ; Jeudi : 9h-12h/14h-18h\nLe vendredi 9h-19h\nLe samedi 9h-17h\nFermeture également durant les vacances scolaires sauf durant les vacances d'automne\nLes congés annuels sont : 3 semaines durant l'été et 2 semaines en hiver.\n\nCe que nous souhaitons et comment postuler ?\nN'hésitez pas à m'envoyer votre CV, parlez moi de vous, de qui vous êtes, de vos compétences. Soyez sincère, soyez vous-même, apportez moi votre passion pour la coiffure.",
+    "dateCreation": "2026-09-23T15:37:49.580Z",
+    "dateActualisation": "2026-09-23T15:37:49.580Z",
+    "lieuTravail": {
+      "libelle": "59 - ANSTAING",
+      "latitude": 50.605988,
+      "longitude": 3.19006,
+      "codePostal": "59152",
+      "commune": "59013"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse",
+    "entreprise": {
+      "nom": "MURIELLE R",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDD",
+    "typeContratLibelle": "CDD - 12 Mois",
+    "natureContrat": "Contrat apprentissage",
+    "experienceExige": "D",
+    "experienceLibelle": "Débutant accepté",
+    "formations": [
+      {
+        "codeFormation": "42050",
+        "domaineLibelle": "Coiffure",
+        "niveauLibelle": "CAP, BEP et équivalents",
+        "exigence": "S"
+      }
+    ],
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "S"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "S"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "S"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "S"
+      }
+    ],
+    "salaire": {
+      "commentaire": "Selon grille salaire apprentissage"
+    },
+    "dureeTravailLibelle": "35H/semaine\nTravail en journée...",
+    "dureeTravailLibelleConverti": "Temps plein",
+    "alternance": true,
+    "contact": {
+      "nom": "Agence France Travail VILLENEUVE D'ASCQ",
+      "coordonnees1": "18 RUE TRUDAINE",
+      "coordonnees2": "59650 Villeneuve-d'Ascq",
+      "coordonnees3": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214HPBT"
+    },
+    "agence": {
+      "courriel": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214HPBT"
+    },
+    "nombrePostes": 1,
+    "accessibleTH": false,
+    "qualificationCode": "5",
+    "qualificationLibelle": "Employé non qualifié",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "trancheEffectifEtab": "1 ou 2 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214HPBT"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "35H/semaine\nTravail en journée",
+        " Travail le samedi"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
+    "id": "214HNPZ",
+    "intitule": "Coiffeur  (H/F) MNC008",
+    "description": "Situé au cœur de la Principauté, notre salon de coiffure mixte est une adresse de référence où l'élégance et le savoir-faire se rencontrent. Nous offrons à notre clientèle un cadre raffiné et une expérience de soin personnalisée.\n\nVotre Mission : Au sein de notre équipe, vous prendrez en charge une clientèle exigeante, en assurant des coupes, brushings et soins de haute qualité.\n\nProfil recherché : Que vous soyez un(e) expert(e) confirmé(e) ou un(e) jeune talent désireux(se) de faire ses preuves, votre passion pour la coiffure et votre sens du service sont vos meilleurs atouts. Nous accueillons avec plaisir les profils débutants motivés par l'apprentissage de l'excellence.\n\nConditions :Vous travaillerez 3 jours par semaine, les jeudis, vendredis et samedis pour commencer. Cette organisation pourra évoluer vers un temps plein.",
+    "dateCreation": "2026-09-23T15:26:09.741Z",
+    "dateActualisation": "2026-09-23T15:26:09.741Z",
+    "lieuTravail": {
+      "libelle": "Principauté de Monaco"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse",
+    "entreprise": {
+      "nom": "SALON PATIO",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDD",
+    "typeContratLibelle": "CDD - 3 Mois",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "E",
+    "experienceLibelle": "3 Mois - avec CAP obligatoire",
+    "experienceCommentaire": "avec CAP obligatoire",
+    "formations": [
+      {
+        "codeFormation": "42050",
+        "domaineLibelle": "Coiffure",
+        "niveauLibelle": "CAP, BEP et équivalents",
+        "exigence": "E"
+      }
+    ],
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "S"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "E"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "S"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "E"
+      },
+      {
+        "code": "101905",
+        "libelle": "Procéder à la mise en forme, au coiffage, à la fixation des cheveux (bouclage, brushing, ...)",
+        "exigence": "S"
+      }
+    ],
+    "salaire": {
+      "libelle": "Mensuel de 1494.0 Euros"
+    },
+    "dureeTravailLibelle": "Temps partiel - 28H/semaine\nTravail en journée",
+    "dureeTravailLibelleConverti": "Temps partiel",
+    "alternance": false,
+    "contact": {
+      "nom": "Agence France Travail MENTON",
+      "coordonnees1": "7 RUE Jeansoulin",
+      "coordonnees2": "06500 Menton",
+      "coordonnees3": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214HNPZ"
+    },
+    "agence": {
+      "courriel": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/214HNPZ"
+    },
+    "nombrePostes": 1,
+    "accessibleTH": false,
+    "deplacementCode": "1",
+    "deplacementLibelle": "Jamais",
+    "qualificationCode": "6",
+    "qualificationLibelle": "Employé qualifié",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214HNPZ"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "Temps partiel - 28H/semaine\nTravail en journée"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
     "id": "214HHSC",
     "intitule": "Coiffeur / Coiffeuse (H/F)",
     "description": "Nous recherchons un(e) coiffeur(euse) polyvalent(e) pour rejoindre notre équipe dynamique. Le(la) candidat(e) idéal(e) sera responsable de diverses tâches de coiffure et devra également participer à la vente de produits en salon.\n\nMissions principales :\n- Réaliser des coupes pour hommes et femmes\n- Effectuer des colorations et des balayages\n- Appliquer des mèches\n- Effectuer des shampoings et des soins capillaires\n- Conseiller et vendre des produits de coiffure et de soin capillaires\n- Assurer un service client de haute qualité\n- Maintenir un environnement de travail propre et organisé\n\nQualifications requises :\n- Diplôme en coiffure (CAP Coiffure minimum)\n- Expérience professionnelle en salon de coiffure\n- Connaissance des techniques de coloration, de balayage et de mise en plis\n- Compétences en vente et en service client\n- Capacité à travailler en équipe et de manière autonome\n- Bonne communication et sens de l'écoute\n\nProfil recherché :\n- Dynamique et motivé(e)\n- Polyvalent(e) et capable de gérer plusieurs tâches simultanément\n- Souci du détail et sens de l'esthétique\n- Capacité à conseiller et à fidéliser la clientèle\n\nSalaire au SMIC évolutif \nOuvert du mardi au samedi de 9h à 19h. ",
@@ -4493,7 +4794,7 @@
     "intitule": "Coiffeur / Coiffeuse",
     "description": "CDD 35h de 6 mois à pourvoir à partir de décembre.\nPossibilité de mi temps selon vos disponibilités.\nSalon de 3 personnes, coiffure mixte, hommes, femmes et enfants.\nVous travaillez sur 4 jours : fermeture du salon les mercredis et dimanches, le 3ème jour sera à définir avec l'employeur",
     "dateCreation": "2026-09-16T16:37:19.987Z",
-    "dateActualisation": "2026-09-18T21:47:27.188Z",
+    "dateActualisation": "2026-09-23T16:20:46.538Z",
     "lieuTravail": {
       "libelle": "56 - PLOEMEL",
       "latitude": 47.651037,
@@ -15633,315 +15934,6 @@
     "origineOffre": {
       "origine": "1",
       "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QSKB"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "35H/semaine\nTravail en journée"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213QSJC",
-    "intitule": "Apprenti coiffeur (H/F)",
-    "description": "La marque Franck Provost, c'est près de 45 ans de passion et d'innovation au service de la beauté des femmes. Un symbole du luxe accessible, est étroitement lié à son fondateur et à son savoir-faire reconnu dans le monde comme un symbole du chic à la française. Les salons élégants à l'image haut de gamme proposent des collections faciles à vivre et des techniques de coloration raffinées et exclusives. \n\nL'enseigne Franck Provost fait partie du Groupe Provalliance, leader mondial de la coiffure avec plus de 3 500 salons et boutiques répartis dans 35 pays, et composé de 18 enseignes (Jean Louis David, Saint Algue, Coiff & Co, The Barber Company .).\nFranck Provost positionne les collaborateurs au cœur de sa réussite, stimule leur évolution et les aide à développer leur sens artistique.  \n\nVous êtes à la recherche de nouvelles opportunités ?  Rejoignez nous !\n\nDescription du poste\nNous recherchons un(e) apprenti(e) prêt(e) à s'investir dans une formation à la fois à l'école et en salon (diplôme CAP)\n\nAccompagné par un tuteur vos missions seront les suivantes :\n\nAccueillir et accompagner la clientèle\nRéaliser des prestations shampoings et soins capillaires\nRéaliser des brushings, des colorations et des coupes basiques\nAssister les coiffeurs lors de la consultation de la cliente\nDévelopper les ventes de produit\nDevenez un coiffeur au sein de notre groupe, notamment grâce à : \n\nUne journée d'intégration dédiée à nos alternants \nUn parcours de formation sur mesure dédié à nos alternants avec le programme « Avenir Juniors » composé de journées de formation spécifiques rien que pour vous.\nUn tuteur formé dans nos académies pour vous accompagner\nDes possibilités futures de carrière et de développement au sein de notre Groupe.\nEn nous rejoignant, nous vous promettons :\n\nDes titres restaurant\nL'accès à une plateforme d'avantages (tarifs préférentiels pour des places de cinémas, des parcs d'attraction.)\nDes offres attractives chez nos partenaires\nDes valeurs d'entreprise fortes : Passion, Confiance, Créativité et Engagement\nNotre entreprise est engagée dans le développement d'un environnement inclusif et encourage les candidatures des personnes en situation de handicap.\n\nQualifications\nNous recherchons des apprenti(e)s coiffeur(se)s motivé(e)s: \n\nPassionné(e) par la coiffure, vous souhaitez vous former dans un salon à l'écoute de vos besoins\nDoté(e) d'un bon relationnel, vous avez le sens du service client (écoute, disponibilité et bienveillance)\nInformations complémentaires\nAdresse : Ccial Alma - 35000 Rennes\n\nStatut : Alternant\n\nType d'emploi : Contrat d'apprentissage",
-    "dateCreation": "2026-09-09T15:58:41.219Z",
-    "dateActualisation": "2026-09-10T09:18:25.854Z",
-    "lieuTravail": {
-      "libelle": "35 - Rennes",
-      "latitude": 48.121078,
-      "longitude": -1.71089,
-      "codePostal": "35000",
-      "commune": "35238"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
-    "entreprise": {
-      "nom": "FRANCK PROVOST",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 24 Mois",
-    "natureContrat": "Contrat apprentissage",
-    "experienceExige": "D",
-    "experienceLibelle": "Débutant accepté",
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "commentaire": "salaire selon barême alternance",
-      "complement1": "Primes",
-      "complement2": "Indemnité transports",
-      "listeComplements": [
-        {
-          "code": "1",
-          "libelle": "Primes"
-        },
-        {
-          "code": "14",
-          "libelle": "Indemnité transports"
-        },
-        {
-          "code": "6",
-          "libelle": "Titres restaurant / Prime de panier"
-        }
-      ]
-    },
-    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": true,
-    "contact": {
-      "coordonnees1": "https://smrtr.io/xxm5v",
-      "urlPostulation": "https://smrtr.io/xxm5v"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "5",
-    "qualificationLibelle": "Employé non qualifié",
-    "codeNAF": "70.10Z",
-    "secteurActivite": "70",
-    "secteurActiviteLibelle": "Activités des sièges sociaux",
-    "qualitesProfessionnelles": [
-      {
-        "libelle": "Avoir l'esprit d'équipe",
-        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
-      },
-      {
-        "libelle": "Avoir le sens du service",
-        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
-      },
-      {
-        "libelle": "Faire preuve de curiosité, d'ouverture d'esprit",
-        "description": "Capacité à aller chercher au-delà de ce qui est donné à voir, à s'ouvrir sur la nouveauté et à investiguer pour comprendre et agir de façon appropriée."
-      }
-    ],
-    "trancheEffectifEtab": "6 à 9 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QSJC"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "35H/semaine\nTravail en journée"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213QSCL",
-    "intitule": "Coiffeur/coiffeuse (H/F)",
-    "description": "Vous êtes passionné(e) par la coiffure et la mode, vous recherchez un salon qui valorise le savoir-faire et propose une prestation de coiffure de qualité?  N'attendez plus, cette opportunité est faite pour vous ! Le pôle recrutement de la Chambre de Métiers et de l'Artisanat recrute pour son artisan un coiffeur(euse). \n\nPourquoi rejoindre l'entreprise ?\nRejoindre notre artisan, c'est faire le choix d'un accompagnement sur-mesure avec de réelles perspectives d'évolution :\n- Un parcours d'intégration : plan de formation incluant deux jours de formation dédiés à la coloration végétale et un accompagnement quotidien par le dirigeant pour une montée en compétences. \n\nLes missions\nVous serez le garant de la satisfaction client et de la qualité de la prestation. Vous serez amené(e) à :\n- Délivrer des prestations de coiffure de haute qualité \n- Accueillir, conseiller et assurer une bonne relation client\n- Participer à la mise en place d'une bonne ambiance au travail \n\nLe profil\nBien plus qu'un diplôme nous recherchons une personnalité de confiance, fiable et engagée :\n- Savoir-être : Vous êtes reconnu(e) pour votre aisance relationnelle et votre capacité à créer une bonne atmosphère de travail. Vous êtes une personne de confiance, respectueuse des horaires de travail et prête à s'investir durablement.\n\nConditions de travail et rémunération\n- Type de contrat : CDD de 6 mois \n- Temps de travail : Mi-temps de 25 heures par semaine (travail du jeudi au samedi)\n- Rémunération : 1333.59€ brut par mois\n- Expérience : 3 ans d'expérience minimum\n- Niveau de qualification : CAP coiffure\n- Spécificités : Vacances imposées la dernière semaine de juillet et d'août\n- Prise de poste : Dès que possible\n\nQui est notre artisan ?\nNotre artisan dirige un salon réputé à Fos-sur-Mer. Profondément attaché à la transmission de son savoir-faire, il souhaite bâtir une équipe solide et pérenne afin de développer son activité. \n\nProcessus de candidature\nPrêt(e) à exprimer votre talent et à donner un nouvel élan à votre carrière ? Envoyez-nous dès aujourd'hui votre CV et vos motivations au pôle recrutement de la Chambre de Métiers et de l'Artisanat pour que nous puissions échanger sur votre parcours.",
-    "dateCreation": "2026-09-09T15:52:34.295Z",
-    "dateActualisation": "2026-09-10T15:21:22.447Z",
-    "lieuTravail": {
-      "libelle": "13 - Fos-sur-Mer",
-      "latitude": 43.454533,
-      "longitude": 4.943479,
-      "codePostal": "13270",
-      "commune": "13039"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse",
-    "entreprise": {
-      "nom": "SECTION DES BOUCHES-DU-RHONE"
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 6 Mois",
-    "natureContrat": "Contrat travail",
-    "experienceExige": "E",
-    "experienceLibelle": "3 An(s)",
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "libelle": "Mensuel de 1333.59 Euros"
-    },
-    "dureeTravailLibelle": "Temps partiel - 25H/semaine\nTravail en journée...",
-    "dureeTravailLibelleConverti": "Temps partiel",
-    "alternance": false,
-    "contact": {
-      "nom": "SECTION DES BOUCHES-DU-RHONE - Mme Anne Chevallier",
-      "coordonnees1": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/213QSCL",
-      "courriel": "Pour postuler, utiliser le lien suivant : https://candidat.francetravail.fr/offres/recherche/detail/213QSCL"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "3",
-    "qualificationLibelle": "Ouvrier qualifié (P1,P2)",
-    "codeNAF": "94.11Z",
-    "secteurActivite": "94",
-    "secteurActiviteLibelle": "Activités des organisations patronales et consulaires",
-    "qualitesProfessionnelles": [
-      {
-        "libelle": "Avoir l'esprit d'équipe",
-        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
-      },
-      {
-        "libelle": "Avoir le sens du service",
-        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
-      },
-      {
-        "libelle": "Faire preuve d'autonomie",
-        "description": "Capacité à prendre en charge son activité sans devoir être encadré de façon continue (le cas échéant, à solliciter les autres acteurs de l'entreprise)."
-      }
-    ],
-    "trancheEffectifEtab": "50 à 99 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QSCL"
-    },
-    "contexteTravail": {
-      "horaires": [
-        "Temps partiel - 25H/semaine\nTravail en journée",
-        " Travail les week-ends et jours fériés",
-        " Travail en horaires fixes"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213QSCK",
-    "intitule": "Apprenti coiffeur (H/F)",
-    "description": "Saint Algue, c'est plus de 40 ans de beauté au sein de 300 salons en France. Naturellement moi, la signature de la marque, prend pleinement sa signification dans cet univers chaleureux et accueillant. Son positionnement éco-responsable place cette marque bien dans son époque. \n\nL'enseigne Franck Provost fait partie du Groupe Provalliance, leader mondial de la coiffure avec plus de 3 500 salons et boutiques répartis dans 35 pays, et composé de 18 enseignes (Franck Provost, Jean Louis David, The Barber Company .) \n\nFranck Provost positionne les collaborateurs au cœur de sa réussite, stimule leur évolution et les aide à développer leur sens artistique.   \n\nVous êtes à la recherche de nouvelles opportunités ?  Rejoignez nous !\n\nDescription du poste\nDescription du poste :\n\nNous recherchons un(e) apprenti(e) prêt(e) à s'investir dans une formation à la fois à l'école et en salon (diplôme BP).\n\nAccompagné par un tuteur vos missions seront les suivantes :\n\nAccueillir et accompagner la clientèle\nRéaliser des prestations shampoings et soins capillaires\nRéaliser des brushings, des colorations et des coupes basiques\nAssister les coiffeurs lors de la consultation de la cliente\nDévelopper les ventes de produit\nDevenez un coiffeur au sein de notre groupe, notamment grâce à : \n\nUne journée d'intégration dédiée à nos alternants \nUn parcours de formation sur mesure dédié à nos alternants avec le programme « Avenir Juniors » composé de journées de formation spécifiques rien que pour vous.\nUn tuteur formé dans nos académies pour vous accompagner\nDes possibilités futures de carrière et de développement au sein de notre Groupe.\nEn nous rejoignant, nous vous promettons :\n\nDes titres restaurant\nL'accès à une plateforme d'avantages (tarifs préférentiels pour des places de cinémas, des parcs d'attraction.)\nDes offres attractives chez nos partenaires\nDes valeurs d'entreprise fortes : Passion, Confiance, Créativité et Engagement\nNotre entreprise est engagée dans le développement d'un environnement inclusif et encourage les candidatures des personnes en situation de handicap.\n\nQualifications\nNous recherchons des apprenti(e)s coiffeur(se)s motivé(e)s: \n\nPassionné(e) par la coiffure, vous souhaitez vous former dans un salon à l'écoute de vos besoins\nDoté(e) d'un bon relationnel, vous avez le sens du service client (écoute, disponibilité et bienveillance)\nPrêt(e) à vous investir dans une formation à la fois à l'école et en salon (diplôme CAP en 1 ou 2 ans)\nInformations complémentaires\nAdresse : 6 rue du Docteur Zamenhoff - 44200 Nantes\n\nStatut : Alternant \n\nType d'emploi : Contrat d'apprentissage",
-    "dateCreation": "2026-09-09T15:52:33.839Z",
-    "dateActualisation": "2026-09-10T09:17:28.103Z",
-    "lieuTravail": {
-      "libelle": "44 - Nantes",
-      "latitude": 47.239923,
-      "longitude": -1.519033,
-      "codePostal": "44000",
-      "commune": "44109"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
-    "entreprise": {
-      "nom": "FRANCK PROVOST",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 24 Mois",
-    "natureContrat": "Contrat apprentissage",
-    "experienceExige": "D",
-    "experienceLibelle": "Débutant accepté",
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "commentaire": "salaire selon le barême d'alternance",
-      "complement1": "Primes",
-      "complement2": "Indemnité transports",
-      "listeComplements": [
-        {
-          "code": "1",
-          "libelle": "Primes"
-        },
-        {
-          "code": "14",
-          "libelle": "Indemnité transports"
-        },
-        {
-          "code": "6",
-          "libelle": "Titres restaurant / Prime de panier"
-        }
-      ]
-    },
-    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": true,
-    "contact": {
-      "coordonnees1": "https://smrtr.io/xxkHY",
-      "urlPostulation": "https://smrtr.io/xxkHY"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "5",
-    "qualificationLibelle": "Employé non qualifié",
-    "codeNAF": "70.10Z",
-    "secteurActivite": "70",
-    "secteurActiviteLibelle": "Activités des sièges sociaux",
-    "qualitesProfessionnelles": [
-      {
-        "libelle": "Avoir l'esprit d'équipe",
-        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
-      },
-      {
-        "libelle": "Avoir le sens du service",
-        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
-      },
-      {
-        "libelle": "Faire preuve de curiosité, d'ouverture d'esprit",
-        "description": "Capacité à aller chercher au-delà de ce qui est donné à voir, à s'ouvrir sur la nouveauté et à investiguer pour comprendre et agir de façon appropriée."
-      }
-    ],
-    "trancheEffectifEtab": "6 à 9 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QSCK"
     },
     "offresManqueCandidats": false,
     "contexteTravail": {

@@ -69,17 +69,16 @@ export function CandidateDashboard({
 
   // Chargement initial du profil et des candidatures depuis Airtable
   useEffect(() => {
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const token = localStorage.getItem("auth_token");
     const userId = localStorage.getItem("userId");
     const email = localStorage.getItem("user_email");
 
     // 1. Récupération profil Airtable
     const profileUrl = userId
-      ? `http://${apiHost}:8000/api/profile?userId=${encodeURIComponent(userId)}`
+      ? `/api/profile?userId=${encodeURIComponent(userId)}`
       : email
-      ? `http://${apiHost}:8000/api/profile?userId=${encodeURIComponent(email)}`
-      : `http://${apiHost}:8000/api/profile`;
+      ? `/api/profile?userId=${encodeURIComponent(email)}`
+      : `/api/profile`;
 
     fetch(profileUrl, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -113,8 +112,8 @@ export function CandidateDashboard({
     // 2. Récupération des candidatures depuis Airtable
     setLoadingApps(true);
     const appsUrl = userId
-      ? `http://${apiHost}:8000/api/applications?candidateId=${encodeURIComponent(userId)}`
-      : `http://${apiHost}:8000/api/applications`;
+      ? `/api/applications?candidateId=${encodeURIComponent(userId)}`
+      : `/api/applications`;
 
     fetch(appsUrl, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -154,7 +153,6 @@ export function CandidateDashboard({
     setSavingProfile(true);
     setSaveSuccessMsg(null);
 
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const token = localStorage.getItem("auth_token");
     const userId = profile.id || localStorage.getItem("userId") || localStorage.getItem("user_email");
 
@@ -172,7 +170,7 @@ export function CandidateDashboard({
     };
 
     try {
-      const res = await fetch(`http://${apiHost}:8000/api/profile`, {
+      const res = await fetch(`/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -44,7 +44,7 @@ export function ManualEntryScreen({ onNavigate }: { onNavigate: (s: Screen) => v
     };
 
     try {
-      const response = await fetch("http://localhost:8000/api/profile", {
+      const response = await fetch("/api/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

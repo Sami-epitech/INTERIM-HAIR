@@ -20,8 +20,8 @@ export async function fetchUserFavorites(): Promise<{ favoriteIds: (string | num
     }
 
     const url = userId
-      ? `http://localhost:8000/api/favorites?candidateId=${encodeURIComponent(userId)}`
-      : "http://localhost:8000/api/favorites";
+      ? `/api/favorites?candidateId=${encodeURIComponent(userId)}`
+      : "/api/favorites";
 
     const res = await fetch(url, { headers });
     if (!res.ok) throw new Error("Erreur réseau chargement favoris");
@@ -52,7 +52,7 @@ export async function apiAddFavorite(job: Job): Promise<(string | number)[]> {
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const res = await fetch("http://localhost:8000/api/favorites", {
+    const res = await fetch("/api/favorites", {
       method: "POST",
       headers,
       body: JSON.stringify({
@@ -86,7 +86,7 @@ export async function apiRemoveFavorite(jobId: string | number): Promise<(string
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const res = await fetch(`http://localhost:8000/api/favorites/${jobId}`, {
+    const res = await fetch(`/api/favorites/${jobId}`, {
       method: "DELETE",
       headers,
       body: JSON.stringify({

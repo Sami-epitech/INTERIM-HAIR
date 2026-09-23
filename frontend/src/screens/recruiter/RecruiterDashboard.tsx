@@ -31,17 +31,16 @@ export function RecruiterDashboard({
   const [loadingMissions, setLoadingMissions] = useState(false);
 
   useEffect(() => {
-    const apiHost = window.location.hostname === "localhost" ? "localhost" : window.location.hostname;
     const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
     const email = localStorage.getItem("user_email");
 
     // 1. Récupération du profil du salon
     const profileUrl = userId
-      ? `http://${apiHost}:8000/api/profile?userMode=recruiter&userId=${encodeURIComponent(userId)}`
+      ? `/api/profile?userMode=recruiter&userId=${encodeURIComponent(userId)}`
       : email
-      ? `http://${apiHost}:8000/api/profile?userMode=recruiter&userId=${encodeURIComponent(email)}`
-      : `http://${apiHost}:8000/api/profile?userMode=recruiter`;
+      ? `/api/profile?userMode=recruiter&userId=${encodeURIComponent(email)}`
+      : `/api/profile?userMode=recruiter`;
 
     fetch(profileUrl, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -59,7 +58,7 @@ export function RecruiterDashboard({
     // 2. Récupération des missions publiées par le recruteur
     if (email) {
       setLoadingMissions(true);
-      fetch(`http://${apiHost}:8000/api/jobs?recruiterEmail=${encodeURIComponent(email)}`)
+      fetch(`/api/jobs?recruiterEmail=${encodeURIComponent(email)}`)
         .then((res) => (res.ok ? res.json() : []))
         .then((data) => {
           if (Array.isArray(data)) {
@@ -73,8 +72,8 @@ export function RecruiterDashboard({
     // 3. Récupération des candidatures associées
     setLoadingApplicants(true);
     const appsUrl = email
-      ? `http://${apiHost}:8000/api/applications?recruiterEmail=${encodeURIComponent(email)}`
-      : `http://${apiHost}:8000/api/applications`;
+      ? `/api/applications?recruiterEmail=${encodeURIComponent(email)}`
+      : `/api/applications`;
 
     fetch(appsUrl)
       .then((res) => (res.ok ? res.json() : []))

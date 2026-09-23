@@ -36,7 +36,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
     const payload = { email: email.trim(), password, userMode, rememberMe };
 
     try {
-      const response = await fetch(`http://localhost:8000${endpoint}`, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -174,7 +174,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
           <button
             type="button"
             onClick={() => {
-              window.location.href = "http://localhost:8000/api/auth/google";
+              window.location.href = "/api/auth/google";
             }}
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium hover:opacity-80 transition-opacity bg-white border-border text-foreground cursor-pointer shadow-xs"
           >
