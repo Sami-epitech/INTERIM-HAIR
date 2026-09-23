@@ -82,7 +82,7 @@ export function RoleSelectScreen({
           (masqué par lg:hidden), pour garder un peu d'air en haut. */}
       <div className="flex-1 flex flex-col px-6 pt-6 lg:pt-16 pb-6 gap-3">
         <div className="text-center">
-          <h2 className="font-serif text-2xl text-foreground">Bienvenue !</h2>
+          <h1 className="font-serif text-2xl text-foreground">Bienvenue !</h1>
           <p className="text-sm text-muted-foreground mt-2">Qui êtes-vous ? Choisissez votre profil pour continuer.</p>
         </div>
 
