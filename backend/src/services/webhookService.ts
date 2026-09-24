@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { MatchNotification } from '../models/MatchNotification';
 
 const DEFAULT_WEBHOOK_URL = 'https://hooks.airtable.com/workflows/v1/genericWebhook/appUUSmomrRcjXvBE/wflZSeuaFdJWDAixi/wtrN6Z8Ffpcau35SO';
-const DEFAULT_THRESHOLD = 60;
+const DEFAULT_THRESHOLD = 80;
 
 // Cache en mémoire pour garantir l'anti-doublon même si MongoDB est indisponible
 const inMemoryNotified = new Set<string>();

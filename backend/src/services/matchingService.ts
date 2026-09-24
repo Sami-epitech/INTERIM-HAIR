@@ -7,8 +7,24 @@ import { sendMatchNotificationWebhook } from './webhookService';
  * Coefficients de pondération bilatérale des critères de matching.
  */
 const WEIGHTS = {
-  candidate: { salary: 0.10, location: 0.70, schedule: 0.10, duration: 0.05, skills: 0.05 },
-  recruiter: { skills: 0.10, schedule: 0.05, duration: 0.10, location: 0.70, salary: 0.05 }
+  candidate: { salary: 0.30, location: 0.40, schedule: 0.10, duration: 0.10, skills: 0.10 },
+  recruiter: { skills: 0.20, schedule: 0.20, duration: 0.20, location: 0.30, salary: 0.10 }
+};
+
+/**
+ * Table de correspondance pour associer une ville de référence à ses codes postaux ou variantes fréquentes.
+ */
+const CITY_MAPPINGS: Record<string, string[]> = {
+  "paris": ["paris", "75", "île-de-france", "ile-de-france"],
+  "lyon": ["lyon", "69"],
+  "marseille": ["marseille", "13"],
+  "bordeaux": ["bordeaux", "33"],
+  "lille": ["lille", "59"],
+  "toulouse": ["toulouse", "31"],
+  "nice": ["nice", "06"],
+  "nantes": ["nantes", "44"],
+  "strasbourg": ["strasbourg", "67"],
+  "rennes": ["rennes", "35"]
 };
 
 /**
@@ -21,22 +37,41 @@ const calculateSkillsScore = (jobSkills: string[], candidateSkills: string[]): n
 };
 
 /**
- * Calcule le score géographique selon la mobilité (locale ou nationale).
+ * Calcule le score géographique avec des logs de debug pour identifier le blocage.
  */
 const calculateLocationScore = (jobLocation: string, candidateCity: string, candidateMobility: string): number => {
+  console.log(`🔍 [DEBUG MATCHING] jobLocation reçue: "${jobLocation}" | candidateCity reçue: "${candidateCity}" | mobility: "${candidateMobility}"`);
+
   if (candidateMobility === "national") {
     return 100;
   }
 
-  if (!jobLocation || !candidateCity) return 0;
+  if (!jobLocation || !candidateCity) {
+    console.warn("⚠️ [DEBUG MATCHING] L'un des champs de localisation est vide !");
+    return 0;
+  }
 
   const normJob = jobLocation.toLowerCase().trim();
   const normCandidate = candidateCity.toLowerCase().trim();
 
+  // 1. Recherche directe par inclusion textuelle simple
   if (normJob.includes(normCandidate) || normCandidate.includes(normJob)) {
+    console.log("✅ [DEBUG MATCHING] Match géographique direct trouvé !");
     return 100;
   }
 
+  // 2. Recherche par table de correspondance élargie (gestion des codes postaux/départements comme "59", "75", etc.)
+  for (const [key, variants] of Object.entries(CITY_MAPPINGS)) {
+    if (normCandidate.includes(key)) {
+      const matchFound = variants.some(variant => normJob.includes(variant));
+      if (matchFound) {
+        console.log(`✅ [DEBUG MATCHING] Match géographique via mapping '${key}' trouvé !`);
+        return 100;
+      }
+    }
+  }
+
+  console.log("❌ [DEBUG MATCHING] Aucun match géographique trouvé.");
   return 0;
 };
 
@@ -62,20 +97,36 @@ const calculateDurationScore = (jobStart: string, jobEnd: string, candStart: str
 /**
  * Calcule le score global de matching entre un candidat et une offre,
  * enregistre l'historique dans MongoDB et déclenche une notification si le seuil est atteint.
- *
- * @param candidate - Données de l'intérimaire (format Airtable).
- * @param job - Données de la mission.
- * @returns Score global pondéré sur 100.
  */
 export const calculateAndLogMatch = async (candidate: any, job: any) => {
-  const fields = candidate.fields || {};
+  const fields = candidate.fields || candidate;
 
   const candidateSkills = fields.skills || fields.tags || [];
-  const candidateCity = fields.location || "";
-  const candidateMobility = fields.mobility || "local";
-  const expectedRate = Number(fields.expectedRate || fields.rate || 10);
+  
+  // 🔍 Extraction ciblée sur 'locationCity' (et replis de secours)
+  const rawLocation = 
+    fields.locationCity || 
+    fields.location || 
+    fields.Location || 
+    fields.ville || 
+    fields.Ville || 
+    fields.city || 
+    fields.City;
 
-  const jobFields = job.fields || {};
+  let candidateCity = "";
+  if (typeof rawLocation === "object" && rawLocation !== null) {
+    candidateCity = rawLocation.city || rawLocation.ville || Object.values(rawLocation)[0] || "";
+  } else {
+    candidateCity = String(rawLocation || "");
+  }
+
+  const rawMobility = fields.mobility || fields.Mobility;
+  const candidateMobility = (typeof rawLocation === "object" && rawLocation !== null ? rawLocation.mobility : rawMobility) || "local";
+
+  console.log(`👤 [DEBUG CANDIDAT] ID: ${candidate.id || 'inconnu'} | Ville extraite: "${candidateCity}" | Mobilité: "${candidateMobility}"`);
+
+  const expectedRate = Number(fields.expectedRate || fields.rate || 10);
+  const jobFields = job.fields || job;
 
   // Calcul des scores élémentaires
   const skillsScore = calculateSkillsScore(jobFields.skills || job.skills || [], candidateSkills);
@@ -121,7 +172,6 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
         }
       });
       await logEntry.save();
-      console.log(`[MONGODB] Match enregistré pour le candidat ${candidateId} (Offre ${job.id}) : ${finalScore}%`);
     } catch (err) {
       console.error("[MONGODB] Erreur lors de la sauvegarde du log de matching :", err);
     }
@@ -133,7 +183,6 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
     const candidateEmail = fields.email || fields.Email || candidate.email;
     const candidateFirstName = fields.firstName || fields.Prenom || fields['Prénom'] || (fields.name ? String(fields.name).split(' ')[0] : undefined) || candidate.firstName;
     
-    // Condition : l'adresse email doit contenir "epitech" pour déclencher le webhook Airtable
     if (candidateEmail && candidateEmail.toLowerCase().includes('epitech')) {
       await sendMatchNotificationWebhook({
         candidatId: candidateId,
@@ -150,8 +199,6 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
 
 /**
  * Évalue une nouvelle offre auprès de l'ensemble des intérimaires enregistrés.
- *
- * @param job - Nouvelle offre à faire correspondre.
  */
 export const matchNewJobWithCandidates = async (job: any) => {
   try {
@@ -169,7 +216,7 @@ export const matchNewJobWithCandidates = async (job: any) => {
       skills: job.skills,
       fields: {
         skills: job.skills || [],
-        location: job.location || "",
+        location: job.location || job.lieuTravail?.libelle || "",
         rate: job.rate || 0,
         shift: job.shift || "",
         startDate: job.startDate || "",
@@ -185,4 +232,3 @@ export const matchNewJobWithCandidates = async (job: any) => {
     console.error("[MATCHING] Erreur lors de l'évaluation de la nouvelle offre avec les candidats :", error);
   }
 };
-

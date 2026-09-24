@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { updateInterimaire, getInterimaireProfile, getRecruiterProfile } from '../services/airtableService';
 import { verifyToken, TokenPayload } from '../auth/jwt';
 import { airtableBase } from '../config/airtable';
+import { calculateAndLogMatch } from '../services/matchingService';
 
 /**
  * Extrait l'identifiant et le rôle de l'utilisateur depuis le jeton Bearer JWT,
@@ -86,7 +87,7 @@ export const saveProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Identifiant utilisateur manquant pour la mise à jour du profil." });
     }
 
-    // Normalisation de la localisation et de l'étendue de mobilité (local ou national)
+    // Normalisation de la localisation et de l'étendue de mobilité
     const dataToUpdate: any = { ...profileData };
 
     if (location) {
@@ -102,7 +103,25 @@ export const saveProfile = async (req: Request, res: Response) => {
     // Mise à jour de l'enregistrement dans Airtable
     const updatedRecord = await updateInterimaire(userId, dataToUpdate);
 
-    // Rechargement du profil mis à jour pour renvoyer la structure complète
+    // 🚀 AJOUT CLÉ : Recalculer les matchs pour cet intérimaire avec toutes les offres existantes
+    try {
+      const candidateRecord = await airtableBase('Intérimaires').find(updatedRecord?.id || userId);
+      // Récupère toutes les offres (depuis ton service d'offres ou Airtable "Missions")
+      const jobs = await airtableBase('Missions').select().all();
+      
+      for (const job of jobs) {
+        await calculateAndLogMatch(candidateRecord, {
+          id: job.id,
+          ...job.fields,
+          fields: job.fields
+        });
+      }
+      console.log(`[MATCHING] Recalcul effectué pour le profil mis à jour de l'intérimaire ${userId}`);
+    } catch (matchErr) {
+      console.warn("⚠️ [MATCHING] Impossible de relancer le matching automatique post-onboarding :", matchErr);
+    }
+
+    // Rechargement du profil mis à jour
     let refreshedProfile: any = null;
     try {
       refreshedProfile = await getInterimaireProfile(updatedRecord?.id || userId);
@@ -111,7 +130,7 @@ export const saveProfile = async (req: Request, res: Response) => {
     }
 
     return res.status(200).json({
-      message: "Profil enregistré avec succès",
+      message: "Profil enregistré et matching mis à jour avec succès",
       profile: refreshedProfile,
       record: updatedRecord,
     });
