@@ -7,8 +7,8 @@ import { sendMatchNotificationWebhook } from './webhookService';
  * Coefficients de pondération bilatérale des critères de matching.
  */
 const WEIGHTS = {
-  candidate: { salary: 0.30, location: 0.30, schedule: 0.20, duration: 0.10, skills: 0.10 },
-  recruiter: { skills: 0.40, schedule: 0.30, duration: 0.15, location: 0.10, salary: 0.05 }
+  candidate: { salary: 0.20, location: 0.50, schedule: 0.10, duration: 0.10, skills: 0.10 },
+  recruiter: { skills: 0.30, schedule: 0.20, duration: 0.15, location: 0.30, salary: 0.05 }
 };
 
 /**
@@ -183,4 +183,4 @@ export const matchNewJobWithCandidates = async (job: any) => {
     console.error("[MATCHING] Erreur lors de l'évaluation de la nouvelle offre avec les candidats :", error);
   }
 };
-
+
