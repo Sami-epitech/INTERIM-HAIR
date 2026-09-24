@@ -74,11 +74,11 @@ export function FeedScreen({
           ...(token ? { Authorization: `Bearer ${token}` } : {})
         }
       });
-      
+
       if (!res.ok) throw new Error("Erreur réseau API");
-      
+
       const data = await res.json();
-      
+
       if (Array.isArray(data) && data.length > 0) {
         const formattedJobs: Job[] = data.map((item: any, idx: number) => ({
           id: item.id || `job-ft-${idx}`,
@@ -90,8 +90,8 @@ export function FeedScreen({
           shift: item.shift || "09:00 - 18:00",
           tags: item.tags || item.skills || ["Coiffure"],
           skills: item.skills || item.tags || [],
-          
-          match: item.match !== undefined ? item.match : 0, 
+
+          match: item.match !== undefined ? item.match : 0,
 
           image: getJobImage(item.id || idx, item.image),
           description: item.description || "Aucune description disponible.",
@@ -167,7 +167,7 @@ export function FeedScreen({
     if (!isPulling.current) return;
     isPulling.current = false;
     if (pullDistance >= 45 && !isRefreshing) {
-      try { navigator.vibrate?.(30); } catch (e) {}
+      try { navigator.vibrate?.(30); } catch (e) { }
       loadJobs(true); // Recharge avec le token !
     }
     setPullDistance(0);
@@ -184,7 +184,7 @@ export function FeedScreen({
       if (wheelTimeout.current) clearTimeout(wheelTimeout.current);
       wheelTimeout.current = setTimeout(() => {
         if (wheelAccumulator.current > 100 && !isRefreshing) {
-          try { navigator.vibrate?.(30); } catch (e) {}
+          try { navigator.vibrate?.(30); } catch (e) { }
           loadJobs(true); // Recharge avec le token !
           wheelAccumulator.current = 0;
           setPullDistance(0);
@@ -197,7 +197,7 @@ export function FeedScreen({
     () =>
       jobs.filter((j) => {
         if (filters.contract !== "Tous" && !j.contract.toLowerCase().includes(filters.contract.toLowerCase())) return false;
-        
+
         if (filters.location) {
           const targetCity = normalizeCity(filters.location);
           const jobCity = normalizeCity(j.location);
@@ -222,18 +222,22 @@ export function FeedScreen({
       <Sidebar active="feed" onNavigate={onNavigate} />
 
       <div className={`flex-1 flex flex-col h-full w-full relative min-w-0 min-h-0 ${loading ? "bg-gradient-to-br from-secondary/70 via-rose-50/40 to-background" : "bg-stone-900"}`}>
-        
+
         {/* En-tête flottant */}
-        <div className={`absolute top-0 left-0 right-0 z-20 px-5 lg:px-8 pt-8 lg:pt-6 pb-6 flex items-center justify-between pointer-events-none ${
-          loading ? "bg-transparent" : "bg-gradient-to-b from-black/60 via-black/20 to-transparent"
-        }`}>
+        <div className={`absolute top-0 left-0 right-0 z-20 px-5 lg:px-8 pt-8 lg:pt-6 pb-6 flex items-center justify-between pointer-events-none ${loading ? "bg-transparent" : "bg-gradient-to-b from-black/60 via-black/20 to-transparent"
+          }`}>
           <div className="flex items-center gap-3 pointer-events-auto">
             {hasHistory && onBack && (
               <BackBtn onClick={onBack} title="Retour" />
             )}
-            <p className={`text-xs font-semibold lg:text-sm ${
-              loading ? "text-muted-foreground" : "text-white/90 drop-shadow-md"
-            }`}>
+            <p
+              className={`text-xs font-semibold lg:text-sm ${loading
+                  ? "text-muted-foreground"
+                  : "text-white/90 drop-shadow-md"
+                }`}
+              role="status"
+              aria-live="polite"
+            >
               France · {loading ? "Chargement..." : `${filtered.length} offres`}
             </p>
           </div>
@@ -241,27 +245,27 @@ export function FeedScreen({
           <div className="flex items-center gap-2 pointer-events-auto">
             <button
               onClick={() => setShowFilters(true)}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-xs font-semibold backdrop-blur-md transition-all ${
-                activeCount > 0
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : loading
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-xs font-semibold backdrop-blur-md transition-all ${activeCount > 0
+                ? "bg-primary text-primary-foreground border-primary"
+                : loading
                   ? "bg-card/90 text-foreground border-border shadow-xs hover:bg-card"
                   : "bg-black/40 text-white border-white/20 hover:border-white/50"
-              }`}
+                }`}
             >
               <IFilter />
               Filtres
               {activeCount > 0 && <span className="w-4 h-4 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-bold">{activeCount}</span>}
             </button>
 
-            <button 
-              onClick={() => onNavigate("c-dashboard")} 
+            <button
+              type="button"
+              onClick={() => onNavigate("c-dashboard")}
+              aria-label="Mon profil"
               title="Mon profil"
-              className={`w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-colors cursor-pointer ${
-                loading
-                  ? "bg-card/90 border border-border text-foreground shadow-xs hover:bg-card"
-                  : "bg-white/20 border border-white/30 text-white hover:bg-white/30"
-              }`}
+              className={`w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-colors cursor-pointer ${loading
+                ? "bg-card/90 border border-border text-foreground shadow-xs hover:bg-card"
+                : "bg-white/20 border border-white/30 text-white hover:bg-white/30"
+                }`}
             >
               <IUser />
             </button>
@@ -270,7 +274,7 @@ export function FeedScreen({
 
         {/* Indicateur Pull-to-Refresh flottant */}
         {(pullDistance > 0 || isRefreshing || refreshSuccess) && (
-          <div 
+          <div
             className="absolute top-20 lg:top-16 left-0 right-0 z-30 flex justify-center pointer-events-none transition-all duration-200"
             style={{
               transform: `translateY(${isRefreshing ? 10 : Math.min(pullDistance * 0.45, 20)}px)`,
@@ -293,8 +297,8 @@ export function FeedScreen({
                 </>
               ) : (
                 <>
-                  <svg 
-                    className="w-4 h-4 text-white transition-transform duration-200" 
+                  <svg
+                    className="w-4 h-4 text-white transition-transform duration-200"
                     style={{ transform: pullDistance >= 45 ? "rotate(180deg)" : "rotate(0deg)" }}
                     viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
                   >
@@ -308,7 +312,7 @@ export function FeedScreen({
         )}
 
         {/* Snap Scroll Vertical */}
-        <div 
+        <div
           ref={scrollRef}
           onScroll={handleScroll}
           onTouchStart={handleTouchStart}
@@ -407,20 +411,33 @@ export function FeedScreen({
 
                     <div className="flex items-center gap-3">
                       <button
+                        type="button"
                         onClick={() => onToggleFavorite && onToggleFavorite(job)}
-                        aria-label={favorites.includes(job.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
-                        title={favorites.includes(job.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
-                        className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-200 cursor-pointer shadow-xl ${
+                        aria-label={
                           favorites.includes(job.id)
-                            ? "bg-rose-50 border-2 border-rose-400 text-rose-600 scale-105 shadow-rose-500/30"
-                            : "bg-white hover:bg-rose-50/80 border-2 border-white text-stone-800 hover:text-rose-500 hover:scale-105 active:scale-95 shadow-black/30"
-                        }`}
+                            ? "Retirer des favoris"
+                            : "Ajouter aux favoris"
+                        }
+                        aria-pressed={favorites.includes(job.id)}
+                        title={
+                          favorites.includes(job.id)
+                            ? "Retirer des favoris"
+                            : "Ajouter aux favoris"
+                        }
+                        className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-200 cursor-pointer shadow-xl ${favorites.includes(job.id)
+                          ? "bg-rose-50 border-2 border-rose-400 text-rose-600 scale-105 shadow-rose-500/30"
+                          : "bg-white hover:bg-rose-50/80 border-2 border-white text-stone-800 hover:text-rose-500 hover:scale-105 active:scale-95 shadow-black/30"
+                          }`}
                       >
                         <IHeart filled={favorites.includes(job.id)} />
                       </button>
 
                       <button
-                        onClick={() => { setSelectedJob(job); onNavigate("job-detail"); }}
+                        type="button"
+                        onClick={() => {
+                          setSelectedJob(job);
+                          onNavigate("job-detail");
+                        }}
                         className="flex items-center gap-2 px-6 h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all shadow-xl cursor-pointer"
                       >
                         Postuler <IArrow />
