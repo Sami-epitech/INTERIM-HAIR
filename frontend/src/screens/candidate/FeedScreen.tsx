@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import type { DashTab, Filters, Job, Screen } from "../../types";
 import { JOBS } from "../../data/mockData";
-import { AppName, BackBtn, MatchRing } from "../../components/ui";
+import { BackBtn, MatchRing } from "../../components/ui";
 import { IArrow, IClock, IFilter, IHeart, ILocation, IUser } from "../../components/icons";
 import { FilterModal } from "../../components/candidate/FilterModal";
 import { BottomNav } from "../../components/candidate/BottomNav";
@@ -216,32 +216,37 @@ export function FeedScreen({
   const activeCount = [filters.contract !== "Tous", filters.location !== "", filters.rateMin > 10, filters.matchMin > 0].filter(Boolean).length;
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-black flex flex-col lg:flex-row relative">
+    <div className={`h-screen w-screen overflow-hidden ${loading ? "bg-gradient-to-br from-secondary via-rose-50/50 to-background" : "bg-stone-900 lg:bg-background"} flex flex-col lg:flex-row relative`}>
       {showFilters && <FilterModal filters={filters} onApply={setFilters} onClose={() => setShowFilters(false)} />}
 
       <Sidebar active="feed" onNavigate={onNavigate} />
 
-      <div className="flex-1 flex flex-col h-full w-full relative min-w-0 min-h-0">
+      <div className={`flex-1 flex flex-col h-full w-full relative min-w-0 min-h-0 ${loading ? "bg-gradient-to-br from-secondary/70 via-rose-50/40 to-background" : "bg-stone-900"}`}>
         
         {/* En-tête flottant */}
-        <div className="absolute top-0 left-0 right-0 z-20 px-5 lg:px-8 pt-10 lg:pt-6 pb-4 flex items-center justify-between bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+        <div className={`absolute top-0 left-0 right-0 z-20 px-5 lg:px-8 pt-8 lg:pt-6 pb-6 flex items-center justify-between pointer-events-none ${
+          loading ? "bg-transparent" : "bg-gradient-to-b from-black/60 via-black/20 to-transparent"
+        }`}>
           <div className="flex items-center gap-3 pointer-events-auto">
             {hasHistory && onBack && (
               <BackBtn onClick={onBack} title="Retour" />
             )}
-            <div>
-              <div className="lg:hidden"><AppName size="sm" /></div>
-              <p className="text-xs text-white/80 mt-0.5 lg:mt-0 lg:text-sm font-medium">
-                France · {loading ? "Chargement..." : `${filtered.length} offres`}
-              </p>
-            </div>
+            <p className={`text-xs font-semibold lg:text-sm ${
+              loading ? "text-muted-foreground" : "text-white/90 drop-shadow-md"
+            }`}>
+              France · {loading ? "Chargement..." : `${filtered.length} offres`}
+            </p>
           </div>
 
           <div className="flex items-center gap-2 pointer-events-auto">
             <button
               onClick={() => setShowFilters(true)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full border text-xs font-semibold backdrop-blur-md transition-all ${
-                activeCount > 0 ? "bg-primary text-primary-foreground border-primary" : "bg-black/40 text-white border-white/20 hover:border-white/50"
+                activeCount > 0
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : loading
+                  ? "bg-card/90 text-foreground border-border shadow-xs hover:bg-card"
+                  : "bg-black/40 text-white border-white/20 hover:border-white/50"
               }`}
             >
               <IFilter />
@@ -252,7 +257,11 @@ export function FeedScreen({
             <button 
               onClick={() => onNavigate("c-dashboard")} 
               title="Mon profil"
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-white/20 border border-white/30 backdrop-blur-md text-white hover:bg-white/30 transition-colors cursor-pointer"
+              className={`w-9 h-9 flex items-center justify-center rounded-full backdrop-blur-md transition-colors cursor-pointer ${
+                loading
+                  ? "bg-card/90 border border-border text-foreground shadow-xs hover:bg-card"
+                  : "bg-white/20 border border-white/30 text-white hover:bg-white/30"
+              }`}
             >
               <IUser />
             </button>
@@ -313,13 +322,33 @@ export function FeedScreen({
           className="flex-1 overflow-y-auto snap-y snap-mandatory scrollable h-full w-full"
         >
           {loading ? (
-            <div className="h-full w-full flex items-center justify-center text-white/70 text-sm animate-pulse">
-              Chargement des offres...
+            <div className="h-full w-full flex flex-col items-center justify-center gap-4 text-center px-6 bg-gradient-to-br from-secondary/70 via-rose-50/50 to-background">
+              <div className="relative flex items-center justify-center">
+                <div className="w-14 h-14 rounded-full border-3 border-primary/20 border-t-primary animate-spin" />
+                <div className="absolute w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">
+                  ✂
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="font-serif text-xl font-medium text-foreground">
+                  Recherche des offres...
+                </p>
+                <p className="text-xs text-muted-foreground max-w-xs">
+                  Sélection des meilleures missions coiffure adaptées à votre profil
+                </p>
+              </div>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="h-full w-full flex flex-col items-center justify-center gap-3 text-center px-5">
-              <p className="text-white/80 text-sm">Aucune offre ne correspond à ces critères</p>
-              <button onClick={() => setFilters(DEFAULT_FILTERS)} className="text-primary text-sm font-medium underline">
+            <div className="h-full w-full flex flex-col items-center justify-center gap-3 text-center px-5 bg-gradient-to-br from-secondary/50 via-rose-50/30 to-background">
+              <div className="w-12 h-12 rounded-2xl bg-card border border-border shadow-xs flex items-center justify-center text-muted-foreground text-xl mb-1">
+                🔍
+              </div>
+              <p className="font-serif text-lg text-foreground font-medium">Aucune offre ne correspond à ces critères</p>
+              <p className="text-xs text-muted-foreground max-w-xs">Essayez d'élargir votre localisation ou de modifier vos filtres.</p>
+              <button
+                onClick={() => setFilters(DEFAULT_FILTERS)}
+                className="mt-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
+              >
                 Réinitialiser les filtres
               </button>
             </div>
@@ -330,40 +359,41 @@ export function FeedScreen({
                 className="h-full w-full snap-start snap-always relative flex flex-col justify-end overflow-hidden shrink-0"
               >
                 <img src={job.image} alt={job.salon} className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20" />
+                {/* Dégradé doux : photo nette et lumineuse en haut, lisibilité parfaite en bas */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 via-45% to-transparent" />
 
                 <div className="relative z-10 p-6 lg:p-10 pb-24 lg:pb-6 max-w-3xl">
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold text-white border border-white/20">
+                    <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold text-white border border-white/25 shadow-xs">
                       {job.contract}
                     </span>
-                    <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                    <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-xs">
                       <MatchRing score={job.match} size={28} />
                       <span className="text-xs font-bold text-white">{job.match}% match</span>
                     </div>
                   </div>
 
-                  <h2 className="font-serif text-2xl lg:text-4xl font-bold text-white leading-tight mb-1">
+                  <h2 className="font-serif text-2xl lg:text-4xl font-bold text-white leading-tight mb-1 drop-shadow-sm">
                     {job.title}
                   </h2>
-                  <p className="text-sm lg:text-base text-white/80 font-medium mb-3">
+                  <p className="text-sm lg:text-base text-white/90 font-medium mb-3">
                     {job.salon}
                   </p>
 
-                  <div className="flex items-center gap-4 text-xs lg:text-sm text-white/70 mb-3">
+                  <div className="flex items-center gap-4 text-xs lg:text-sm text-white/80 mb-3">
                     <span className="flex items-center gap-1.5"><ILocation />{job.location}</span>
                     <span className="flex items-center gap-1.5"><IClock />{job.shift}</span>
                   </div>
 
                   {job.description && (
-                    <p className="text-xs lg:text-sm text-white/90 line-clamp-2 leading-relaxed mb-4 max-w-2xl bg-black/30 backdrop-blur-xs p-2.5 rounded-xl border border-white/10">
+                    <p className="text-xs lg:text-sm text-white/95 line-clamp-2 leading-relaxed mb-4 max-w-2xl bg-black/40 backdrop-blur-md p-3 rounded-xl border border-white/15">
                       {job.description}
                     </p>
                   )}
 
                   <div className="flex flex-wrap gap-1.5 mb-6 max-h-16 overflow-hidden">
                     {(job.tags || []).map((t) => (
-                      <span key={t} className="px-2.5 py-1 rounded-lg bg-white/15 backdrop-blur-md text-xs font-medium text-white/90 border border-white/10">
+                      <span key={t} className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-md text-xs font-medium text-white border border-white/20 shadow-xs">
                         {t}
                       </span>
                     ))}
@@ -378,14 +408,20 @@ export function FeedScreen({
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => onToggleFavorite && onToggleFavorite(job)}
-                        className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 hover:bg-white/25 transition-all text-white cursor-pointer"
+                        aria-label={favorites.includes(job.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                        title={favorites.includes(job.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                        className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-all duration-200 cursor-pointer shadow-xl ${
+                          favorites.includes(job.id)
+                            ? "bg-rose-50 border-2 border-rose-400 text-rose-600 scale-105 shadow-rose-500/30"
+                            : "bg-white hover:bg-rose-50/80 border-2 border-white text-stone-800 hover:text-rose-500 hover:scale-105 active:scale-95 shadow-black/30"
+                        }`}
                       >
                         <IHeart filled={favorites.includes(job.id)} />
                       </button>
 
                       <button
                         onClick={() => { setSelectedJob(job); onNavigate("job-detail"); }}
-                        className="flex items-center gap-2 px-6 h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all shadow-lg"
+                        className="flex items-center gap-2 px-6 h-12 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all shadow-xl cursor-pointer"
                       >
                         Postuler <IArrow />
                       </button>
@@ -398,7 +434,7 @@ export function FeedScreen({
           )}
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-black/80 backdrop-blur-lg border-t border-white/10">
+        <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-stone-950/90 backdrop-blur-xl border-t border-white/15">
           <BottomNav active="feed" onNavigate={onNavigate} />
         </div>
       </div>

@@ -39,7 +39,7 @@ export function Sidebar({
   };
 
   return (
-    <div className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:h-screen lg:sticky lg:top-0 lg:border-r lg:border-border lg:py-8 lg:px-5 lg:gap-8">
+    <div className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:h-screen lg:sticky lg:top-0 lg:border-r lg:border-border bg-card lg:py-8 lg:px-5 lg:gap-8 z-20">
       <div className="px-2"><AppName size="sm" /></div>
       <nav className="flex flex-col gap-1">
         {items.map((item) => (
