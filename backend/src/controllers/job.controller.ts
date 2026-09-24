@@ -32,6 +32,17 @@ export const getJobs = async (req: Request, res: Response) => {
       }
     }
 
+    // 🛡️ REPLI ROBUSTE : Si aucun ID ou token n'est passé au rechargement (F5), on prend le premier profil dispo
+    if (!candidateId && !recruiterEmail) {
+      try {
+        const defaultCandidate = await base('Intérimaires').select({ maxRecords: 1 }).firstPage();
+        if (defaultCandidate.length > 0) {
+          candidateId = defaultCandidate[0].id;
+          console.log(`🔄 [BACKEND] Rechargement détecté sans ID : utilisation du profil de repli ${candidateId}`);
+        }
+      } catch (e) {}
+    }
+
     // Récupération des offres publiées dans Airtable
     const airtableRecords = await base("Offres d'emploi").select().firstPage();
     
@@ -107,34 +118,51 @@ export const getJobs = async (req: Request, res: Response) => {
     // Évaluation algorithmique du matching lorsque le candidat est identifié
     if (candidateId) {
       try {
-        const candidateRecord = await base('Intérimaires').find(candidateId);
+        let candidateRecord: any = null;
+        try {
+          candidateRecord = await base('Intérimaires').find(candidateId);
+        } catch (err) {
+          // Si l'ID direct échoue, on cherche par email ou on prend le premier enregistrement par défaut
+          const matchingCandidates = await base('Intérimaires').select({
+            filterByFormula: `{email} = '${candidateId}'`
+          }).firstPage();
+          
+          if (matchingCandidates.length > 0) {
+            candidateRecord = matchingCandidates[0];
+          } else {
+            const firstFallback = await base('Intérimaires').select({ maxRecords: 1 }).firstPage();
+            candidateRecord = firstFallback[0];
+          }
+        }
 
-        allJobs = await Promise.all(allJobs.map(async (job: any) => {
-          const jobForMatching = {
-            id: job.id,
-            title: job.title,
-            salon: job.salon,
-            location: job.location,
-            rate: job.rate,
-            shift: job.shift,
-            dates: job.dates,
-            skills: job.skills,
-            fields: {
-              skills: job.skills,
+        if (candidateRecord) {
+          allJobs = await Promise.all(allJobs.map(async (job: any) => {
+            const jobForMatching = {
+              id: job.id,
+              title: job.title,
+              salon: job.salon,
               location: job.location,
               rate: job.rate,
               shift: job.shift,
-              startDate: job.startDate,
-              endDate: job.endDate
-            }
-          };
+              dates: job.dates,
+              skills: job.skills,
+              fields: {
+                skills: job.skills,
+                location: job.location,
+                rate: job.rate,
+                shift: job.shift,
+                startDate: job.startDate,
+                endDate: job.endDate
+              }
+            };
 
-          const score = await calculateAndLogMatch(candidateRecord, jobForMatching);
-          return { ...job, match: score };
-        }));
+            const score = await calculateAndLogMatch(candidateRecord, jobForMatching);
+            return { ...job, match: score };
+          }));
 
-        // Tri décroissant selon le score de compatibilité
-        allJobs.sort((a: any, b: any) => b.match - a.match);
+          // Tri décroissant selon le score de compatibilité
+          allJobs.sort((a: any, b: any) => b.match - a.match);
+        }
       } catch (err) {
         console.error("❌ Erreur lors du calcul du matching :", err);
       }
