@@ -1,5 +1,63 @@
 [
   {
+    "id": "214JPRS",
+    "intitule": "Coiffeur (H/F)",
+    "description": "Envie de rejoindre un salon de coiffure reconnu pour son savoir-faire et la qualité de son accueil ? Notre client est prêt à vous ouvrir ses portes ! \nNous recherchons pour notre client, un salon de coiffure dynamique et à taille humaine, un(e) Coiffeur(se) expérimenté(e) (H/F) dans le cadre d'une mission d'intérim jusqu'à fin janvier.\nPassionné(e) par votre métier et autonome dans votre travail ? Ce poste est fait pour vous ! \nVous assurerez l'ensemble des prestations de coiffure et contribuerez à la satisfaction et à la fidélisation de la clientèle. \nVos missions : \n- Accueillir, conseiller et accompagner les clients selon leurs besoins et leurs attentes. \n- Réaliser les coupes, brushings, coiffages et techniques de coiffure. \n- Maîtriser les techniques de coloration classique et assurer un résultat de qualité. \n- Réaliser les diagnostics capillaires et proposer les prestations adaptées. \n- Participer à l'entretien du salon et au respect des règles d'hygiène. \n- Contribuer à l'image de qualité et de professionnalisme du salon. \n- La maîtrise de la coloration végétale serait un véritable atout. \n. Réaliser l'encaissement de la clientèle selon la prestation réalisée. \n. Gérer les stocks et réapprovisionnement des produits et consommables. \nConditions de travail : \n- Mission d'intérim jusqu'à fin janvier. \n- Temps de travail selon les horaires d'ouverture du salon. \n- Cadre de travail agréable avec une clientèle fidèle. \n- Prise de poste dès que possible. \nVous êtes autonome, rigoureux(se) et doté(e) d'un excellent sens du service ? \nVous justifiez d'une expérience minimum de 5 ans en coiffure et maîtrisez impérativement la coloration classique ? \nUne expérience ou une connaissance de la coloration végétale serait fortement appréciée. \nVous aimez le contact client, le travail soigné et souhaitez vous investir dans une mission jusqu'à fin janvier ? \nAlors ce poste est fait pour vous ! \nPour postuler, rien de plus simple ! Vous pouvez : \n- Postuler en ligne en joignant votre CV. \n- Nous contacter directement par téléphone. \n- Venir nous rencontrer afin d'échanger sur votre projet professionnel. \nMotivé(e) et prêt(e) à relever ce nouveau défi ? N'hésitez plus, nous attendons votre candidature avec impatience ! \nÀ très bientôt ! \nRejoindre Manpower c'est aussi bénéficier d'un Comité d'Entreprise attractif et la possibilité d'un placement rémunéré jusqu'à 8 % de vos IFM.",
+    "dateCreation": "2026-09-24T14:05:05.820Z",
+    "dateActualisation": "2026-09-24T14:05:06.178Z",
+    "lieuTravail": {
+      "libelle": "39 - Moirans-en-Montagne",
+      "latitude": 46.431068,
+      "longitude": 5.725309,
+      "codePostal": "39260",
+      "commune": "39333"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse",
+    "entreprise": {
+      "nom": "MANPOWER FRANCE",
+      "description": "Faites confiance à Manpower, votre partenaire emploi :\n- Des opportunités nombreuses et diversifiées\n- Une expertise RH et des conseils emploi\n- Une employabilité durable avec le programme MyPath® \n- Des démarches facilitées \n- Des avantages et des services",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "MIS",
+    "typeContratLibelle": "Intérim - 4 Mois",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "E",
+    "experienceLibelle": "5 An(s)",
+    "salaire": {
+      "libelle": "Horaire de 13.0 Euros à 16.0 Euros"
+    },
+    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
+    "dureeTravailLibelleConverti": "Temps plein",
+    "alternance": false,
+    "contact": {
+      "nom": "MANPOWER FRANCE - M. Jérémy WIDENT",
+      "coordonnees1": "https://www.manpower.fr/offers/details/1101495521?partenaire=FRANCE_TRAVAIL",
+      "urlPostulation": "https://www.manpower.fr/offers/details/1101495521?partenaire=FRANCE_TRAVAIL"
+    },
+    "agence": {},
+    "nombrePostes": 1,
+    "qualificationCode": "2",
+    "qualificationLibelle": "Ouvrier spécialisé",
+    "codeNAF": "78.20Z",
+    "secteurActivite": "78",
+    "secteurActiviteLibelle": "Activités des agences de travail temporaire",
+    "trancheEffectifEtab": "100 à 199 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214JPRS"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "35H/semaine\nTravail en journée"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
     "id": "214JGZD",
     "intitule": "CAP ou BP coiffure H/F (H/F)",
     "description": "Passionné(e) par la coiffure, vous êtes déterminé à apprendre le métier dans un environnement professionnel où se conjuguent bienveillance et exigence. \nVous préparez un CAP ou un BP Coiffure en alternance.\nNous attendons de vous une forte implication pour acquérir les savoir être et savoir faire de notre métier, une soif d'apprendre, une participation enthousiaste à notre activité.\nRejoignez nous et partageons notre passion.",
@@ -15860,114 +15918,6 @@
     "origineOffre": {
       "origine": "1",
       "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QTBG"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "35H/semaine\nTravail en journée"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213QSYM",
-    "intitule": "Apprenti coiffeur (H/F)",
-    "description": "La marque Franck Provost, c'est près de 45 ans de passion et d'innovation au service de la beauté des femmes. Un symbole du luxe accessible, est étroitement lié à son fondateur et à son savoir-faire reconnu dans le monde comme un symbole du chic à la française. Les salons élégants à l'image haut de gamme proposent des collections faciles à vivre et des techniques de coloration raffinées et exclusives. \n\nL'enseigne Franck Provost fait partie du Groupe Provalliance, leader mondial de la coiffure avec plus de 3 500 salons et boutiques répartis dans 35 pays, et composé de 18 enseignes (Jean Louis David, Saint Algue, Coiff & Co, The Barber Company .).\nFranck Provost positionne les collaborateurs au cœur de sa réussite, stimule leur évolution et les aide à développer leur sens artistique.  \n\nVous êtes à la recherche de nouvelles opportunités ?  Rejoignez nous !\n\nDescription du poste\nNous recherchons un(e) apprenti(e) prêt(e) à s'investir dans une formation à la fois à l'école et en salon (diplôme CAP)\n\nAccompagné par un tuteur vos missions seront les suivantes :\n\nAccueillir et accompagner la clientèle\nRéaliser des prestations shampoings et soins capillaires\nRéaliser des brushings, des colorations et des coupes basiques\nAssister les coiffeurs lors de la consultation de la cliente\nDévelopper les ventes de produit\nDevenez un coiffeur au sein de notre groupe, notamment grâce à : \n\nUne journée d'intégration dédiée à nos alternants \nUn parcours de formation sur mesure dédié à nos alternants avec le programme « Avenir Juniors » composé de journées de formation spécifiques rien que pour vous.\nUn tuteur formé dans nos académies pour vous accompagner\nDes possibilités futures de carrière et de développement au sein de notre Groupe.\nEn nous rejoignant, nous vous promettons :\n\nDes titres restaurant\nL'accès à une plateforme d'avantages (tarifs préférentiels pour des places de cinémas, des parcs d'attraction.)\nDes offres attractives chez nos partenaires\nDes valeurs d'entreprise fortes : Passion, Confiance, Créativité et Engagement\nNotre entreprise est engagée dans le développement d'un environnement inclusif et encourage les candidatures des personnes en situation de handicap.\n\nQualifications\nNous recherchons des apprenti(e)s coiffeur(se)s motivé(e)s: \n\nPassionné(e) par la coiffure, vous souhaitez vous former dans un salon à l'écoute de vos besoins\nDoté(e) d'un bon relationnel, vous avez le sens du service client (écoute, disponibilité et bienveillance)\nInformations complémentaires\nAdresse : 252-254 Bd Jean Jaurès - 92100 Boulogne Billancourt\n\nStatut : Alternant\n\nType d'emploi : Contrat d'apprentissage",
-    "dateCreation": "2026-09-09T16:16:14.353Z",
-    "dateActualisation": "2026-09-10T09:26:18.628Z",
-    "lieuTravail": {
-      "libelle": "92 - Boulogne-Billancourt",
-      "latitude": 48.835948,
-      "longitude": 2.240514,
-      "codePostal": "92100",
-      "commune": "92012"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
-    "entreprise": {
-      "nom": "FRANCK PROVOST",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 24 Mois",
-    "natureContrat": "Contrat apprentissage",
-    "experienceExige": "D",
-    "experienceLibelle": "Débutant accepté",
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "commentaire": "salaire selon barême alternance",
-      "complement1": "Primes",
-      "complement2": "Indemnité transports",
-      "listeComplements": [
-        {
-          "code": "1",
-          "libelle": "Primes"
-        },
-        {
-          "code": "14",
-          "libelle": "Indemnité transports"
-        },
-        {
-          "code": "6",
-          "libelle": "Titres restaurant / Prime de panier"
-        }
-      ]
-    },
-    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": true,
-    "contact": {
-      "coordonnees1": "https://smrtr.io/xxr5v",
-      "urlPostulation": "https://smrtr.io/xxr5v"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "5",
-    "qualificationLibelle": "Employé non qualifié",
-    "codeNAF": "70.10Z",
-    "secteurActivite": "70",
-    "secteurActiviteLibelle": "Activités des sièges sociaux",
-    "qualitesProfessionnelles": [
-      {
-        "libelle": "Avoir l'esprit d'équipe",
-        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
-      },
-      {
-        "libelle": "Avoir le sens du service",
-        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
-      },
-      {
-        "libelle": "Faire preuve de curiosité, d'ouverture d'esprit",
-        "description": "Capacité à aller chercher au-delà de ce qui est donné à voir, à s'ouvrir sur la nouveauté et à investiguer pour comprendre et agir de façon appropriée."
-      }
-    ],
-    "trancheEffectifEtab": "6 à 9 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QSYM"
     },
     "offresManqueCandidats": false,
     "contexteTravail": {

@@ -157,21 +157,31 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
   // Persistance dans MongoDB si la connexion est établie
   if (mongoose.connection.readyState === 1) {
     try {
-      const logEntry = new MatchingLog({
-        candidatId: candidateId,
-        missionId: String(job.id),
-        score: finalScore,
-        candidateScore: Math.round(candidateScore),
-        recruiterScore: Math.round(recruiterScore),
-        criteriaDetails: {
-          salaryScore: Math.round(salaryScore),
-          scheduleScore: Math.round(scheduleScore),
-          skillsScore: Math.round(skillsScore),
-          locationScore: Math.round(locationScore),
-          durationScore: Math.round(durationScore)
+      // Utilisation de findOneAndUpdate avec upsert=true pour éviter les doublons
+      await MatchingLog.findOneAndUpdate(
+        { 
+          candidatId: candidateId, 
+          missionId: String(job.id) 
+        },
+        {
+          $set: {
+            score: finalScore,
+            candidateScore: Math.round(candidateScore),
+            recruiterScore: Math.round(recruiterScore),
+            criteriaDetails: {
+              salaryScore: Math.round(salaryScore),
+              scheduleScore: Math.round(scheduleScore),
+              skillsScore: Math.round(skillsScore),
+              locationScore: Math.round(locationScore),
+              durationScore: Math.round(durationScore)
+            }
+          }
+        },
+        { 
+          upsert: true,
+          new: true
         }
-      });
-      await logEntry.save();
+      );
     } catch (err) {
       console.error("[MONGODB] Erreur lors de la sauvegarde du log de matching :", err);
     }
