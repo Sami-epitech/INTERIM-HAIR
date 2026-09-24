@@ -8,10 +8,14 @@ import { IArrow, ICalendar, ILogout, IPencil, IPlus } from "../../components/ico
 
 export function RecruiterDashboard({
   onNavigate,
+  onBack,
+  hasHistory = false,
   onEditMission,
   missions: initialMissions,
 }: {
   onNavigate: (s: Screen) => void;
+  onBack?: () => void;
+  hasHistory?: boolean;
   onEditMission?: (m: Mission) => void;
   missions?: Mission[];
 }) {
@@ -29,6 +33,28 @@ export function RecruiterDashboard({
   
   const [loadingApplicants, setLoadingApplicants] = useState(false);
   const [loadingMissions, setLoadingMissions] = useState(false);
+
+  // Synchronisation avec les retours arrières du navigateur pour les onglets
+  useEffect(() => {
+    const handlePop = (e: PopStateEvent) => {
+      if (e.state && e.state.screen === "r-dashboard") {
+        if (e.state.recTab) setTab(e.state.recTab);
+        if (e.state.recMissionId !== undefined) setSelectedMissionId(e.state.recMissionId);
+      }
+    };
+    window.addEventListener("popstate", handlePop);
+    return () => window.removeEventListener("popstate", handlePop);
+  }, []);
+
+  const changeTab = (newTab: RecTab, missionId: string | number | "all" = "all") => {
+    setTab(newTab);
+    setSelectedMissionId(missionId);
+    window.history.pushState(
+      { screen: "r-dashboard", recTab: newTab, recMissionId: missionId },
+      "",
+      "#r-dashboard"
+    );
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
@@ -97,13 +123,34 @@ export function RecruiterDashboard({
       .finally(() => setLoadingApplicants(false));
   }, [userEmail]);
 
+  // Seul le bouton explicite de déconnexion peut déconnecter l'utilisateur
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("user_email");
     localStorage.removeItem("user_name");
+    localStorage.removeItem("candidate_profile");
+    localStorage.removeItem("user_mode");
     onNavigate("role-select");
+  };
+
+  const canGoBack = selectedMissionId !== "all" || tab !== "missions" || Boolean(hasHistory);
+
+  // Le bouton retour effectue un retour arrière contextuel sans jamais déconnecter
+  const handleBack = () => {
+    if (selectedMissionId !== "all") {
+      setSelectedMissionId("all");
+      return;
+    }
+    if (tab !== "missions") {
+      setTab("missions");
+      return;
+    }
+    if (onBack) {
+      onBack();
+      return;
+    }
   };
 
   // Calcul des KPIs
@@ -122,7 +169,11 @@ export function RecruiterDashboard({
       {/* En-tête */}
       <div className="px-5 pt-12 lg:pt-8 pb-4 flex items-center justify-between border-b border-border bg-card">
         <div className="flex items-center gap-3">
-          <BackBtn onClick={() => onNavigate("role-select")} />
+          <BackBtn
+            onClick={handleBack}
+            disabled={!canGoBack}
+            title={canGoBack ? "Retour" : "Espace recruteur"}
+          />
           <div>
             <h1 className="font-serif text-xl font-bold text-foreground">Espace Recruteur</h1>
             <p className="text-xs text-muted-foreground font-medium">{salonName}</p>
@@ -142,7 +193,7 @@ export function RecruiterDashboard({
       <div className="px-5 border-b border-border bg-card flex items-center justify-between">
         <div className="flex gap-6">
           <button
-            onClick={() => setTab("missions")}
+            onClick={() => changeTab("missions", "all")}
             className={`pb-3 pt-3 text-sm font-semibold border-b-2 -mb-px transition-colors cursor-pointer ${
               tab === "missions" ? "text-primary border-primary" : "text-muted-foreground border-transparent"
             }`}
@@ -150,7 +201,7 @@ export function RecruiterDashboard({
             Missions ({missions.length})
           </button>
           <button
-            onClick={() => setTab("applicants")}
+            onClick={() => changeTab("applicants", "all")}
             className={`pb-3 pt-3 text-sm font-semibold border-b-2 -mb-px transition-colors cursor-pointer ${
               tab === "applicants" ? "text-primary border-primary" : "text-muted-foreground border-transparent"
             }`}
@@ -195,7 +246,7 @@ export function RecruiterDashboard({
 
           {/* KPI 3 : À traiter */}
           <div
-            onClick={() => setTab("applicants")}
+            onClick={() => changeTab("applicants", "all")}
             className="bg-card border border-border rounded-3xl px-4 sm:px-6 py-3 sm:py-4 flex flex-col items-center justify-center text-center shadow-xs cursor-pointer hover:border-rose-300 transition-colors"
           >
             <span className="font-serif text-3xl sm:text-4xl font-bold text-rose-500 mb-1">
@@ -261,10 +312,7 @@ export function RecruiterDashboard({
                     <div className="flex items-center justify-between pt-3 border-t border-border mt-2">
                       <span className="font-serif text-lg font-bold text-foreground">{m.rate}€/h</span>
                       <button
-                        onClick={() => {
-                          setSelectedMissionId(m.id);
-                          setTab("applicants");
-                        }}
+                        onClick={() => changeTab("applicants", m.id)}
                         className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         Voir les candidats ({missionApplicantCount}) <IArrow />
@@ -284,7 +332,7 @@ export function RecruiterDashboard({
               <div className="flex items-center gap-2 overflow-x-auto pb-2">
                 <span className="text-xs font-medium text-muted-foreground shrink-0">Filtrer par mission :</span>
                 <button
-                  onClick={() => setSelectedMissionId("all")}
+                  onClick={() => changeTab("applicants", "all")}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer ${
                     selectedMissionId === "all"
                       ? "bg-primary text-primary-foreground"
@@ -298,7 +346,7 @@ export function RecruiterDashboard({
                   return (
                     <button
                       key={m.id}
-                      onClick={() => setSelectedMissionId(m.id)}
+                      onClick={() => changeTab("applicants", m.id)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 cursor-pointer ${
                         String(selectedMissionId) === String(m.id)
                           ? "bg-primary text-primary-foreground"

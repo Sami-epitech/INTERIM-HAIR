@@ -9,9 +9,11 @@ import { IUpload } from "../../components/icons";
 
 export function MissionCreateScreen({
   onNavigate,
+  onBack,
   onCreateMission,
 }: {
   onNavigate: (s: Screen) => void;
+  onBack?: () => void;
   onCreateMission?: (m: Mission) => void;
 }) {
   const [mode, setMode] = useState<"import" | "manual">("manual");
@@ -105,7 +107,7 @@ export function MissionCreateScreen({
   return (
     <div className="min-h-screen bg-background flex flex-col lg:max-w-2xl lg:mx-auto">
       <div className="px-5 pt-12 lg:pt-8 pb-5 flex items-center gap-3">
-        <BackBtn onClick={() => onNavigate("r-dashboard")} />
+        <BackBtn onClick={() => (onBack ? onBack() : onNavigate("r-dashboard"))} />
         <div>
           <h1 className="font-serif text-2xl text-foreground">Nouvelle mission</h1>
           <p className="text-xs text-muted-foreground mt-0.5">Définissez votre offre d'emploi</p>

@@ -24,6 +24,8 @@ function normalizeCity(loc: string): string {
 
 interface FeedScreenProps {
   onNavigate: (s: Screen) => void;
+  onBack?: () => void;
+  hasHistory?: boolean;
   setSelectedJob: (j: Job) => void;
   favorites?: (string | number)[];
   onToggleFavorite?: (job: Job) => void;
@@ -32,6 +34,8 @@ interface FeedScreenProps {
 
 export function FeedScreen({
   onNavigate,
+  onBack,
+  hasHistory = false,
   setSelectedJob,
   favorites = [],
   onToggleFavorite,
@@ -222,7 +226,9 @@ export function FeedScreen({
         {/* En-tête flottant */}
         <div className="absolute top-0 left-0 right-0 z-20 px-5 lg:px-8 pt-10 lg:pt-6 pb-4 flex items-center justify-between bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
           <div className="flex items-center gap-3 pointer-events-auto">
-            <BackBtn onClick={() => onNavigate("role-select")} />
+            {hasHistory && onBack && (
+              <BackBtn onClick={onBack} title="Retour" />
+            )}
             <div>
               <div className="lg:hidden"><AppName size="sm" /></div>
               <p className="text-xs text-white/80 mt-0.5 lg:mt-0 lg:text-sm font-medium">

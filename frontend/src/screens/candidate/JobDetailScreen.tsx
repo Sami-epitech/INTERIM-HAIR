@@ -9,11 +9,13 @@ import { IClock, IHeart, ILocation } from "../../components/icons";
 export function JobDetailScreen({
   job,
   onNavigate,
+  onBack,
   isFavorite = false,
   onToggleFavorite,
 }: {
   job: Job;
   onNavigate: (s: Screen) => void;
+  onBack?: () => void;
   isFavorite?: boolean;
   onToggleFavorite?: (j: Job) => void;
 }) {
@@ -83,7 +85,7 @@ export function JobDetailScreen({
       <div className="relative h-64 bg-muted overflow-hidden">
         <img src={job.image} alt={job.salon} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <div className="absolute top-12 left-4"><BackBtn onClick={() => onNavigate("feed")} /></div>
+        <div className="absolute top-12 left-4"><BackBtn onClick={() => (onBack ? onBack() : onNavigate("feed"))} /></div>
         <div className="absolute top-12 right-4">
           <button
             onClick={() => onToggleFavorite && onToggleFavorite(job)}

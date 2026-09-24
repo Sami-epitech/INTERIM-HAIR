@@ -64,6 +64,7 @@ export function AuthScreen({ onNavigate, userMode }: { onNavigate: (s: Screen) =
       if (data.user?.name) {
         localStorage.setItem("user_name", data.user.name);
       }
+      localStorage.setItem("user_mode", userMode);
 
       // Redirection selon le profil et l'avancement
       if (userMode === "candidate") {

@@ -9,10 +9,12 @@ import { BackBtn, Input, StatusBadge } from "../../components/ui";
 export function MissionEditScreen({
   mission,
   onNavigate,
+  onBack,
   onSave,
 }: {
   mission: Mission;
   onNavigate: (s: Screen) => void;
+  onBack?: () => void;
   onSave: (m: Mission) => void;
 }) {
   const [title, setTitle] = useState(mission.title);
@@ -103,7 +105,7 @@ export function MissionEditScreen({
       )}
 
       <div className="px-5 pt-12 lg:pt-8 pb-5 flex items-center gap-3">
-        <BackBtn onClick={() => onNavigate("r-dashboard")} />
+        <BackBtn onClick={() => (onBack ? onBack() : onNavigate("r-dashboard"))} />
         <div className="flex-1">
           <h1 className="font-serif text-2xl text-foreground">Modifier la mission</h1>
           <p className="text-xs text-muted-foreground mt-0.5">{mission.title}</p>

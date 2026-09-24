@@ -29,7 +29,12 @@ export function Sidebar({
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("user_email");
+    localStorage.removeItem("user_name");
+    localStorage.removeItem("candidate_profile");
+    localStorage.removeItem("user_mode");
     onNavigate("role-select");
   };
 

@@ -3,13 +3,33 @@ import { AppName, BackBtn } from "../components/ui";
 
 export function LegalScreen({
     onNavigate,
+    onBack,
 }: {
     onNavigate: (s: Screen) => void;
+    onBack?: () => void;
 }) {
+    const handleBack = () => {
+        if (onBack) {
+            onBack();
+            return;
+        }
+        const userMode = localStorage.getItem("user_mode") || "candidate";
+        const isLoggedIn = Boolean(
+            localStorage.getItem("auth_token") ||
+            localStorage.getItem("token") ||
+            localStorage.getItem("user_email")
+        );
+        if (isLoggedIn) {
+            onNavigate(userMode === "recruiter" ? "r-dashboard" : "feed");
+        } else {
+            onNavigate("role-select");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-background flex flex-col">
             <header className="px-5 pt-8 pb-4 flex items-center gap-3 border-b border-border">
-                <BackBtn onClick={() => onNavigate("role-select")} />
+                <BackBtn onClick={handleBack} />
                 <AppName size="sm" />
             </header>
 

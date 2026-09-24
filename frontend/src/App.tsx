@@ -25,12 +25,25 @@ const FORM_FLOW_SCREENS: Screen[] = ["role-select", "auth", "onboarding1", "cv-u
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("role-select");
-  const [userMode, setUserMode] = useState<UserMode>("candidate");
+  const [userMode, setUserMode] = useState<UserMode>(() => {
+    return (localStorage.getItem("user_mode") as UserMode) || "candidate";
+  });
+  const [historyStack, setHistoryStack] = useState<Screen[]>([]);
+
   const [selectedJob, setSelectedJob] = useState<Job>(JOBS[0]);
   const [editingMission, setEditingMission] = useState<Mission>(MISSIONS_INIT[0]);
 
   const [jobsList, setJobsList] = useState<Job[]>(JOBS);
   const [dashTab, setDashTab] = useState<DashTab>("applications");
+
+  // Vérifie si un utilisateur possède une session active
+  const isUserLoggedIn = () => {
+    return Boolean(
+      localStorage.getItem("auth_token") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("user_email")
+    );
+  };
 
   // Centralisation des favoris avec persistance Airtable
   const [favoriteJobIds, setFavoriteJobIds] = useState<(string | number)[]>(() => {
@@ -71,11 +84,17 @@ export default function App() {
       .catch((err) => console.warn("[FAVORIS] Erreur chargement Airtable :", err));
   }, [userEmail, screen]);
 
-
   useEffect(() => {
-    // Synchronise l'URL initiale au chargement
+    const loggedIn = isUserLoggedIn();
+    const savedMode = (localStorage.getItem("user_mode") as UserMode) || userMode;
+    const defaultHome: Screen = savedMode === "recruiter" ? "r-dashboard" : "feed";
     const hash = window.location.hash.replace("#", "") as Screen;
-    if (hash) {
+
+    // Si déjà connecté, bloquer l'accès à role-select et auth
+    if (loggedIn && (!hash || hash === "role-select" || hash === "auth")) {
+      setScreen(defaultHome);
+      window.history.replaceState({ screen: defaultHome }, "", `#${defaultHome}`);
+    } else if (hash) {
       setScreen(hash);
     } else {
       window.history.replaceState({ screen: "role-select" }, "", "#role-select");
@@ -83,11 +102,20 @@ export default function App() {
 
     // Écoute les retours en arrière (bouton physique ou navigateur)
     const handlePopState = (event: PopStateEvent) => {
-      if (event.state && event.state.screen) {
-        setScreen(event.state.screen);
-      } else {
-        const currentHash = window.location.hash.replace("#", "") as Screen;
-        if (currentHash) setScreen(currentHash);
+      const targetScreen = (event.state?.screen || window.location.hash.replace("#", "")) as Screen;
+      const stillLoggedIn = isUserLoggedIn();
+      const currentMode = (localStorage.getItem("user_mode") as UserMode) || "candidate";
+      const homeScreen: Screen = currentMode === "recruiter" ? "r-dashboard" : "feed";
+
+      // Empêche le retour physique/navigateur de déconnecter l'utilisateur
+      if (stillLoggedIn && (!targetScreen || targetScreen === "role-select" || targetScreen === "auth")) {
+        setScreen(homeScreen);
+        window.history.replaceState({ screen: homeScreen }, "", `#${homeScreen}`);
+        return;
+      }
+
+      if (targetScreen) {
+        setScreen(targetScreen);
       }
     };
 
@@ -95,11 +123,76 @@ export default function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  const go = (s: Screen) => {
+  const go = (s: Screen, replace = false) => {
+    const loggedIn = isUserLoggedIn();
+    const currentMode = (localStorage.getItem("user_mode") as UserMode) || userMode;
+    const homeScreen: Screen = currentMode === "recruiter" ? "r-dashboard" : "feed";
+
+    // Si connecté, le seul moyen de se déconnecter est le bouton déconnexion
+    // (qui efface localStorage avant d'appeler go('role-select'))
+    if (loggedIn && (s === "role-select" || s === "auth")) {
+      if (screen !== homeScreen) {
+        setScreen(homeScreen);
+        window.history.replaceState({ screen: homeScreen }, "", `#${homeScreen}`);
+      }
+      return;
+    }
+
+    if (!replace && s !== screen) {
+      setHistoryStack((prev) => [...prev, screen]);
+    }
+
+    // Réinitialisation de la pile d'historique lors d'une déconnexion explicite
+    if (s === "role-select") {
+      setHistoryStack([]);
+    }
+
     setScreen(s);
     window.scrollTo(0, 0);
-    window.history.pushState({ screen: s }, "", `#${s}`);
+    if (replace) {
+      window.history.replaceState({ screen: s }, "", `#${s}`);
+    } else {
+      window.history.pushState({ screen: s }, "", `#${s}`);
+    }
   };
+
+  const goBack = (fallback?: Screen) => {
+    const loggedIn = isUserLoggedIn();
+    const currentMode = (localStorage.getItem("user_mode") as UserMode) || userMode;
+    const defaultHome: Screen = currentMode === "recruiter" ? "r-dashboard" : "feed";
+
+    setHistoryStack((prevStack) => {
+      const newStack = [...prevStack];
+
+      while (newStack.length > 0) {
+        const prev = newStack.pop()!;
+        // Si connecté, ignorer les écrans d'authentification du retour arrière
+        if (loggedIn && (prev === "role-select" || prev === "auth")) {
+          continue;
+        }
+        if (prev !== screen) {
+          setScreen(prev);
+          window.scrollTo(0, 0);
+          window.history.pushState({ screen: prev }, "", `#${prev}`);
+          return newStack;
+        }
+      }
+
+      // Aucun écran valide précédent : rester sur le dashboard ou fallback
+      const target = fallback || (loggedIn ? defaultHome : "role-select");
+      if (target !== screen) {
+        setScreen(target);
+        window.scrollTo(0, 0);
+        window.history.pushState({ screen: target }, "", `#${target}`);
+      }
+      return newStack;
+    });
+  };
+
+  const hasHistory = historyStack.some((s) => {
+    if (isUserLoggedIn() && (s === "role-select" || s === "auth")) return false;
+    return s !== screen;
+  });
 
   // Bascule de favori avec synchronisation directe dans Airtable
   const handleToggleFavorite = async (job: Job) => {
@@ -210,7 +303,7 @@ export default function App() {
     <div key={screen} className="screen-enter">
       {screen === "role-select" && <RoleSelectScreen onNavigate={go} setUserMode={setUserMode} />}
       {screen === "auth" && <AuthScreen onNavigate={go} userMode={userMode} />}
-      {screen === "legal" && <LegalScreen onNavigate={go} />}
+      {screen === "legal" && <LegalScreen onNavigate={go} onBack={goBack} />}
 
       {/* Parcours candidat */}
       {screen === "onboarding1" && <Onboarding1Screen onNavigate={go} />}
@@ -221,6 +314,8 @@ export default function App() {
       {screen === "feed" && (
         <FeedScreen
           onNavigate={go}
+          onBack={goBack}
+          hasHistory={hasHistory}
           setSelectedJob={setSelectedJob}
           favorites={favoriteJobIds}
           onToggleFavorite={handleToggleFavorite}
@@ -231,6 +326,7 @@ export default function App() {
         <JobDetailScreen
           job={selectedJob}
           onNavigate={go}
+          onBack={goBack}
           isFavorite={favoriteJobIds.includes(selectedJob.id)}
           onToggleFavorite={handleToggleFavorite}
         />
@@ -239,6 +335,7 @@ export default function App() {
       {screen === "c-dashboard" && (
         <CandidateDashboard
           onNavigate={go}
+          onBack={goBack}
           activeTab={dashTab}
           onTabChange={setDashTab}
           favoriteJobs={favoriteJobs}
@@ -251,6 +348,8 @@ export default function App() {
       {screen === "r-dashboard" && (
         <RecruiterDashboard
           onNavigate={go}
+          onBack={goBack}
+          hasHistory={hasHistory}
           missions={recruiterMissions}
           onEditMission={(m) => {
             setEditingMission(m);
@@ -261,6 +360,7 @@ export default function App() {
       {screen === "r-create" && (
         <MissionCreateScreen
           onNavigate={go}
+          onBack={goBack}
           onCreateMission={(m) => {
             const newJob: Job = {
               id: m.id,
@@ -287,6 +387,7 @@ export default function App() {
         <MissionEditScreen
           mission={editingMission}
           onNavigate={go}
+          onBack={goBack}
           onSave={(updated) =>
             setJobsList((p) =>
               p.map((j) => (String(j.id) === String(updated.id) ? { ...j, ...updated, tags: updated.skills } : j))

@@ -51,6 +51,7 @@ export function RoleSelectScreen({
 }) {
   const choose = (m: UserMode) => {
     setUserMode(m);
+    localStorage.setItem("user_mode", m);
     onNavigate("auth");
   };
 

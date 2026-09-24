@@ -17,8 +17,10 @@ export function CandidateDashboard({
   onToggleFavorite,
   onSelectJob,
   loadingFavorites = false,
+  onBack,
 }: {
   onNavigate: (s: Screen) => void;
+  onBack?: () => void;
   activeTab?: DashTab;
   onTabChange?: (t: DashTab) => void;
   favoriteJobs?: Job[];
@@ -142,9 +144,12 @@ export function CandidateDashboard({
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("user_email");
+    localStorage.removeItem("user_name");
     localStorage.removeItem("candidate_profile");
+    localStorage.removeItem("user_mode");
     onNavigate("role-select");
   };
 
@@ -226,7 +231,7 @@ export function CandidateDashboard({
       <div className="flex-1 flex flex-col min-w-0">
         <div className="px-5 lg:px-8 pt-12 lg:pt-8 pb-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <BackBtn onClick={() => onNavigate("feed")} />
+            <BackBtn onClick={() => (onBack ? onBack() : onNavigate("feed"))} />
             <div>
               <h1 className="font-serif text-2xl text-foreground">Mon espace</h1>
               <p className="text-xs text-muted-foreground mt-0.5">{profile.fullName} · {profile.title}</p>
