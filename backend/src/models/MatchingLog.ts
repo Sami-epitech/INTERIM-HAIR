@@ -37,4 +37,7 @@ const matchingLogSchema = new Schema<IMatchingLog>({
   createdAt: { type: Date, default: Date.now }
 });
 
+// Verrou de base de données : Empêche physiquement la création de doublons
+matchingLogSchema.index({ candidatId: 1, missionId: 1 }, { unique: true });
+
 export const MatchingLog = model<IMatchingLog>('MatchingLog', matchingLogSchema);

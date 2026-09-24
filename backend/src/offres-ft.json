@@ -1,5 +1,225 @@
 [
   {
+    "id": "214JVQB",
+    "intitule": "Coiffeur/se pour un remplacement de 15 jours  (H/F)",
+    "description": "Centre de Cannes recherche un coiffeur/ses pour 15 jours du 27 Octobre 2026 au 07 Novembre 2026 inclus en CCD ou auto entrepreneur/ses.",
+    "dateCreation": "2026-09-24T15:55:52.146Z",
+    "dateActualisation": "2026-09-24T15:59:25.303Z",
+    "lieuTravail": {
+      "libelle": "06 - CANNES",
+      "latitude": 43.569237,
+      "longitude": 6.965818,
+      "codePostal": "06400",
+      "commune": "06029"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse",
+    "entreprise": {
+      "nom": "BRISSET PHILIPPE",
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDD",
+    "typeContratLibelle": "CDD - 15 Jour(s)",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "E",
+    "experienceLibelle": "5 An(s)",
+    "formations": [
+      {
+        "niveauLibelle": "CAP, BEP et équivalents",
+        "commentaire": "CAP",
+        "exigence": "S"
+      }
+    ],
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "S"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "S"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "S"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "S"
+      },
+      {
+        "code": "114126",
+        "libelle": "Préparer et appliquer des produits colorants, décolorants (mèches, ...)",
+        "exigence": "S"
+      }
+    ],
+    "salaire": {
+      "libelle": "Horaire de 100.0 Euros à 140.0 Euros"
+    },
+    "dureeTravailLibelle": "Temps partiel - 7H30/semaine\nTravail en horaires fixes",
+    "dureeTravailLibelleConverti": "Temps partiel",
+    "alternance": false,
+    "contact": {
+      "nom": "BRISSET PHILIPPE - M. PHILIPPE M BRISSET PHILIPPE",
+      "coordonnees1": "Tél : 0609532525",
+      "telephone": "0609532525"
+    },
+    "agence": {},
+    "nombrePostes": 1,
+    "qualificationCode": "3",
+    "qualificationLibelle": "Ouvrier qualifié (P1,P2)",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "qualitesProfessionnelles": [
+      {
+        "libelle": "Avoir l'esprit d'équipe",
+        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
+      },
+      {
+        "libelle": "Avoir le sens du service",
+        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
+      },
+      {
+        "libelle": "Faire preuve de créativité, d'inventivité",
+        "description": "Capacité à créer, imaginer quelque chose de nouveau (nouveau produit, nouvelle solution, …)."
+      }
+    ],
+    "trancheEffectifEtab": "1 ou 2 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214JVQB"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "Temps partiel - 7H30/semaine\nTravail en horaires fixes"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
+    "id": "214JVNH",
+    "intitule": "Coiffeur / Coiffeuse mixte",
+    "description": "Au sein d'un salon mixte,  vous réalisez des prestations sur tous types de cheveux : \n- vous réalisez la prise de rendez-vous, l' accueil physique et téléphonique, et les encaissements.\n- vous réaliser un diagnostic personnalisé, afin de conseiller et de proposer les prestations et les produits adaptés\n- vous effectuez les coupes, coiffures, mises en forme et soins capillaires selon la nature des cheveux des clients\n- vous procédez aux colorations, balayages, éclaircissements et décolorations\n- vous proposez de produits de soin adaptés pour prolonger l'effet salon à domicile.\n- vous assurez la propreté de votre environnement de travail \n- vous respectez les règles d'hygiène et de propreté.\n- vous veillez à la satisfaction globale de la clientèle \n\nProfil recherché : \n\n- Expérience de 4 à 5 ans sur un poste similaire en salon.\n- Maîtrise parfaite des techniques de coupe, de coloration\n- Excellente présentation, sens du contact client, esprit d'équipe et autonomie.\n- vous êtes à l'aise avec la vente de produits de soin et savez conseiller avec bienveillance.\n - vous êtes curieux(se) et suivez les tendances en matière de coiffure.",
+    "dateCreation": "2026-09-24T15:52:54.604Z",
+    "dateActualisation": "2026-09-24T15:52:54.604Z",
+    "lieuTravail": {
+      "libelle": "971 - LE MOULE",
+      "latitude": 16.331223,
+      "longitude": -61.34376,
+      "codePostal": "97160",
+      "commune": "97117"
+    },
+    "romeCode": "D1202",
+    "romeLibelle": "Coiffeur / Coiffeuse",
+    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
+    "entreprise": {
+      "entrepriseAdaptee": false
+    },
+    "typeContrat": "CDD",
+    "typeContratLibelle": "CDD - 3 Mois",
+    "natureContrat": "Contrat travail",
+    "experienceExige": "E",
+    "experienceLibelle": "4 An(s) - En coiffure",
+    "experienceCommentaire": "En coiffure",
+    "formations": [
+      {
+        "codeFormation": "42050",
+        "domaineLibelle": "Coiffure",
+        "niveauLibelle": "CAP, BEP et équivalents",
+        "exigence": "E"
+      }
+    ],
+    "competences": [
+      {
+        "code": "101910",
+        "libelle": "Techniques de coupes de cheveux",
+        "exigence": "E"
+      },
+      {
+        "code": "405313",
+        "libelle": "CAP métiers de la coiffure",
+        "exigence": "E"
+      },
+      {
+        "code": "101901",
+        "libelle": "Accueillir le client et l'installer",
+        "exigence": "E"
+      },
+      {
+        "code": "101903",
+        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
+        "exigence": "E"
+      },
+      {
+        "code": "101918",
+        "libelle": "Réaliser une coupe ou une coiffure",
+        "exigence": "E"
+      }
+    ],
+    "salaire": {
+      "libelle": "Horaire de 12.31 Euros",
+      "complement1": "Primes",
+      "listeComplements": [
+        {
+          "code": "1",
+          "libelle": "Primes"
+        }
+      ]
+    },
+    "dureeTravailLibelle": "35H/semaine\nTravail en journée...",
+    "dureeTravailLibelleConverti": "Temps plein",
+    "alternance": false,
+    "contact": {},
+    "agence": {},
+    "nombrePostes": 1,
+    "accessibleTH": false,
+    "qualificationCode": "6",
+    "qualificationLibelle": "Employé qualifié",
+    "codeNAF": "96.02A",
+    "secteurActivite": "96",
+    "secteurActiviteLibelle": "Coiffure",
+    "qualitesProfessionnelles": [
+      {
+        "libelle": "Faire preuve d'autonomie",
+        "description": "Capacité à prendre en charge son activité sans devoir être encadré de façon continue (le cas échéant, à solliciter les autres acteurs de l'entreprise)."
+      },
+      {
+        "libelle": "Faire preuve de rigueur et de précision",
+        "description": "Capacité à réaliser des tâches en suivant avec exactitude les règles, les procédures, les instructions qui ont été fournies, sans réaliser d'erreur et à transmettre clairement des informations. Se montrer ponctuel et respectueux des règles de savoir-vivre usuelles."
+      },
+      {
+        "libelle": "Organiser son travail selon les priorités et les objectifs",
+        "description": "Capacité à planifier, prioriser, anticiper des actions, en tenant compte des moyens, des ressources, des objectifs et du calendrier pour les réaliser."
+      }
+    ],
+    "trancheEffectifEtab": "1 ou 2 salariés",
+    "origineOffre": {
+      "origine": "1",
+      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/214JVNH"
+    },
+    "offresManqueCandidats": false,
+    "contexteTravail": {
+      "horaires": [
+        "35H/semaine\nTravail en journée",
+        " Travail le samedi"
+      ],
+      "conditionsExercice": [
+        "Port de tenue professionnelle ou d'uniforme",
+        "Station debout prolongée"
+      ]
+    },
+    "entrepriseAdaptee": false,
+    "employeurHandiEngage": false
+  },
+  {
     "id": "214JPRS",
     "intitule": "Coiffeur (H/F)",
     "description": "Envie de rejoindre un salon de coiffure reconnu pour son savoir-faire et la qualité de son accueil ? Notre client est prêt à vous ouvrir ses portes ! \nNous recherchons pour notre client, un salon de coiffure dynamique et à taille humaine, un(e) Coiffeur(se) expérimenté(e) (H/F) dans le cadre d'une mission d'intérim jusqu'à fin janvier.\nPassionné(e) par votre métier et autonome dans votre travail ? Ce poste est fait pour vous ! \nVous assurerez l'ensemble des prestations de coiffure et contribuerez à la satisfaction et à la fidélisation de la clientèle. \nVos missions : \n- Accueillir, conseiller et accompagner les clients selon leurs besoins et leurs attentes. \n- Réaliser les coupes, brushings, coiffages et techniques de coiffure. \n- Maîtriser les techniques de coloration classique et assurer un résultat de qualité. \n- Réaliser les diagnostics capillaires et proposer les prestations adaptées. \n- Participer à l'entretien du salon et au respect des règles d'hygiène. \n- Contribuer à l'image de qualité et de professionnalisme du salon. \n- La maîtrise de la coloration végétale serait un véritable atout. \n. Réaliser l'encaissement de la clientèle selon la prestation réalisée. \n. Gérer les stocks et réapprovisionnement des produits et consommables. \nConditions de travail : \n- Mission d'intérim jusqu'à fin janvier. \n- Temps de travail selon les horaires d'ouverture du salon. \n- Cadre de travail agréable avec une clientèle fidèle. \n- Prise de poste dès que possible. \nVous êtes autonome, rigoureux(se) et doté(e) d'un excellent sens du service ? \nVous justifiez d'une expérience minimum de 5 ans en coiffure et maîtrisez impérativement la coloration classique ? \nUne expérience ou une connaissance de la coloration végétale serait fortement appréciée. \nVous aimez le contact client, le travail soigné et souhaitez vous investir dans une mission jusqu'à fin janvier ? \nAlors ce poste est fait pour vous ! \nPour postuler, rien de plus simple ! Vous pouvez : \n- Postuler en ligne en joignant votre CV. \n- Nous contacter directement par téléphone. \n- Venir nous rencontrer afin d'échanger sur votre projet professionnel. \nMotivé(e) et prêt(e) à relever ce nouveau défi ? N'hésitez plus, nous attendons votre candidature avec impatience ! \nÀ très bientôt ! \nRejoindre Manpower c'est aussi bénéficier d'un Comité d'Entreprise attractif et la possibilité d'un placement rémunéré jusqu'à 8 % de vos IFM.",
@@ -13158,139 +13378,6 @@
     "employeurHandiEngage": false
   },
   {
-    "id": "213RJQH",
-    "intitule": "Coiffeur / Coiffeuse mixte  (H/F)",
-    "description": "Au sein d'un salon de coiffure mixte, au centre de Cannes, vous travaillerez en collaboration avec le gérant dans un salon à \nl 'ambiance familiale.\nVous serez en charge des coupes hommes et femmes, des couleurs, des mèches, ombrés, et des brushings.\nVous êtes autonome.\n\nCDD de remplacement pour 15 jours à partir du 27 OCTOBRE",
-    "dateCreation": "2026-09-10T10:23:16.956Z",
-    "dateActualisation": "2026-09-23T10:55:18.397Z",
-    "lieuTravail": {
-      "libelle": "06 - CANNES",
-      "latitude": 43.552984,
-      "longitude": 7.013128,
-      "codePostal": "06150",
-      "commune": "06029"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
-    "entreprise": {
-      "nom": "BRISSET PHILIPPE",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 15 Jour(s)",
-    "natureContrat": "Contrat travail",
-    "experienceExige": "E",
-    "experienceLibelle": "5 An(s)",
-    "formations": [
-      {
-        "codeFormation": "42050",
-        "domaineLibelle": "Coiffure",
-        "niveauLibelle": "CAP, BEP et équivalents",
-        "exigence": "E"
-      }
-    ],
-    "competences": [
-      {
-        "code": "101908",
-        "libelle": "Manipulation d'outil tranchant (ciseaux de coupe, cranteur, ...)",
-        "exigence": "S"
-      },
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101911",
-        "libelle": "Techniques de séchage",
-        "exigence": "S"
-      },
-      {
-        "code": "101913",
-        "libelle": "Coiffure femme",
-        "exigence": "S"
-      },
-      {
-        "code": "101914",
-        "libelle": "Coiffure homme",
-        "exigence": "S"
-      },
-      {
-        "code": "101915",
-        "libelle": "Techniques de décoloration, de coloration de cheveux (contraste, ton sur ton, d'oxydation, ...)",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101905",
-        "libelle": "Procéder à la mise en forme, au coiffage, à la fixation des cheveux (bouclage, brushing, ...)",
-        "exigence": "S"
-      },
-      {
-        "code": "101906",
-        "libelle": "Présenter au client sa coiffure sous différents angles pour recueillir son avis",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      },
-      {
-        "code": "114126",
-        "libelle": "Préparer et appliquer des produits colorants, décolorants (mèches, ...)",
-        "exigence": "S"
-      },
-      {
-        "code": "300379",
-        "libelle": "Développer et fidéliser la relation client",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "commentaire": "A définir"
-    },
-    "dureeTravailLibelle": "39H/semaine\nTravail le samedi",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": false,
-    "contact": {
-      "nom": "BRISSET PHILIPPE - M. BRISSET PHILIPPE Non renseigne",
-      "coordonnees1": "Tél : 0609532525",
-      "telephone": "0493383598"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "accessibleTH": false,
-    "qualificationCode": "6",
-    "qualificationLibelle": "Employé qualifié",
-    "codeNAF": "96.02A",
-    "secteurActivite": "96",
-    "secteurActiviteLibelle": "Coiffure",
-    "trancheEffectifEtab": "1 ou 2 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213RJQH"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "39H/semaine\nTravail le samedi"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
     "id": "213RHZS",
     "intitule": "Coiffeur, coiffeuse  titulaire d'un BP (H/F)",
     "description": "Recherche coiffeur (se)  pour un remplacement congé maternité de septembre à janvier\nBP Coiffure minimum\nUne personne polyvalente( coiffure femme et homme)\nAutonome et polyvalente\ndynamique et motivé(e)\nSouriant(e) , dynamique et à l'aise avec la clientèle\nEnvie de travailler dans un salon à taille humaine\n3 jours de repos consécutifs ( dimanche, lundi ,mardi)\nJournées continues le vendredi et le samedi\ncontrat : CDD temps plein 35h",
@@ -15810,114 +15897,6 @@
     "origineOffre": {
       "origine": "1",
       "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QTCW"
-    },
-    "offresManqueCandidats": false,
-    "contexteTravail": {
-      "horaires": [
-        "35H/semaine\nTravail en journée"
-      ]
-    },
-    "entrepriseAdaptee": false,
-    "employeurHandiEngage": false
-  },
-  {
-    "id": "213QTBG",
-    "intitule": "Apprenti coiffeur (H/F)",
-    "description": "La marque Franck Provost, c'est près de 45 ans de passion et d'innovation au service de la beauté des femmes. Un symbole du luxe accessible, est étroitement lié à son fondateur et à son savoir-faire reconnu dans le monde comme un symbole du chic à la française. Les salons élégants à l'image haut de gamme proposent des collections faciles à vivre et des techniques de coloration raffinées et exclusives. \n\nL'enseigne Franck Provost fait partie du Groupe Provalliance, leader mondial de la coiffure avec plus de 3 500 salons et boutiques répartis dans 35 pays, et composé de 18 enseignes (Jean Louis David, Saint Algue, Coiff & Co, The Barber Company .).\nFranck Provost positionne les collaborateurs au cœur de sa réussite, stimule leur évolution et les aide à développer leur sens artistique.  \n\nVous êtes à la recherche de nouvelles opportunités ?  Rejoignez nous !\n\nDescription du poste\nNous recherchons un(e) apprenti(e) prêt(e) à s'investir dans une formation à la fois à l'école et en salon (diplôme CAP)\n\nAccompagné par un tuteur vos missions seront les suivantes :\n\nAccueillir et accompagner la clientèle\nRéaliser des prestations shampoings et soins capillaires\nRéaliser des brushings, des colorations et des coupes basiques\nAssister les coiffeurs lors de la consultation de la cliente\nDévelopper les ventes de produit\nDevenez un coiffeur au sein de notre groupe, notamment grâce à : \n\nUne journée d'intégration dédiée à nos alternants \nUn parcours de formation sur mesure dédié à nos alternants avec le programme « Avenir Juniors » composé de journées de formation spécifiques rien que pour vous.\nUn tuteur formé dans nos académies pour vous accompagner\nDes possibilités futures de carrière et de développement au sein de notre Groupe.\nEn nous rejoignant, nous vous promettons :\n\nDes titres restaurant\nL'accès à une plateforme d'avantages (tarifs préférentiels pour des places de cinémas, des parcs d'attraction.)\nDes offres attractives chez nos partenaires\nDes valeurs d'entreprise fortes : Passion, Confiance, Créativité et Engagement\nNotre entreprise est engagée dans le développement d'un environnement inclusif et encourage les candidatures des personnes en situation de handicap.\n\nQualifications\nNous recherchons des apprenti(e)s coiffeur(se)s motivé(e)s: \n\nPassionné(e) par la coiffure, vous souhaitez vous former dans un salon à l'écoute de vos besoins\nDoté(e) d'un bon relationnel, vous avez le sens du service client (écoute, disponibilité et bienveillance)\nInformations complémentaires\nAdresse : Ccial Qwartz - 92390 Villeneuve la Garenne\n\nStatut : Alternant\n\nType d'emploi : Contrat d'apprentissage",
-    "dateCreation": "2026-09-09T16:18:34.379Z",
-    "dateActualisation": "2026-09-10T09:27:02.689Z",
-    "lieuTravail": {
-      "libelle": "92 - Villeneuve-la-Garenne",
-      "latitude": 48.935964,
-      "longitude": 2.333283,
-      "codePostal": "92390",
-      "commune": "92078"
-    },
-    "romeCode": "D1202",
-    "romeLibelle": "Coiffeur / Coiffeuse",
-    "appellationlibelle": "Coiffeur / Coiffeuse mixte",
-    "entreprise": {
-      "nom": "FRANCK PROVOST",
-      "entrepriseAdaptee": false
-    },
-    "typeContrat": "CDD",
-    "typeContratLibelle": "CDD - 24 Mois",
-    "natureContrat": "Contrat apprentissage",
-    "experienceExige": "D",
-    "experienceLibelle": "Débutant accepté",
-    "competences": [
-      {
-        "code": "101910",
-        "libelle": "Techniques de coupes de cheveux",
-        "exigence": "S"
-      },
-      {
-        "code": "101901",
-        "libelle": "Accueillir le client et l'installer",
-        "exigence": "S"
-      },
-      {
-        "code": "101903",
-        "libelle": "Réaliser le diagnostic capillaire, les préparations du lavage et le shampoing",
-        "exigence": "S"
-      },
-      {
-        "code": "101918",
-        "libelle": "Réaliser une coupe ou une coiffure",
-        "exigence": "S"
-      }
-    ],
-    "salaire": {
-      "commentaire": "salaire selon barême alternance",
-      "complement1": "Primes",
-      "complement2": "Indemnité transports",
-      "listeComplements": [
-        {
-          "code": "1",
-          "libelle": "Primes"
-        },
-        {
-          "code": "14",
-          "libelle": "Indemnité transports"
-        },
-        {
-          "code": "6",
-          "libelle": "Titres restaurant / Prime de panier"
-        }
-      ]
-    },
-    "dureeTravailLibelle": "35H/semaine\nTravail en journée",
-    "dureeTravailLibelleConverti": "Temps plein",
-    "alternance": true,
-    "contact": {
-      "coordonnees1": "https://smrtr.io/xxrch",
-      "urlPostulation": "https://smrtr.io/xxrch"
-    },
-    "agence": {},
-    "nombrePostes": 1,
-    "qualificationCode": "5",
-    "qualificationLibelle": "Employé non qualifié",
-    "codeNAF": "70.10Z",
-    "secteurActivite": "70",
-    "secteurActiviteLibelle": "Activités des sièges sociaux",
-    "qualitesProfessionnelles": [
-      {
-        "libelle": "Avoir l'esprit d'équipe",
-        "description": "Capacité à travailler et à se coordonner avec les autres au sein de l'entreprise pour réaliser les objectifs fixés."
-      },
-      {
-        "libelle": "Faire preuve de curiosité, d'ouverture d'esprit",
-        "description": "Capacité à aller chercher au-delà de ce qui est donné à voir, à s'ouvrir sur la nouveauté et à investiguer pour comprendre et agir de façon appropriée."
-      },
-      {
-        "libelle": "Avoir le sens du service",
-        "description": "Capacité à identifier (voire anticiper) les besoins des usagers, clients (internes et externes) et à apporter une réponse adaptée afin de les satisfaire."
-      }
-    ],
-    "trancheEffectifEtab": "6 à 9 salariés",
-    "origineOffre": {
-      "origine": "1",
-      "urlOrigine": "https://candidat.francetravail.fr/offres/recherche/detail/213QTBG"
     },
     "offresManqueCandidats": false,
     "contexteTravail": {
