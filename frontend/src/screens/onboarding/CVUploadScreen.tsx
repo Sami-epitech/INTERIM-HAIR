@@ -2,7 +2,7 @@
  * Deuxième étape de l'inscription candidat (variante import de CV) :
  * téléchargement, analyse automatique et vérification des informations extraites.
  */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { Screen } from "../../types";
 import { DIPLOMAS_LIST } from "../../data/mockData";
 import { BackBtn, PrimaryButton } from "../../components/ui";
@@ -10,6 +10,8 @@ import { IUpload, ICheck, IPencil, IX } from "../../components/icons";
 
 export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   const [stage, setStage] = useState<"drop" | "parsing" | "review">("drop");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string>("");
 
   // Données extraites ou modifiées du CV
   const [exName, setExName] = useState("Marie Dupont");
@@ -28,6 +30,68 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
       setExSkills((p) => [...p, newSkill.trim()]);
       setNewSkill("");
     }
+  };
+
+  // Traitement et analyse locale du CV déposé
+  const processUploadedFile = (file: File) => {
+    if (!file) return;
+
+    setUploadedFileName(file.name);
+    setStage("parsing");
+    setErrorMsg(null);
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const dataBase64 = reader.result as string;
+
+        // Appel de l'analyseur local backend
+        const response = await fetch("/api/cv/parse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: file.name,
+            dataBase64,
+          }),
+        });
+
+        const json = await response.json();
+
+        if (json.success && json.data) {
+          const { name, diploma, skills, experienceLevel } = json.data;
+          if (name) setExName(name);
+          if (diploma) setExDiploma(diploma);
+          if (skills && Array.isArray(skills) && skills.length > 0) setExSkills(skills);
+          if (experienceLevel) setExLevel(experienceLevel);
+        }
+
+        // Sauvegarde chiffrée du document au repos
+        const userId = localStorage.getItem("userId") || undefined;
+        fetch("/api/documents/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileType: file.type || "application/pdf",
+            dataBase64,
+            candidateId: userId,
+          }),
+        }).catch((docErr) => console.warn("[DOCS] Erreur sauvegarde document chiffré :", docErr));
+
+      } catch (err: any) {
+        console.error("[CV-PARSE] Erreur lors de l'analyse locale :", err);
+        setErrorMsg("L'analyse automatique a rencontré une difficulté, vous pouvez ajuster vos données manuellement.");
+      } finally {
+        setTimeout(() => setStage("review"), 1200);
+      }
+    };
+
+    reader.onerror = () => {
+      setErrorMsg("Impossible de lire le fichier sélectionné.");
+      setStage("drop");
+    };
+
+    reader.readAsDataURL(file);
   };
 
   // Envoi des données du profil analysé vers l'API backend
@@ -96,10 +160,26 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
       {/* ── Étape "drop" : zone de dépôt du fichier ────────────── */}
       {stage === "drop" && (
         <>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept=".pdf,.txt,.docx"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                processUploadedFile(e.target.files[0]);
+              }
+            }}
+          />
+
           <div
-            onClick={() => {
-              setStage("parsing");
-              setTimeout(() => setStage("review"), 2200);
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                processUploadedFile(e.dataTransfer.files[0]);
+              }
             }}
             className="flex flex-col items-center justify-center gap-5 border-2 border-dashed border-primary/30 rounded-2xl bg-primary/[0.02] cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all duration-200 min-h-[220px] p-8"
           >
@@ -166,8 +246,10 @@ export function CVUploadScreen({ onNavigate }: { onNavigate: (s: Screen) => void
               <ICheck />
             </div>
             <div>
-              <p className="text-sm font-semibold text-emerald-800">CV analysé avec succès</p>
-              <p className="text-xs text-emerald-600">Vérifiez et corrigez si nécessaire</p>
+              <p className="text-sm font-semibold text-emerald-800">
+                {uploadedFileName ? `CV analysé : ${uploadedFileName}` : "CV analysé avec succès"}
+              </p>
+              <p className="text-xs text-emerald-600">Vérifiez et ajustez vos informations ci-dessous</p>
             </div>
           </div>
 
