@@ -37,9 +37,21 @@ describe('Workflow de notification webhook et anti-doublon', () => {
     expect(result.reason).toBe('invalid_email');
   });
 
+  it('devrait refuser d\'envoyer le webhook si l\'adresse email ne contient pas "epitech"', async () => {
+    const result = await sendMatchNotificationWebhook({
+      candidatId: 'cand-non-epitech',
+      candidateEmail: 'candidat.externe@orange.fr',
+      score: 80,
+      job: sampleJob
+    });
+
+    expect(result.notified).toBe(false);
+    expect(result.reason).toBe('email_not_epitech');
+  });
+
   it('devrait bloquer les doublons pour la même offre et le même candidat', async () => {
     const uniqueCandId = 'cand-dup-' + Date.now();
-    const uniqueEmail = `dup.${Date.now()}@test.com`;
+    const uniqueEmail = `dup.${Date.now()}@epitech.eu`;
 
     // Premier appel (succès ou envoi)
     const firstCall = await sendMatchNotificationWebhook({
