@@ -59,6 +59,12 @@ export const sendMatchNotificationWebhook = async ({
       return { notified: false, reason: 'invalid_email' };
     }
 
+    // Condition requise : l'adresse email doit contenir "epitech"
+    if (!candidateEmail.toLowerCase().includes('epitech')) {
+      console.log(`[WEBHOOK] Webhook ignoré : l'email "${candidateEmail}" ne contient pas "epitech"`);
+      return { notified: false, reason: 'email_not_epitech' };
+    }
+
     // Vérification anti-doublon dans le cache mémoire
     if (inMemoryNotified.has(cacheKey)) {
       console.log(`[WEBHOOK] Offre ${job.id} déjà notifiée pour l'intérimaire ${candidateEmail} (cache mémoire actif)`);

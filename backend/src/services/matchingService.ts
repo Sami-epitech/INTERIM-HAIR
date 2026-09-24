@@ -132,7 +132,9 @@ export const calculateAndLogMatch = async (candidate: any, job: any) => {
   if (finalScore >= threshold) {
     const candidateEmail = fields.email || fields.Email || candidate.email;
     const candidateFirstName = fields.firstName || fields.Prenom || fields['Prénom'] || (fields.name ? String(fields.name).split(' ')[0] : undefined) || candidate.firstName;
-    if (candidateEmail) {
+    
+    // Condition : l'adresse email doit contenir "epitech" pour déclencher le webhook Airtable
+    if (candidateEmail && candidateEmail.toLowerCase().includes('epitech')) {
       await sendMatchNotificationWebhook({
         candidatId: candidateId,
         candidateEmail,
