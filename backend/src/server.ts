@@ -23,6 +23,7 @@ import { getJobs, postJob, patchJob } from "./controllers/job.controller";
 import { applyToMission, getApplications } from "./controllers/application.controller";
 import { getFavorites, addFavorite, removeFavorite, toggleFavorite } from "./controllers/favorite.controller";
 import { uploadDocument, downloadDocument, getCandidateDocuments } from "./controllers/document.controller";
+import { parseCV } from "./controllers/cvParser.controller";
 
 // Routeurs modulaires
 import jobRoutes from "./routes/job.routes";
@@ -86,6 +87,9 @@ app.post("/api/favorites/toggle", toggleFavorite);
 app.post("/api/documents/upload", uploadDocument);
 app.get("/api/documents/:docId", downloadDocument);
 app.get("/api/documents/candidate/:candidateId", getCandidateDocuments);
+
+// Analyse automatique de CV (100% locale)
+app.post("/api/cv/parse", parseCV);
 
 // Routes modulaires d'offres
 app.use("/api/jobs", jobRoutes);
