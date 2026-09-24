@@ -3,9 +3,21 @@
  */
 
 /** Cœur (favoris) — rempli en rose quand `filled` est vrai */
-export const IHeart = ({ filled }: { filled?: boolean }) => (
-  <svg width="22" height="22" viewBox="0 0 22 22" fill={filled ? "#C4697B" : "none"} className={filled ? "text-primary" : "text-foreground"}>
-    <path d="M11 19.5S2.5 14 2.5 7.5a4.5 4.5 0 0 1 8.5-2.1A4.5 4.5 0 0 1 19.5 7.5C19.5 14 11 19.5 11 19.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+export const IHeart = ({ filled, className = "" }: { filled?: boolean; className?: string }) => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 22 22"
+    fill={filled ? "#E11D48" : "none"}
+    stroke={filled ? "#E11D48" : "currentColor"}
+    className={`${filled ? "text-rose-600" : "text-current"} ${className}`}
+  >
+    <path
+      d="M11 19.5S2.5 14 2.5 7.5a4.5 4.5 0 0 1 8.5-2.1A4.5 4.5 0 0 1 19.5 7.5C19.5 14 11 19.5 11 19.5Z"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   </svg>
 );
 
