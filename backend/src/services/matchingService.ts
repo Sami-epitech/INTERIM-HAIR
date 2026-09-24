@@ -7,8 +7,8 @@ import { sendMatchNotificationWebhook } from './webhookService';
  * Coefficients de pondération bilatérale des critères de matching.
  */
 const WEIGHTS = {
-  candidate: { salary: 0.20, location: 0.50, schedule: 0.10, duration: 0.10, skills: 0.10 },
-  recruiter: { skills: 0.30, schedule: 0.20, duration: 0.15, location: 0.30, salary: 0.05 }
+  candidate: { salary: 0.10, location: 0.70, schedule: 0.10, duration: 0.05, skills: 0.05 },
+  recruiter: { skills: 0.10, schedule: 0.05, duration: 0.10, location: 0.70, salary: 0.05 }
 };
 
 /**
